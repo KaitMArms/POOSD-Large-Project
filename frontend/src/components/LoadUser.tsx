@@ -1,0 +1,1 @@
+// This component page will load the users profile after login
