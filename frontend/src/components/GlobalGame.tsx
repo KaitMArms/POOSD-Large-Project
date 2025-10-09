@@ -1,0 +1,1 @@
+//Component for recommend page with global game databse and ML
