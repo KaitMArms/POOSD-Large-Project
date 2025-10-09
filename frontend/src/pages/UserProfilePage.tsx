@@ -1,0 +1,1 @@
+// This i where the user can see their profile with all of their stats and their settings such as change in and delete account
