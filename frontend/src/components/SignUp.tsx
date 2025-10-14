@@ -7,7 +7,6 @@ function SignUp()
     }
 
     // put function for sign up here that calls login in after signup okayed by server
-
     return(
         <div id="signUpDiv">
         <span id="inner-title">PLEASE SIGN UP</span><br />
