@@ -5,6 +5,7 @@ import LoadDevUser from '../components/LoadDevUser.tsx';
 const UserProfilePage = () =>
 {
     const devFlag = false; // figure out dynamic solution temp placeholder
+    
     return(
         <div>
             <PageTitle />
