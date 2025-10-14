@@ -4,7 +4,7 @@ function LoadUser()
     //Neccessary functs to make return work here
 
     return(
-        // HTML code goes inside container. container = CSS for general page layout and info
+        // HTML code goes inside container. container = html for general page layout and info
         <div id="profileContainer">
             
         </div>
