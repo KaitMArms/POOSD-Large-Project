@@ -14,8 +14,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-        cd backend
-        npm install
+          cd backend
+          npm install
 
       - name: Deploy
         env:
