@@ -1,34 +1,18 @@
+require('dotenv').config();
+
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 
-<<<<<<< Updated upstream
-=======
 const authRoutes = require('./routes/auth.routes');
 const addgamesRouter = require('./apiFiles/addgames');
 
->>>>>>> Stashed changes
 const app = express();
-app.use(cors());
-// app.use(bodyParser.json());
+
+// Middleware
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
-<<<<<<< Updated upstream
-app.use((req, res, next) =>
-{
-    app.get("/api/ping", (req, res, next) => {
-        res.status(200).json({ message: "Hello World" });
-    });
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PATCH, DELETE, OPTIONS'
-    );
-    next();
-=======
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/games', addgamesRouter);
@@ -43,7 +27,21 @@ app.use((_req, res) => res.status(404).json({ message: 'Not found' }));
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ message: 'Server error.' });
->>>>>>> Stashed changes
 });
 
-app.listen(42069); // start Node + Express server on port 5000
+// Mongo + server bootstrap
+async function start() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+    });
+    console.log('Mongo connected');
+
+    const port = process.env.PORT || 8080;
+    app.listen(port, () => console.log(`API listening on port ${port}`));
+  } catch (err) {
+    console.error('Mongo connection error:', err);
+    process.exit(1);
+  }
+}
+
+start();
