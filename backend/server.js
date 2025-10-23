@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('./db');
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -11,7 +12,7 @@ const app = express();
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+app.use(express.json( {limit: '50mb'}));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -29,19 +30,5 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ message: 'Server error.' });
 });
 
-// Mongo + server bootstrap
-async function start() {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-    });
-    console.log('Mongo connected');
-
-    const port = process.env.PORT || 8080;
-    app.listen(port, () => console.log(`API listening on port ${port}`));
-  } catch (err) {
-    console.error('Mongo connection error:', err);
-    process.exit(1);
-  }
-}
-
-start();
+const port = process.env.PORT || 8080;
+app.listen(port, () => console.log('Listening on port ${port}'));
