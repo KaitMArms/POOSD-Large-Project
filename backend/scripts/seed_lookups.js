@@ -1,0 +1,94 @@
+require('dotenv').config({ path: '../backend/.env' }); 
+const axios = require('axios');
+const mongoose = require('mongoose');
+
+const PlatformModel = require('../backend/models/Platform');
+const GenreModel = require('../backend/models/Genre');
+const FranchiseModel = require('../backend/models/Franchise');
+const AgeRatingModel = require('../backend/models/AgeRating');
+const CoverModel = require('../backend/models/Cover');
+
+async function getAccessToken() {
+    console.log("Requesting Twitch Access Token...");
+    try {
+        const response = await axios.post('https://id.twitch.tv/oauth2/token', null, {
+            params: {
+                client_id: process.env.TWITCH_CLIENT_ID,
+                client_secret: process.env.TWITCH_CLIENT_SECRET,
+                grant_type: 'client_credentials'
+            }
+        });
+        console.log("Token received.");
+        return response.data.access_token;
+    } catch (error) {
+        console.error("FATAL: Could not get Twitch Access Token. Check your credentials in .env");
+        throw error;
+    }
+}
+
+async function seedData(endpointName, Model, accessToken) {
+    console.log(`\n--- Seeding ${endpointName} ---`);
+    
+    let offset = 0;
+    const limit = 500;
+    let continueFetching = true;
+    let totalRecords = 0;
+
+    while (continueFetching) {
+        try {
+            const fields = (endpointName === 'covers') ? 'fields id,image_id;' : 'fields *;';
+            
+            console.log(`   > Fetching ${endpointName} with offset ${offset}...`);
+            const response = await axios.post(`https://api.igdb.com/v4/${endpointName}`,
+                `${fields} limit ${limit}; offset ${offset};`,
+                {
+                    headers: {
+                        'Client-ID': process.env.TWITCH_CLIENT_ID,
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                }
+            );
+
+            const data = response.data;
+            if (data.length > 0) {
+                await Model.insertMany(data, { ordered: false });
+                totalRecords += data.length;
+                offset += limit; 
+            } else {
+                console.log(`No more records found for ${endpointName}.`);
+                continueFetching = false;
+            }
+
+        } catch (error) {
+            if (error.code === 11000) {
+                console.log(`   > Some records were duplicates (which is expected). Moving to next batch.`);
+                offset += limit;
+            } else {
+                console.error(`Error seeding ${endpointName} at offset ${offset}:`, error.message);
+                continueFetching = false; 
+            }
+        }
+    }
+    console.log(`Finished seeding ${endpointName}. Total records processed: ${totalRecords}.`);
+}
+
+async function run() {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Mongo connected for seeding.");
+    
+    const accessToken = await getAccessToken();
+    
+    await seedData('platforms', PlatformModel, accessToken);
+    await seedData('genres', GenreModel, accessToken);
+    await seedData('franchises', FranchiseModel, accessToken);
+    await seedData('age_ratings', AgeRatingModel, accessToken);
+    await seedData('covers', CoverModel, accessToken); 
+
+    await mongoose.connection.close();
+    console.log("\nSeeding complete. Mongo connection closed.");
+}
+
+run().catch(err => {
+    console.error("A fatal error occurred during the seeding process:", err);
+    mongoose.connection.close();
+});
