@@ -1,6 +1,5 @@
 const mongoose  = require('mongoose');
 const bcrypt    = require('bcryptjs');
-
 require('./Counter');
 
 const SALT_WORK_FACTOR = 10;
