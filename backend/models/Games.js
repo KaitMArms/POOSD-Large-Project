@@ -1,4 +1,9 @@
 const mongoose = require('mongoose');
+const gamesConn = mongoose.createConnection(process.env.MONGO_URI_GAMES, {
+  serverSelectionTimeoutMS: 10000,
+});
+
+gamesConn.once('open', () => console.log('MongoDB connected: GamesDB'));
 
 const gameSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true }, 
@@ -17,6 +22,5 @@ const gameSchema = new mongoose.Schema({
     timestamps: true 
 });
 
-gameSchema.index({ id: 1 }, { unique: true });
 
 module.exports = mongoose.model('Game', gameSchema);

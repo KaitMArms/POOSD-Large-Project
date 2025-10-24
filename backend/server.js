@@ -1,45 +1,40 @@
 require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const authRoutes = require('./routes/auth.routes');
-const addgamesRouter = require('./apiFiles/addgames');
-
 const app = express();
 
-// Middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/games', addgamesRouter);
-
-// Health check
+// quick health route
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
 
-// 404 handler
-app.use((_req, res) => res.status(404).json({ message: 'Not found' }));
-
-// Global error handler (optional)
-app.use((err, _req, res, _next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ message: 'Server error.' });
-});
-
-// Mongo + server bootstrap
+// --- MAIN: connect to Users DB (default connection) ---
 async function start() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(process.env.MONGO_URI_USERS, {
+      serverSelectionTimeoutMS: 10000,
     });
-    console.log('Mongo connected');
+    console.log('MongoDB connected: UsersDB');
 
-    const port = process.env.PORT || 8080;
-    app.listen(port, () => console.log(`API listening on port ${port}`));
+    // register models that use this default connection
+    require('./models/Counter');
+    require('./models/Users');
+
+    // mount routes (auth first)
+    app.use('/api/auth', require('./routes/auth.routes'));
+
+    // games route will handle its own separate connection
+    app.use('/api/games', require('./apiFiles/addgames'));
+
+    const PORT = process.env.PORT || 8080;
+    
+    app.listen(PORT, '0.0.0.0', () => console.log(`Listening on port ${PORT}`));
+
   } catch (err) {
-    console.error('Mongo connection error:', err);
+    console.error('Startup error:', err);
     process.exit(1);
   }
 }
