@@ -18,17 +18,19 @@ async function start() {
     });
     console.log('MongoDB connected: UsersDB');
 
+    // register models that use this default connection
     require('./models/Counter');
     require('./models/Users');
 
-    // mount routes
+    // mount routes (auth first)
     app.use('/api/auth', require('./routes/auth.routes'));
 
+    // games route will handle its own separate connection
     app.use('/api/games', require('./apiFiles/addgames'));
 
     const PORT = process.env.PORT || 8080;
     
-    app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+    app.listen(PORT, '0.0.0.0', () => console.log(`Listening on port ${PORT}`));
 
   } catch (err) {
     console.error('Startup error:', err);

@@ -17,15 +17,26 @@ jobs:
           cd backend
           npm install
 
-      - name: Deploy
+      - name: Setup SSH key
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          env
+          mkdir -p ~/.ssh
+          echo "${SSH_KEY}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 22 ${SSH_HOST} >> ~/.ssh/known_hosts
+          sudo apt-get install sshpass
+
+      - name: Deploy
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          sshpass -p "${SSH_KEY}" ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+          ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
           cd /var/www/html/backend
-          git pull origin master
+          git pull origin main
           npm install
           pm2 restart server
           EOF
