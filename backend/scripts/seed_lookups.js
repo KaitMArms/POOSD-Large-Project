@@ -7,6 +7,12 @@ const GenreModel = require('../models/Genre');
 const FranchiseModel = require('../models/Franchise');
 const AgeRatingModel = require('../models/AgeRating');
 const CoverModel = require('../models/Cover');
+const ModeModel = require('../models/GameMode');
+const KeyModel = require('../models/KeyWords');
+const LanguageModel = require('../models/LanguageSupport');
+const TheseModel = require('../models/Themes');
+const TypeModel = require('../models/GameType');
+const PerspectiveModel = require('../models/Perspective');
 
 async function getAccessToken() {
     console.log("Requesting Twitch Access Token...");
@@ -59,6 +65,8 @@ async function seedData(endpointName, Model, accessToken) {
                 await Model.insertMany(data, { ordered: false });
                 totalRecords += data.length;
                 offset += limit; 
+
+                await new Promise(resolve => setTimeout(resolve, 300))
             } else {
                 console.log(`No more records found for ${endpointName}.`);
                 continueFetching = false;
@@ -97,6 +105,11 @@ async function run() {
     await seedData('franchises', FranchiseModel, accessToken);
     await seedData('age_ratings', AgeRatingModel, accessToken);
     await seedData('covers', CoverModel, accessToken); 
+    await seedData('game_modes', ModeModel, accessToken);
+    await seedData('keywords', KeyModel, accessToken);
+    await seedData('language_supports', LanguageModel, accessToken);
+    await seedData('themes', TheseModel, accessToken);
+    await seedData('game_types', TypeModel, accessToken);
 
     await mongoose.connection.close();
     console.log("\nSeeding complete. Mongo connection closed.");
