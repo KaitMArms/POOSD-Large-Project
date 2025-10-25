@@ -11,7 +11,6 @@ app.use(express.json());
 // quick health route
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
 
-// --- MAIN: connect to Users DB (default connection) ---
 async function start() {
   try {
     await mongoose.connect(process.env.MONGO_URI_USERS, {

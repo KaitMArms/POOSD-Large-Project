@@ -1,12 +1,12 @@
-require('dotenv').config({ path: '../backend/.env' }); 
+require('dotenv').config({ path: '../.env' }); 
 const axios = require('axios');
 const mongoose = require('mongoose');
 
-const PlatformModel = require('../backend/models/Platform');
-const GenreModel = require('../backend/models/Genre');
-const FranchiseModel = require('../backend/models/Franchise');
-const AgeRatingModel = require('../backend/models/AgeRating');
-const CoverModel = require('../backend/models/Cover');
+const PlatformModel = require('../models/Platform');
+const GenreModel = require('../models/Genre');
+const FranchiseModel = require('../models/Franchise');
+const AgeRatingModel = require('../models/AgeRating');
+const CoverModel = require('../models/Cover');
 
 async function getAccessToken() {
     console.log("Requesting Twitch Access Token...");
@@ -33,6 +33,8 @@ async function seedData(endpointName, Model, accessToken) {
     const limit = 500;
     let continueFetching = true;
     let totalRecords = 0;
+    let retries = 0;
+    const maxRetries = 5;
 
     while (continueFetching) {
         try {
@@ -45,9 +47,12 @@ async function seedData(endpointName, Model, accessToken) {
                     headers: {
                         'Client-ID': process.env.TWITCH_CLIENT_ID,
                         'Authorization': `Bearer ${accessToken}`
-                    }
+                    },
+
+		    timeout: 10000
                 }
             );
+	    retries = 0;
 
             const data = response.data;
             if (data.length > 0) {
@@ -59,13 +64,22 @@ async function seedData(endpointName, Model, accessToken) {
                 continueFetching = false;
             }
 
-        } catch (error) {
-            if (error.code === 11000) {
-                console.log(`   > Some records were duplicates (which is expected). Moving to next batch.`);
-                offset += limit;
+        } catch (error)
+	    {
+             if (retries < maxRetries && (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT')) {
+                retries++;
+                const delay = 5000 * retries; // Wait longer each time
+                console.warn(`   > Request timed out or connection was reset. Retrying in ${delay / 1000}s... (Attempt ${retries}/${maxRetries})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
             } else {
-                console.error(`Error seeding ${endpointName} at offset ${offset}:`, error.message);
-                continueFetching = false; 
+                // For other errors (like duplicates or fatal errors), handle as before
+                if (error.code === 11000) {
+                    console.log(`   > Some records were duplicates. Moving to next batch.`);
+                    offset += limit;
+                } else {
+                    console.error(`Error seeding ${endpointName} at offset ${offset}:`, error.message);
+                    continueFetching = false; // Stop on fatal errors
+                }
             }
         }
     }
@@ -73,7 +87,7 @@ async function seedData(endpointName, Model, accessToken) {
 }
 
 async function run() {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI_GAMES);
     console.log("Mongo connected for seeding.");
     
     const accessToken = await getAccessToken();

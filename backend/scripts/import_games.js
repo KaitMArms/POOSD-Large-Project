@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../backend/.env' });
+require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 
 const YOUR_SERVER_API_URL = 'http://localhost:8080/api/games'; 
