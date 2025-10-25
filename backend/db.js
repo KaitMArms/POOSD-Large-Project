@@ -15,7 +15,7 @@ function createDbConnection(uri, dbName){
 	return db;
 }
 
-const userConnection = createDbConnection(process.env.MONGO_URI, 'Users');
+const userConnection = createDbConnection(process.env.MONGO_URI_USERS, 'Users');
 const gameConnection = createDbConnection(process.env.MONGO_URI_GAMES, 'GameDB');
 
 module.exports = { userConnection, gameConnection };

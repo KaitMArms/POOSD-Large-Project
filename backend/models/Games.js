@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
-const gamesConn = mongoose.createConnection(process.env.MONGO_URI_GAMES, {
-  serverSelectionTimeoutMS: 10000,
-});
+const { gameConnection } = require('../db');
 
-gamesConn.once('open', () => console.log('MongoDB connected: GamesDB'));
 
 const gameSchema = new mongoose.Schema({
-    id: { type: Number, required: true, unique: true }, 
+    id: { type: Number, required: true}, 
     name: { type: String, required: true },
     slug: { type: String },
     summary: { type: String },
@@ -21,12 +18,13 @@ const gameSchema = new mongoose.Schema({
     language_supports: [{type: Number}],
     keywords: [{type: Number}],
     game_modes: [{type: Number}],
-    game_type:[{type: Number}],
+    game_type:{type: Number},
     player_perspectives:[{type: Number}]
 }, 
 { 
     timestamps: true 
 });
 
+gameSchema.index({id: 1}, {unique: true});
 
-module.exports = mongoose.model('Game', gameSchema);
+module.exports = gameConnection.models.game || gameConnection.model('Game', gameSchema);

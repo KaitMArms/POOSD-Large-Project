@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 
-const YOUR_SERVER_API_URL = 'http://localhost:8080/api/games'; 
+const YOUR_SERVER_API_URL = 'http://127.0.0.1:8080/api/games'; 
 
 async function getAccessToken() {
     console.log("Requesting Twitch Access Token...");
@@ -67,3 +67,4 @@ async function importGames() {
 }
 
 importGames();
+
