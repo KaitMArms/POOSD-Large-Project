@@ -9,7 +9,7 @@ const AgeRatingModel = require('../models/AgeRating');
 const CoverModel = require('../models/Cover');
 const ModeModel = require('../models/GameMode');
 const KeyModel = require('../models/KeyWords');
-const LanguageModel = require('../models/LanguageSupport');
+const LanguageModel = require('../models/Languages');
 const TheseModel = require('../models/Themes');
 const TypeModel = require('../models/GameType');
 const PerspectiveModel = require('../models/Perspective');
@@ -100,16 +100,17 @@ async function run() {
     
     const accessToken = await getAccessToken();
     
-    await seedData('platforms', PlatformModel, accessToken);
+    // await seedData('platforms', PlatformModel, accessToken);
     await seedData('genres', GenreModel, accessToken);
     await seedData('franchises', FranchiseModel, accessToken);
-    await seedData('age_ratings', AgeRatingModel, accessToken);
-    await seedData('covers', CoverModel, accessToken); 
+    // await seedData('age_ratings', AgeRatingModel, accessToken);
+    // await seedData('covers', CoverModel, accessToken); 
     await seedData('game_modes', ModeModel, accessToken);
     await seedData('keywords', KeyModel, accessToken);
-    await seedData('language_supports', LanguageModel, accessToken);
+    await seedData('languages', LanguageModel, accessToken);
     await seedData('themes', TheseModel, accessToken);
     await seedData('game_types', TypeModel, accessToken);
+    await seedData('player_perspectives', PerspectiveModel, accessToken);
 
     await mongoose.connection.close();
     console.log("\nSeeding complete. Mongo connection closed.");
