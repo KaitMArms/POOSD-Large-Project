@@ -16,7 +16,13 @@ const gameSchema = new mongoose.Schema({
     age_ratings: [{type : Number}],
     franchise: {type: Number},
     platforms: [ {type: Number}],
-    rating: {type : Number, default: 0}
+    rating: {type : Number, default: 0},
+    themes: [ {type: Number}],
+    language_supports: [{type: Number}],
+    keywords: [{type: Number}],
+    game_modes: [{type: Number}],
+    game_type:[{type: Number}],
+    player_perspectives:[{type: Number}]
 }, 
 { 
     timestamps: true 
