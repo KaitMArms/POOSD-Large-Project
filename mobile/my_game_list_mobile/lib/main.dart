@@ -5,6 +5,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  static final String title = 'Simulator';
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),
       home: const MyHomePage(title: 'Everybody Dance Now'),
     );
@@ -91,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
+
           // children horizontally, and tries to be as tall as its parent.
           //
           // Column has various properties to control how it sizes itself and
