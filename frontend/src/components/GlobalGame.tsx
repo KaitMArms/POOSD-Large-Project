@@ -4,7 +4,7 @@ function LoadGameReq()
     return(
         //code inside container
         <div id="globalGamesContainer">
-        
+            
         </div>
     );
 };

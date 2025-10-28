@@ -1,6 +1,6 @@
 const mongoose  = require('mongoose');
 const bcrypt    = require('bcryptjs');
-const Counter   = require('./Counter');
+require('./Counter');
 
 const SALT_WORK_FACTOR = 10;
 
@@ -49,6 +49,7 @@ userSchema.pre('save', async function(next) {
   // Assign incremental userID once on create
   if (user.isNew && !user.userID) {
     try {
+      const Counter = user.model('Counter');
       const counter = await Counter.findByIdAndUpdate(
         'userID',
         { $inc: { sequence: 1 } },
