@@ -1,6 +1,8 @@
 //imports Flutter's material design library (has Flutter's pre-built widgets): Scaffold, AppBar, Text, FloatingActionButton, etc.
 import 'package:flutter/material.dart';
 
+/*
+
 void main() {
   //main is the entry point of flutter application
   //const tells Flutter this widget is immutable and can be compiled at build time for performance.
@@ -149,3 +151,28 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+*/
+
+void main() {
+  runApp(const PlayedIt());
+}
+
+class PlayedIt extends StatelessWidget {
+   const PlayedIt({super.key});
+
+  final String title;
+
+  @override
+   Widget build(BuildContext context) {
+    //materialApp is defines the set up of our app (theme, routes, title, etc.)
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+      ),
+      home: const MyHomePage(title: 'Everybody Dance Now'), //home is a property that means that home is the first screen shown on start-up
+    );
+  }
+}
+
