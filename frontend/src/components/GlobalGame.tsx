@@ -1,11 +1,15 @@
 //Component for recommend page with global game databse and ML
-function LoadGameReq()
+function LoadGlobalGame()
 {
     return(
         //code inside container
+<<<<<<< Updated upstream
         <div id="globalGamesContainer">
+=======
+        <div id="page-container">
+>>>>>>> Stashed changes
             
         </div>
     );
 };
-export default LoadGameReq;
+export default LoadGlobalGame;
