@@ -169,8 +169,7 @@ class PlayedIt extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),
-      home: const LogIn(title: 'Everybody Dance Now'), //home is a property that means that home is the first screen shown on start-up
-
+      home: const LogIn(), //home is a property that means that home is the first screen shown on start-up
     );
   }
 }

@@ -1,16 +1,16 @@
 
 import 'package:flutter/material.dart';
-import 'package:my_game_list_mobile/sign_up.dart';
+import 'package:my_game_list_mobile/future_log_in.dart';
 
-class LogIn extends StatefulWidget {
-  const LogIn({super.key, required String title});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key, required String title});
 
   @override
-  State<LogIn> createState() => LogInUI();
+  State<SignUp> createState() => LogInUI();
 
 }
 
-class LogInUI extends State<LogIn>  {
+class LogInUI extends State<SignUp>  {
   /*
   we need to make something that:
   1. Moves the text boxes slightly down
@@ -83,7 +83,7 @@ class LogInUI extends State<LogIn>  {
                   onPressed: () {
                     //NavigationBar to sign_up.dart
                     Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const SignUp())
+                    MaterialPageRoute(builder: (context) => const LogIn())
                     );
                   }, 
                   child: Text("Log In"))
