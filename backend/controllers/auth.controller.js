@@ -1,16 +1,19 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 
-const JWT_EXPIRES = '7d';
+const JWT_EXPIRES = '1d';
 
 
 function signToken(user) {
-  return jwt.sign(
-    { sub: user._id.toString(), uid: user.userID, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: JWT_EXPIRES }
-  );
+  const payload = {
+    sub: user._id.toString(),
+    uid: user.userID,
+    email: user.email,
+    role: user.role // 'user' or 'dev'
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
 }
+
 
 exports.register = async (req, res) => {
   try {

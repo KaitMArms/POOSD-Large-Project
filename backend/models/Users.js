@@ -1,6 +1,6 @@
 const mongoose  = require('mongoose');
 const bcrypt    = require('bcryptjs');
-const Counter   = require('./Counter');
+require('./Counter');
 
 const SALT_WORK_FACTOR = 10;
 
@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
   email:     { type: String, required: true, unique: true, lowercase: true, trim: true },
   password:  { type: String, required: true, trim: true },
   createdAt: { type: Date, default: Date.now },
-  userID:    { type: Number, unique: true }
+  userID:    { type: Number, unique: true },
+  role:      { type: String, enum: ['user', 'dev'], default: 'user' }
 }, {
   collection: 'game-users'
 });
@@ -49,6 +50,7 @@ userSchema.pre('save', async function(next) {
   // Assign incremental userID once on create
   if (user.isNew && !user.userID) {
     try {
+      const Counter = user.model('Counter');
       const counter = await Counter.findByIdAndUpdate(
         'userID',
         { $inc: { sequence: 1 } },
