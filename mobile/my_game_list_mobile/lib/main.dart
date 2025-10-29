@@ -1,8 +1,4 @@
-//imports Flutter's material design library (has Flutter's pre-built widgets): Scaffold, AppBar, Text, FloatingActionButton, etc.
-import 'package:flutter/material.dart';
-
 /*
-
 void main() {
   //main is the entry point of flutter application
   //const tells Flutter this widget is immutable and can be compiled at build time for performance.
@@ -153,15 +149,17 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 */
+//imports Flutter's material design library (has Flutter's pre-built widgets): Scaffold, AppBar, Text, FloatingActionButton, etc.
+import 'package:flutter/material.dart';
+import 'package:my_game_list_mobile/log_in.dart';
 
 void main() {
   runApp(const PlayedIt());
 }
 
 class PlayedIt extends StatelessWidget {
-   const PlayedIt({super.key});
-
-  final String title;
+  static final String title = 'Simulator';
+  const PlayedIt({super.key});
 
   @override
    Widget build(BuildContext context) {
@@ -171,7 +169,8 @@ class PlayedIt extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),
-      home: const MyHomePage(title: 'Everybody Dance Now'), //home is a property that means that home is the first screen shown on start-up
+      home: const LogIn(title: 'Everybody Dance Now'), //home is a property that means that home is the first screen shown on start-up
+
     );
   }
 }
