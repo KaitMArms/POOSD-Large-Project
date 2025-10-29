@@ -5,19 +5,39 @@ class SignUp extends StatefulWidget {
   const SignUp({super.key});
 
   @override
-  State<SignUp> createState() => LogInUI();
+  State<SignUp> createState() => SignUpUI();
 
 }
 
-class LogInUI extends State<SignUp>  {
+class SignUpUI extends State<SignUp>  {
   /*
   we need to make something that:
   1. Moves the text boxes slightly down
   2. Puts the text fields in mild boxes instead
   3. First name, last name text boxes too
   */
+
+  bool _obscure = true;
+
+  final TextEditingController firstName = TextEditingController();
+  final TextEditingController lastName = TextEditingController();
+  final TextEditingController username = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  
+  @override
+  void dispose() {
+    firstName.dispose();
+    lastName.dispose();
+    username.dispose();
+    password.dispose();
+    email.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(24, 80, 24, 24),
@@ -40,6 +60,7 @@ class LogInUI extends State<SignUp>  {
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: firstName,
                   decoration: InputDecoration(
                     labelText: "First Name",
                     border: OutlineInputBorder(),
@@ -48,6 +69,7 @@ class LogInUI extends State<SignUp>  {
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: lastName,
                   decoration: InputDecoration(
                     labelText: "Last Name",
                     border: OutlineInputBorder(),
@@ -56,6 +78,7 @@ class LogInUI extends State<SignUp>  {
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: email,
                   decoration: InputDecoration(
                     labelText: "Email",
                     border: OutlineInputBorder(),
@@ -64,6 +87,7 @@ class LogInUI extends State<SignUp>  {
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: username,
                   decoration: InputDecoration(
                     labelText: "Username",
                     border: OutlineInputBorder(),
@@ -72,9 +96,19 @@ class LogInUI extends State<SignUp>  {
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: password,
+                  obscureText: _obscure,
                   decoration: InputDecoration(
                     labelText: "Password",
                     border: OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                    icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                    onPressed: (){
+                      setState(() {
+                        _obscure = !_obscure;
+                      });
+                    },
+                  ),
                   ), 
                 ),
                 SizedBox(height: 16,),
