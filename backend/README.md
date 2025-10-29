@@ -1,0 +1,2 @@
+# My Game Library (working title)
+A work in progress MERN stack project designed for UCF's Processes in Object Oriented Software Development (POOSD) course. This website and app allows for the gaming community to have a place to rate games of every console both big and small. It enables users to track their progess and prefaces of games and developers of both big and small games to track their game's development and perception.
