@@ -15,40 +15,42 @@ class LogInUI extends State<LogIn>  {
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
-        child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 400),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Name"
-                ), 
-              ),
-              SizedBox(height: 16,),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: "Name"
+                  ), 
+                ),
+                SizedBox(height: 16,),
 
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Email"
-                ), 
-              ),
-              SizedBox(height: 16,),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: "Email"
+                  ), 
+                ),
+                SizedBox(height: 16,),
 
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Username"
-                ), 
-              ),
-              SizedBox(height: 16,),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: "Username"
+                  ), 
+                ),
+                SizedBox(height: 16,),
 
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Password"
-                ), 
-              ),
-            ],
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: "Password"
+                  ), 
+                ),
+              ],
+            )
           )
         ),
-      )
-    );
+      );
   }
 }
