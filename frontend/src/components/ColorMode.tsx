@@ -7,7 +7,7 @@ function Mode()
         document.body.classList.add('light-mode')
     }
 
-    const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    const theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
     localStorage.setItem('theme', theme);
 }
 export default Mode;
