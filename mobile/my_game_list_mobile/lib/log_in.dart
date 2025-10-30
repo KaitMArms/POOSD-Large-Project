@@ -25,21 +25,25 @@ class _LogInState extends State<LogIn>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(24, 80, 24, 24),
+      backgroundColor: Color(0xFF192642),
+      body: Padding(
+      padding: EdgeInsets.fromLTRB(24, 40, 24, 24),
+      child: Center(
           child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             TextField(
               controller: username,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Username/Email",
-                fillColor: Color.fromARGB(3, 6, 16, 245),
+                fillColor: Color(0xFF2047C0),
+                filled: true,
               )
             ),
 
-            SizedBox(height: 16),
+            SizedBox(height: 20),
 
             TextField(
               controller: password,
@@ -47,7 +51,8 @@ class _LogInState extends State<LogIn>{
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Password",
-                fillColor: Color.fromARGB(3, 6, 16, 245),
+                fillColor: Color(0xFF2047C0),
+                filled: true,
                 suffixIcon: IconButton(
                     icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: (){
@@ -59,7 +64,7 @@ class _LogInState extends State<LogIn>{
                 ),
             ),
 
-            SizedBox(height: 16),
+            SizedBox(height: 20),
 
             ElevatedButton(
               onPressed: () {
@@ -70,7 +75,7 @@ class _LogInState extends State<LogIn>{
               child: Text("Sign Up"),
             ),
 
-            SizedBox(height: 16),
+            SizedBox(height: 14),
 
             ElevatedButton(
               onPressed: () {
@@ -82,6 +87,7 @@ class _LogInState extends State<LogIn>{
             )
           ],
         )
+      )
       )
     );
   }

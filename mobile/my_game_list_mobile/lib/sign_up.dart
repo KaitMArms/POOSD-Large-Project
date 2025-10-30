@@ -39,6 +39,7 @@ class SignUpUI extends State<SignUp>  {
   Widget build(BuildContext context) {
     
     return Scaffold(
+      backgroundColor: Color(0xFF192642),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(24, 80, 24, 24),
         child: ConstrainedBox(
@@ -117,7 +118,7 @@ class SignUpUI extends State<SignUp>  {
                     //NavigationBar to sign_up.dart
                     Navigator.pop(context);
                   }, 
-                  child: Text("Sign Up"))
+                  child: Text("Back to Log-In"))
               ],
             )
           )
