@@ -6,8 +6,11 @@ const express = require('express');
 const cors = require('cors');
 
 // --- Routes ---
-const authRoutes = require('./routes/login.routes');
-const addgamesRouter = require('./apiFiles/addgames');
+const loginRoutes = require('./routes/login.routes');
+const userRoutes = require('./routes/user.routes');
+const devRoutes = require('./routes/dev.routes');
+const userGamesRoutes = require('./routes/userGames.routes');
+const globalGamesRoures = require('./routes/globalGames.routes');
 
 const app = express();
 
@@ -17,8 +20,11 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/games', addgamesRouter);
+app.use('/api/auth', loginRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/dev', devRoutes);
+app.use('/api/user/games', userGamesRoutes);
+app.use('/api/globalgames', globalGamesRoures);
 
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
 app.use((_req, res) => res.status(404).json({ message: 'Not found' }));

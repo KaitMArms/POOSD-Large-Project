@@ -4,9 +4,13 @@ const {addGame, editGame, deleteGame, viewGames} = require('../controllers/dev.c
 const requireAuth = require('../middleware/requireAuth');
 const requireRole = require('../middleware/requireRole');
 
+// Authenticated & Role 'dev'
 router.use(requireAuth);
+router.use(requireRole('dev')); //requires auth first
 
-// Authenticated
-router.get('/')
+router.get('/games', viewGames);
+router.post('/games', addGame);
+router.patch('/games/:id', editGame);
+router.delete('/games/:id', deleteGame);
 
 module.exports = router;
