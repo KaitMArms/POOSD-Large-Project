@@ -1,0 +1,15 @@
+.page-container{
+    position: relative;
+    display: flex;
+    padding: 2em;
+}
+
+.sign-up-div{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2em;
+}
