@@ -63,11 +63,17 @@ class SignUpUI extends State<SignUp>  {
 
                 TextField(
                   controller: firstName,
+                  style: GoogleFonts.orbitron(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   decoration: InputDecoration(
                     labelStyle: GoogleFonts.orbitron(
                     color: const Color.fromARGB(255, 243, 239, 239),
                     fontWeight: FontWeight.bold,
                     ),
+                    fillColor: Color(0xFF2047C0),
+                    filled: true,
                     labelText: "First Name",
                     border: OutlineInputBorder(),
                   ), 
@@ -76,11 +82,17 @@ class SignUpUI extends State<SignUp>  {
 
                 TextField(
                   controller: lastName,
+                  style: GoogleFonts.orbitron(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   decoration: InputDecoration(
                     labelStyle: GoogleFonts.orbitron(
                     color: const Color.fromARGB(255, 243, 239, 239),
                     fontWeight: FontWeight.bold,
                     ),
+                    fillColor: Color(0xFF2047C0),
+                    filled: true,
                     labelText: "Last Name",
                     border: OutlineInputBorder(),
                   ), 
@@ -89,11 +101,17 @@ class SignUpUI extends State<SignUp>  {
 
                 TextField(
                   controller: email,
+                  style: GoogleFonts.orbitron(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   decoration: InputDecoration(
                     labelStyle: GoogleFonts.orbitron(
                     color: const Color.fromARGB(255, 243, 239, 239),
                     fontWeight: FontWeight.bold,
                     ),
+                    fillColor: Color(0xFF2047C0),
+                    filled: true,
                     labelText: "Email",
                     border: OutlineInputBorder(),
                   ), 
@@ -102,11 +120,17 @@ class SignUpUI extends State<SignUp>  {
 
                 TextField(
                   controller: username,
+                  style: GoogleFonts.orbitron(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   decoration: InputDecoration(
                     labelStyle: GoogleFonts.orbitron(
                     color: const Color.fromARGB(255, 243, 239, 239),
                     fontWeight: FontWeight.bold,
                     ),
+                    fillColor: Color(0xFF2047C0),
+                    filled: true,
                     labelText: "Username",
                     border: OutlineInputBorder(),
                   ), 
@@ -115,12 +139,18 @@ class SignUpUI extends State<SignUp>  {
 
                 TextField(
                   controller: password,
+                  style: GoogleFonts.orbitron(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                   obscureText: _obscure,
                   decoration: InputDecoration(
                     labelStyle: GoogleFonts.orbitron(
                     color: const Color.fromARGB(255, 243, 239, 239),
                     fontWeight: FontWeight.bold,
                     ),
+                    fillColor: Color(0xFF2047C0),
+                    filled: true,
                     labelText: "Password",
                     border: OutlineInputBorder(),
                     suffixIcon: IconButton(

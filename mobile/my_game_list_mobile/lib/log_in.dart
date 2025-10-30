@@ -26,7 +26,6 @@ class _LogInState extends State<LogIn>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF192642),
       body: Padding(
       padding: EdgeInsets.fromLTRB(24, 70, 24, 24),
       child: Center(
@@ -37,18 +36,18 @@ class _LogInState extends State<LogIn>{
             TextField(
               controller: username,
               style: GoogleFonts.orbitron(
-                color: Colors.white,
+                //color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Username/Email",
                 labelStyle: GoogleFonts.orbitron(
-                  color: const Color.fromARGB(255, 243, 239, 239),
+                  //color: const Color.fromARGB(255, 243, 239, 239),
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
-                fillColor: Color(0xFF2047C0),
-                filled: true,
               )
             ),
 
@@ -58,18 +57,18 @@ class _LogInState extends State<LogIn>{
               controller: password,
               obscureText: _obscure,
               style: GoogleFonts.orbitron(
-                color: Colors.white,
+                //color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Password",
                 labelStyle: GoogleFonts.orbitron(
-                  color: const Color.fromARGB(255, 243, 239, 239),
+                  //color: const Color.fromARGB(255, 243, 239, 239),
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
-                fillColor: Color(0xFF2047C0),
-                filled: true,
                 suffixIcon: IconButton(
                     icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: (){
