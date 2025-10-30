@@ -11,7 +11,8 @@ const LoadDevUser: React.FC<LoadDevUserProps> =({ event }) =>
         return(
             // put stuff that is supposed to be on dev user in here
             <div id="devProfileContainer">
-                <h2>Dev Stuff Here</h2>
+                <span id="dev-title">Your Games in Development</span>
+                <span id="dev-games"></span>
             </div>
         );
     }

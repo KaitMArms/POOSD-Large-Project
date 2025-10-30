@@ -1,0 +1,30 @@
+.page-container{
+    position: relative;
+    display: flex;
+    padding: 2em;
+}
+
+.game-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    column-gap: 10px;
+    padding: 1em;
+}
+.game-column{
+    float: left;
+    overflow-y: scroll;
+}
+
+/*
+.page-title{
+    //color: ;
+    //font: ;
+}
+
+.column-title{
+    //color: ;
+    //font: ;
+}
+*/
