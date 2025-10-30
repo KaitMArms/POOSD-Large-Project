@@ -12,7 +12,7 @@ function Login()
 
     return(
         <div id="page-container">
-            <div id="loginDiv">
+            <div id="login-div">
                 <span id="inner-title">PLEASE LOG IN</span><br />
                 <input type="text" id="loginName" placeholder="Username" /><br />
                 <input type="password" id="loginPassword" placeholder="Password" /><br />

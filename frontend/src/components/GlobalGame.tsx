@@ -4,8 +4,15 @@ function LoadGlobalGame()
     return(
         //code inside container
         <div id="page-container">
-
-            
+            <div id="recommend-games">
+                <span id="rec-results"></span>
+            </div>
+            <div id="search-games">
+                <input type="text" id="searchGamesInput" placeholder="Game Name here"/><br />
+                <input type="submit" id="searchButton" className="buttons" value = "Do It"
+                /*onClick={doSearchGame}*/ />
+                <span id="searchResult"></span>
+            </div>            
         </div>
     );
 };

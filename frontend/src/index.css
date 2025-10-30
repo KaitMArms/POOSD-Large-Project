@@ -66,3 +66,41 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.page-container{
+  display: flex;
+  overflow-y: auto;
+  margin: 5vw;
+}
+
+nav{
+  border-radius: 4vw;
+  padding: 1em;
+  display: flex;
+  justify-content: space-around;
+}
+
+nav a{
+  font-size: 3vw;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+}
+
+/*
+add font type to nav a
+add color into nav a and put darker color in hover for link buttons
+nav a:hover{
+  background-color: #fff8c6;
+  box-shadow: 0 0 15px rgba(255, 255, 150, 0.8);
+}
+
+.title-container{
+  position: relative;
+  display: flex;
+}
+
+.title{
+  font: (put font here);
+  font-size: 10vm;
+}
+*/
