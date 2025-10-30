@@ -1,16 +1,19 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 
-const JWT_EXPIRES = '7d';
+const JWT_EXPIRES = '1d';
 
 
 function signToken(user) {
-  return jwt.sign(
-    { sub: user._id.toString(), uid: user.userID, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: JWT_EXPIRES }
-  );
+  const payload = {
+    sub: user._id.toString(),
+    uid: user.userID,
+    email: user.email,
+    role: user.role // 'user' or 'dev'
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
 }
+
 
 exports.register = async (req, res) => {
   try {
@@ -58,17 +61,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// Get current user (auth required)
-exports.me = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.sub);
-    if (!user) return res.status(404).json({ message: 'User not found.' });
-    return res.status(200).json({ user: user.toJSON() });
-  } catch (err) {
-    console.error('Me error:', err);
-    return res.status(500).json({ message: 'Server error.' });
-  }
-};
 
 // Secure change password (auth required)
 exports.changePassword = async (req, res) => {
@@ -93,34 +85,6 @@ exports.changePassword = async (req, res) => {
     return res.status(200).json({ message: 'Password updated.' });
   } catch (err) {
     console.error('ChangePassword error:', err);
-    return res.status(500).json({ message: 'Server error.' });
-  }
-};
-
-// Update profile fields (auth required)
-exports.updateProfile = async (req, res) => {
-  try {
-    const allowed = ['firstName', 'lastName', 'email', 'password'];
-    const updates = {};
-    for (const k of allowed) if (k in req.body) updates[k] = req.body[k];
-
-    if (updates.email) updates.email = String(updates.email).toLowerCase().trim();
-    if (updates.firstName) updates.firstName = String(updates.firstName).trim();
-    if (updates.lastName) updates.lastName = String(updates.lastName).trim();
-
-    const user = await User.findOneAndUpdate(
-      { _id: req.user.sub },
-      { $set: updates },
-      { new: true, runValidators: true, context: 'query' }
-    );
-    if (!user) return res.status(404).json({ message: 'User not found.' });
-
-    return res.status(200).json({ user: user.toJSON() });
-  } catch (err) {
-    if (err?.code === 11000 && err?.keyPattern?.email) {
-      return res.status(409).json({ message: 'Email already in use.' });
-    }
-    console.error('UpdateProfile error:', err);
     return res.status(500).json({ message: 'Server error.' });
   }
 };

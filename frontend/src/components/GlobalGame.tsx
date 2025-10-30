@@ -2,7 +2,6 @@
 function LoadGlobalGame()
 {
     return(
-        //code inside container
         <div id="page-container">
             <div id="recommend-games">
                 <span id="rec-results"></span>
