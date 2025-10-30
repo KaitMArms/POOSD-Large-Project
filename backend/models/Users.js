@@ -15,7 +15,9 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
   role:      { type: String, enum: ['user', 'dev'], default: 'user' },
-  likedGames: [{type: Number}]
+  likedGames:[{type: Number}],
+  userGames: [{type: String, enum: ['completed', 'in-progress', 'paused', 'dropped', 'to_play', 'n/a']}]
+  // userGames will be changed to an array of embedded documents
 }, {
   collection: 'game-users'
 });
