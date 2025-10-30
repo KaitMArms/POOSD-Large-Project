@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Mode from '../components/ColorMode.tsx';
 
 // Light & Dark Mode Controller
 // This component page will load the users profile after login
@@ -19,6 +20,13 @@ function LoadUser()
         return <EditUser onClose={() => setEditing(false)} />;
     }
 
+    // Button controller
+    const modeButton = document.getElementById('mode-toggle');
+    modeButton?.addEventListener('click', () => {
+        
+
+    });
+
     return(
         // HTML code goes inside container. container = html for general page layout and info
         <div id="page-container">
@@ -33,7 +41,7 @@ function LoadUser()
                 </div>
             </div>
             <div id="settings-container">
-                
+                <button id="mode-toggle">Toggle Page's Color Mode</button>
             </div>
         </div>
         //Maybe put an if statement here for if a flag is positive user is developer and another section for dev realted stuff pops up

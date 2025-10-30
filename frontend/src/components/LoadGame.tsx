@@ -1,3 +1,5 @@
+import Mode from '../components/ColorMode.tsx';
+
 // Loads view of individual game upon game being clicked in either user library or local library
 function LoadGame()
 {

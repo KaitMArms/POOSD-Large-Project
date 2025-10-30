@@ -1,7 +1,5 @@
-/*import { Login } from '../components/Login.tsx';
-const response = await fetch(Login('api/login'),
-                {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
-API lines currently throwing errors. Figure out how to fix*/
+import Mode from '../components/ColorMode.tsx';
+
 function Login()
 {
     function doLogin(event:any) : void

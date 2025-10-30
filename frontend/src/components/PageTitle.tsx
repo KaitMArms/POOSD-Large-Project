@@ -1,5 +1,7 @@
-//Title of the website plus global nav 
-import "frontend\src\index.css"
+ import "frontend\src\index.css"
+import Mode from '../components/ColorMode.tsx';
+
+//Title of the website plus global nav
 function PageTitle()
 {
     // Add links when actual domain and website is set up
