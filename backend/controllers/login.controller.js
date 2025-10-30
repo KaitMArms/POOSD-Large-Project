@@ -32,7 +32,7 @@ exports.register = async(req, res) => {
         const token = signToken(user);
         return res.status(201).json({ token, user: user.toJSON() });
     } catch (err) {
-        if (err ? .code === 11000 && err ? .keyPattern ? .email) {
+        if (err ?.code === 11000 && err ?.keyPattern ?.email) {
             return res.status(409).json({ message: 'Email already in use.' });
         }
         console.error('Register error:', err);
