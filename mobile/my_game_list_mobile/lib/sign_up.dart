@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -63,6 +64,10 @@ class SignUpUI extends State<SignUp>  {
                 TextField(
                   controller: firstName,
                   decoration: InputDecoration(
+                    labelStyle: GoogleFonts.orbitron(
+                    color: const Color.fromARGB(255, 243, 239, 239),
+                    fontWeight: FontWeight.bold,
+                    ),
                     labelText: "First Name",
                     border: OutlineInputBorder(),
                   ), 
@@ -72,6 +77,10 @@ class SignUpUI extends State<SignUp>  {
                 TextField(
                   controller: lastName,
                   decoration: InputDecoration(
+                    labelStyle: GoogleFonts.orbitron(
+                    color: const Color.fromARGB(255, 243, 239, 239),
+                    fontWeight: FontWeight.bold,
+                    ),
                     labelText: "Last Name",
                     border: OutlineInputBorder(),
                   ), 
@@ -81,6 +90,10 @@ class SignUpUI extends State<SignUp>  {
                 TextField(
                   controller: email,
                   decoration: InputDecoration(
+                    labelStyle: GoogleFonts.orbitron(
+                    color: const Color.fromARGB(255, 243, 239, 239),
+                    fontWeight: FontWeight.bold,
+                    ),
                     labelText: "Email",
                     border: OutlineInputBorder(),
                   ), 
@@ -90,6 +103,10 @@ class SignUpUI extends State<SignUp>  {
                 TextField(
                   controller: username,
                   decoration: InputDecoration(
+                    labelStyle: GoogleFonts.orbitron(
+                    color: const Color.fromARGB(255, 243, 239, 239),
+                    fontWeight: FontWeight.bold,
+                    ),
                     labelText: "Username",
                     border: OutlineInputBorder(),
                   ), 
@@ -100,6 +117,10 @@ class SignUpUI extends State<SignUp>  {
                   controller: password,
                   obscureText: _obscure,
                   decoration: InputDecoration(
+                    labelStyle: GoogleFonts.orbitron(
+                    color: const Color.fromARGB(255, 243, 239, 239),
+                    fontWeight: FontWeight.bold,
+                    ),
                     labelText: "Password",
                     border: OutlineInputBorder(),
                     suffixIcon: IconButton(

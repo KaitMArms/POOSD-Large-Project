@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_game_list_mobile/profile.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -27,7 +28,7 @@ class _LogInState extends State<LogIn>{
     return Scaffold(
       backgroundColor: Color(0xFF192642),
       body: Padding(
-      padding: EdgeInsets.fromLTRB(24, 40, 24, 24),
+      padding: EdgeInsets.fromLTRB(24, 70, 24, 24),
       child: Center(
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -35,9 +36,17 @@ class _LogInState extends State<LogIn>{
           children: [
             TextField(
               controller: username,
+              style: GoogleFonts.orbitron(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Username/Email",
+                labelStyle: GoogleFonts.orbitron(
+                  color: const Color.fromARGB(255, 243, 239, 239),
+                  fontWeight: FontWeight.bold,
+                ),
                 fillColor: Color(0xFF2047C0),
                 filled: true,
               )
@@ -48,9 +57,17 @@ class _LogInState extends State<LogIn>{
             TextField(
               controller: password,
               obscureText: _obscure,
+              style: GoogleFonts.orbitron(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Password",
+                labelStyle: GoogleFonts.orbitron(
+                  color: const Color.fromARGB(255, 243, 239, 239),
+                  fontWeight: FontWeight.bold,
+                ),
                 fillColor: Color(0xFF2047C0),
                 filled: true,
                 suffixIcon: IconButton(
