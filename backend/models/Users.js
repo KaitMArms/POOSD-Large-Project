@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema({
   password:  { type: String, required: true, trim: true },
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
-  role:      { type: String, enum: ['user', 'dev'], default: 'user' }
+  role:      { type: String, enum: ['user', 'dev'], default: 'user' },
+  likedGames:[{type: Number}]
 }, {
   collection: 'game-users'
 });
