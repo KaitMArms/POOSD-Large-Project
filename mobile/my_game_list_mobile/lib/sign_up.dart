@@ -42,7 +42,7 @@ class SignUpUI extends State<SignUp>  {
     return Scaffold(
       backgroundColor: Color(0xFF192642),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(24, 80, 24, 24),
+        padding: EdgeInsets.fromLTRB(24, 70, 24, 24),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 400),
           child: Column(
@@ -59,7 +59,7 @@ class SignUpUI extends State<SignUp>  {
                     color: Colors.deepPurpleAccent,
                   ),
                 ),
-                SizedBox(height: 16,),
+                SizedBox(height: 20,),
 
                 TextField(
                   controller: firstName,
