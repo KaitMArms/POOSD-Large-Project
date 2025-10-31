@@ -4,6 +4,7 @@ const { gameConnection } = require('../db');
 
 const gameSchema = new mongoose.Schema({
     id: { type: Number, required: true}, 
+    clusterID: {type: Number, index: true, unique: true},
     name: { type: String, required: true },
     slug: { type: String },
     summary: { type: String },
