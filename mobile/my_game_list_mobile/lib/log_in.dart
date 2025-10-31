@@ -26,12 +26,19 @@ class _LogInState extends State<LogIn>{
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-      padding: EdgeInsets.fromLTRB(24, 70, 24, 24),
+      padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Center(
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Image(
+              image: AssetImage('assets/Mascot.png'),
+              fit: BoxFit.cover,
+            ),
+
+            SizedBox(height: 30),
+
             TextField(
               controller: username,
               decoration: InputDecoration(
