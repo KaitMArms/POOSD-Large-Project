@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../.env' }); 
 const mongoose = require('mongoose');
 const { gameConnection } = require('../db');
 const Games = require('../models/Games');
@@ -40,3 +41,5 @@ async function runImport(){
     }
     await mongoose.connection.close();
 };
+
+runImport();
