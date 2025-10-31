@@ -13,7 +13,7 @@ function Login()
                 <input type="text" id="loginName" placeholder="Username" /><br />
                 <input type="password" id="loginPassword" placeholder="Password" /><br />
                 <input type="submit" id="loginButton" className="buttons" value = "Do It" onClick={doLogin} />
-                <span id="loginResult"></span>
+                <span id="login-result"></span>
             </div>
         </div>
     );

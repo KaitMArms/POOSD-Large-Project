@@ -1,5 +1,3 @@
- import "frontend\src\index.css"
-
 //Title of the website plus global nav
 function PageTitle()
 {

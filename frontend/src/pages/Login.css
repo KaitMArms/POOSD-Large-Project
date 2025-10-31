@@ -1,11 +1,11 @@
 .page-container {
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: 100vh;
-  padding: 2rem;
+  min-height: 100vw;
+  padding: 2em;
 }
 
-.login-div{
+.login-container{
     position: relative;
     display: flex;
     flex-direction: column;
@@ -13,4 +13,16 @@
     justify-content: center;
     text-align: center;
     padding: 2em;
+}
+
+.login-result{
+  
+}
+
+.inner-title{
+
+}
+
+input{
+
 }

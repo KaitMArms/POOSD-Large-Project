@@ -2,8 +2,8 @@
 .page-container {
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: 100vh;
-  padding: 2rem;
+  min-height: 100vw;
+  padding: 2em;
 }
 
 button {
@@ -14,4 +14,20 @@ button {
   padding: 0.5rem 1rem;
   box-shadow: 2px 2px 8px #dd98e6;
   cursor: pointer;
+}
+
+.recommended-game-container{
+
+}
+
+.rec-results{
+
+}
+
+.searchGamesInput{
+
+}
+
+.searchButton{
+  
 }

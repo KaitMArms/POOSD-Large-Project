@@ -3,7 +3,7 @@ function LoadGlobalGame()
 {
     return(
         <div id="page-container">
-            <div id="recommend-games">
+            <div id="recommend-games-container">
                 <span id="rec-results"></span>
             </div>
             <div id="search-games">
