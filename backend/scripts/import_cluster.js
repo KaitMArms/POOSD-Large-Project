@@ -5,7 +5,7 @@ const fs = require('fs');
 const {parse} = require('csv-parse');
 
 const path = './final_game_cluster_assignments.csv';
-const db_uri = proces.env.MONGO_URI_GAMES;
+const db_uri = process.env.MONGO_URI_GAMES;
 
 async function runImport(){
     await mongoose.connect(db_uri);
@@ -40,21 +40,3 @@ async function runImport(){
     }
     await mongoose.connection.close();
 };
-
-fs.readFile('./final_game_cluster_assignments.csv', 'utf8', (err, csv_string) => {
-    if (err) { 
-        console.error('Error reading file:', err);
-        return;
-    }
-    records = csv_string;
-})
-
-
-const cluster_import = records.map(record => ({
-    updateOne: {
-        filter: { id: parseInt(record.game_id) }, 
-        update: { $set: { clusterId: parseInt(record.cluster_id) } } 
-    }
-}));
-
-await Games.bulkWrite(cluster_import);
