@@ -1,6 +1,7 @@
 const mongoose  = require('mongoose');
 const bcrypt    = require('bcryptjs');
 require('./Counter');
+const UserGameSchema = require('./UserGame'); 
 
 const SALT_WORK_FACTOR = 10;
 
@@ -15,7 +16,7 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
   role:      { type: String, enum: ['user', 'dev'], default: 'user' },
-  likedGames:[{type: Number}]
+  userGames:[UserGameSchema]
 }, {
   collection: 'game-users'
 });
