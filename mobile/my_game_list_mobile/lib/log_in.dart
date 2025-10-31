@@ -86,6 +86,17 @@ class _LogInState extends State<LogIn>{
                     );
               },
               child: Text("Log In"),
+            ),
+
+            SizedBox(height: 14),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) => const Profile())
+                    );
+              },
+              child: Text("Forgot Your Password?"),
             )
           ],
         )
