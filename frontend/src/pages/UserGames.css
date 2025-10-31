@@ -7,6 +7,8 @@
 
 .page-title{
     height: 30;
+    font-size: 15
+    var(--text-color)
 }
 
 .game-container{
@@ -30,6 +32,8 @@
 
 .column-title{
     height: 20;
+    font-size: 10;
+    color: var(--text-color);
 }
 
 span{

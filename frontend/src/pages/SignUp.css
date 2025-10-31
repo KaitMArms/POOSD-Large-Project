@@ -7,22 +7,38 @@
 
 .sign-up-container{
   position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2em;
 }
 
 .sign-up-result{
-  
+  font-size: 10vw;
+  font-weight: bold;
+  font-style: italic;
+  color: #72139B;
 }
 
 .inner-title{
-
+  font-size: 20vw;
+  font-weight: bold;
+  font-style: italic;
+  color: #72139B;
 }
 
 input{
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-width: 2px;
+  border-color: #72139B;
+}
 
+.loginButton{
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
