@@ -1,5 +1,3 @@
-import Mode from '../components/ColorMode.tsx';
-
 function SignUp()
 {
     function doLogin(event:any) : void

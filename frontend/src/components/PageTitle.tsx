@@ -1,5 +1,4 @@
  import "frontend\src\index.css"
-import Mode from '../components/ColorMode.tsx';
 
 //Title of the website plus global nav
 function PageTitle()

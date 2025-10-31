@@ -1,7 +1,8 @@
-.page-container{
-    position: relative;
-    display: flex;
-    padding: 2em;
+.page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 2rem;
 }
 
 .sign-up-div{

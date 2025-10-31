@@ -1,13 +1,25 @@
 // Code for maintaining color mode across pages
-function Mode()
-{
-    const currentMode = localStorage.getItem('theme');
-    if(currentMode ==='light')
-    {
-        document.body.classList.add('light-mode')
-    }
+import React, { createContext, useState, useContext, useEffect } from "react";
 
-    const theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
-    localStorage.setItem('theme', theme);
-}
-export default Mode;
+const ModeContext = createContext<any>(null);
+
+export const ModeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", mode);
+    localStorage.setItem("mode", mode);
+  }, [mode]);
+
+  const toggleMode = () => {
+    setMode(prev => (prev === "light" ? "dark" : "light"));
+  };
+
+  return (
+    <ModeContext.Provider value={{ mode, toggleMode }}>
+      {children}
+    </ModeContext.Provider>
+  );
+};
+
+export const useColorMode = () => useContext(ModeContext);

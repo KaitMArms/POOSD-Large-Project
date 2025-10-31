@@ -1,5 +1,3 @@
-import Mode from '../components/ColorMode.tsx';
-
 // Load the dev info & related setting on the profile
 type LoadDevUserProps =
 {

@@ -92,3 +92,17 @@ nav a:hover{
   font-size: 10vm;
 }
 
+body[data-theme="light"] {
+  --bg-color: #dae1f1;
+  --text-color: black;
+  --button-bg: #2047c0;
+  --button-text: black;
+}
+
+body[data-theme="dark"] {
+  --bg-color: #192642;
+  --text-color: white;
+  --button-bg: #2047c0;
+  --button-text: white;
+}
+

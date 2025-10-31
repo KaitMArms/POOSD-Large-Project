@@ -1,5 +1,3 @@
-import Mode from '../components/ColorMode.tsx';
-
 interface EditUserProps {
   onClose: () => void;
 }

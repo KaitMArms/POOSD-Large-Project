@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Mode from '../components/ColorMode.tsx';
 
 // Light & Dark Mode Controller
 // This component page will load the users profile after login
