@@ -29,9 +29,15 @@ button {
 }
 
 .searchGamesInput{
-
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-width: 2px;
+  border-color: #72139B;
 }
 
 .searchButton{
-
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
