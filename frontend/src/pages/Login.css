@@ -1,0 +1,28 @@
+.page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vw;
+  padding: 2em;
+}
+
+.login-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2em;
+}
+
+.login-result{
+  
+}
+
+.inner-title{
+
+}
+
+input{
+
+}

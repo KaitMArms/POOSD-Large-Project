@@ -1,0 +1,35 @@
+.page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100dvw;
+  padding: 2em;
+}
+
+.page-title{
+
+}
+
+.game-container{
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    column-gap: 10px;
+    padding: 1em;
+}
+.game-column{
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    float: left;
+    overflow-y: scroll;
+}
+
+.column-title{
+
+}
+
+span{
+
+}

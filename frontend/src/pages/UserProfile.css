@@ -1,0 +1,22 @@
+.page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vw;
+  padding: 2em;
+}
+
+.user-container {
+
+}
+
+.pfp-container {
+
+}
+
+.info-container {
+
+}
+
+button {
+  
+}
