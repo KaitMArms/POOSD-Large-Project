@@ -17,11 +17,19 @@ button {
 }
 
 .recommended-game-container{
-
+  width: auto;
+  height: 50vw;
+  padding: 5em;
 }
 
 .rec-results{
 
+}
+
+.search-games {
+  width: auto;
+  height: 50vw;
+  padding: 5em;
 }
 
 .searchGamesInput{
@@ -29,5 +37,5 @@ button {
 }
 
 .searchButton{
-  
+
 }

@@ -6,17 +6,29 @@
 }
 
 .user-container {
-
+  width: auto;
+  height: 50vw;
+  padding: 5em;
 }
 
 .pfp-container {
-
+  width: 25vw;
+  height: 25vw;
+  padding: 2em;
 }
 
 .info-container {
+  width: 25vw;
+  height: 65vw;
+  padding: 2em;
+}
 
+.settings-container {
+  width: auto;
+  height: 30vw;
+  padding: 2em;
 }
 
 button {
-  
+
 }

@@ -1,12 +1,12 @@
 .page-container {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  min-height: 100dvw;
-  padding: 2em;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vw;
+    padding: 2em;
 }
 
 .page-title{
-
+    height: 30;
 }
 
 .game-container{
@@ -24,10 +24,12 @@
     color: var(--text-color);
     float: left;
     overflow-y: scroll;
+    width: 16vw;
+    height: 50vw;
 }
 
 .column-title{
-
+    height: 20;
 }
 
 span{
