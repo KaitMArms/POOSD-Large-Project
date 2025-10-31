@@ -12,9 +12,21 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true },
   lastName:  { type: String, required: true, trim: true },
   email:     { type: String, required: true, unique: true, lowercase: true, trim: true },
+  username:  {
+    type: String,
+    required: true,            // <-- required since you set it at register
+    unique: true,              // <-- unique index
+    trim: true,
+    lowercase: true,           // <-- normalize for case-insensitive uniqueness
+    minlength: 3,
+    maxlength: 30,
+    match: /^[a-z0-9._-]+$/    // <-- simple safe charset (customize as you like)
+  },
   password:  { type: String, required: true, trim: true },
+  avatarUrl: { type: String, trim: true },
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
+  bio:      { type: String, trim: true, maxlength: 300 },
   role:      { type: String, enum: ['user', 'dev'], default: 'user' },
   userGames: [UserGameSchema]
 }, {

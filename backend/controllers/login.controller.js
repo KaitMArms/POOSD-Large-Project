@@ -9,6 +9,7 @@ function signToken(user) {
         sub: user._id.toString(),
         uid: user.userID,
         email: user.email,
+        username: user.username,
         role: user.role // 'user' or 'dev'
     };
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
@@ -17,24 +18,31 @@ function signToken(user) {
 
 exports.register = async(req, res) => {
     try {
-        const { firstName, lastName, email, password } = req.body;
-        if (!firstName || !lastName || !email || !password) {
+        const { firstName, lastName, email, username, password } = req.body;
+        if (!firstName || !lastName || !email || !password || !username) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
+
+        const [emailTaken, usernameTaken] = await Promise.all([
+            User.exists({ email: String(email).toLowerCase().trim() }),
+            User.exists({ username: String(username).toLowerCase().trim() })
+        ]);
+        if (emailTaken) return res.status(409).json({ message: 'Email already in use.' });
+        if (usernameTaken) return res.status(409).json({ message: 'Username already taken.' });
 
         const user = await User.create({
             firstName: String(firstName).trim(),
             lastName: String(lastName).trim(),
             email: String(email).toLowerCase().trim(),
+            username:  String(username).toLowerCase().trim(),
             password
         });
-
-        const token = signToken(user);
-        return res.status(201).json({ token, user: user.toJSON() });
+        res.status(201).json({ message: 'Registration successful. Please log in.' });
     } catch (err) {
-        if (err ?.code === 11000 && err ?.keyPattern ?.email) {
-            return res.status(409).json({ message: 'Email already in use.' });
-        }
+        if (err?.code === 11000) {
+            if (err.keyPattern?.email) return res.status(409).json({ message: 'Email already in use.' });
+            if (err.keyPattern?.username) return res.status(409).json({ message: 'Username already taken.' });
+    }
         console.error('Register error:', err);
         return res.status(500).json({ message: 'Server error.' });
     }
