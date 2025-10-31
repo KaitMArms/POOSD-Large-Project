@@ -168,25 +168,29 @@ class PlayedIt extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        fontFamily: GoogleFonts.orbitron().fontFamily,
         brightness: Brightness.light,
         scaffoldBackgroundColor: Color(0xFFDAE1F1),
         //text button fill colors -> light
         inputDecorationTheme: InputDecorationTheme(
+            labelStyle: TextStyle(color: Colors.black),
             fillColor: Color(0xFFbecbf4),
             filled: true,
         ),
-        textTheme: TextTheme(
-            bodyMedium: TextStyle(color: Color(value), fontFamily: GoogleFonts(orbitron))
-        ),
+        
         //text color -> dark
         //text font -> orbitron
       ),
 
       darkTheme: ThemeData(
+        fontFamily: GoogleFonts.orbitron(
+          fontWeight: FontWeight.bold,
+        ).fontFamily,
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Color(0xFF192642),
         //text button fill colors -> dark
         inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: const Color.fromARGB(255, 215, 215, 215)),
           fillColor: Color(0xFF2047C0),
           filled: true,
         )

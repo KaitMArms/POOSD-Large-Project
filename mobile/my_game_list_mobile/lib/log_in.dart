@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_game_list_mobile/profile.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -35,19 +34,9 @@ class _LogInState extends State<LogIn>{
           children: [
             TextField(
               controller: username,
-              style: GoogleFonts.orbitron(
-                //color: Colors.white,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Username/Email",
-                labelStyle: GoogleFonts.orbitron(
-                  //color: const Color.fromARGB(255, 243, 239, 239),
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
               )
             ),
 
@@ -56,19 +45,9 @@ class _LogInState extends State<LogIn>{
             TextField(
               controller: password,
               obscureText: _obscure,
-              style: GoogleFonts.orbitron(
-                //color: Colors.white,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Password",
-                labelStyle: GoogleFonts.orbitron(
-                  //color: const Color.fromARGB(255, 243, 239, 239),
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
                 suffixIcon: IconButton(
                     icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: (){
