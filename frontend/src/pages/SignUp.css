@@ -1,15 +1,28 @@
-.page-container{
-    position: relative;
-    display: flex;
-    padding: 2em;
+.page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vw;
+  padding: 2em;
 }
 
-.sign-up-div{
-    position: relative;
+.sign-up-container{
+  position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 2em;
+}
+
+.sign-up-result{
+  
+}
+
+.inner-title{
+
+}
+
+input{
+
 }
