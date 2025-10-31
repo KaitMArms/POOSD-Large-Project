@@ -6,6 +6,7 @@ const { gameConnection } = require('../db');
 const gameSchema = new mongoose.Schema({
     // IGDB game reference id
     id: { type: Number, required: true}, 
+    clusterId: {type: Number, index: true},
     name: { type: String, required: true },
     // url-tag
     slug: { type: String },
