@@ -2,6 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const mongoose = require('mongoose');
 
+// Model imports
 const PlatformModel = require('../models/Platform');
 const GenreModel = require('../models/Genre');
 const FranchiseModel = require('../models/Franchise');
@@ -14,8 +15,10 @@ const TheseModel = require('../models/Themes');
 const TypeModel = require('../models/GameType');
 const PerspectiveModel = require('../models/Perspective');
 
+// Authenticates with twitch 
 async function getAccessToken() {
     console.log("Requesting Twitch Access Token...");
+    // Send a request to twitch authentication given the credentials in .env
     try {
         const response = await axios.post('https://id.twitch.tv/oauth2/token', null, {
             params: {
@@ -32,40 +35,49 @@ async function getAccessToken() {
     }
 }
 
+// Send a data request to Twitch Servers
 async function seedData(endpointName, Model, accessToken) {
     console.log(`\n--- Seeding ${endpointName} ---`);
     
-    let offset = 0;
-    const limit = 500;
-    let continueFetching = true;
-    let totalRecords = 0;
-    let retries = 0;
-    const maxRetries = 5;
+    
+    let offset = 0;              // Offset to determine which portion of info to take
+    const limit = 500;           // max number of files pulled per fetch
+    let continueFetching = true; // Whether we should keep pulling information
+    let totalRecords = 0;        // Total number of files processed
+    let retries = 0;             // Current number of times a call was retried
+    const maxRetries = 5;        // max allowed retries
 
     while (continueFetching) {
         try {
+            // Field for api request
+            // Take all fields if not cover endpoint
             const fields = (endpointName === 'covers') ? 'fields id,image_id;' : 'fields *;';
             
             console.log(`   > Fetching ${endpointName} with offset ${offset}...`);
+            // API request for given endpointName
+            // Pull the specified fields, pull limit amount of them at offset
             const response = await axios.post(`https://api.igdb.com/v4/${endpointName}`,
                 `${fields} limit ${limit}; offset ${offset};`,
                 {
+                    // Specify authorization
                     headers: {
                         'Client-ID': process.env.TWITCH_CLIENT_ID,
                         'Authorization': `Bearer ${accessToken}`
                     },
-
-		    timeout: 10000
+                    // How long we should wait for the information
+		            timeout: 10000
                 }
             );
-	    retries = 0;
+	        retries = 0;
 
+            // Insert data into our database
             const data = response.data;
             if (data.length > 0) {
                 await Model.insertMany(data, { ordered: false });
                 totalRecords += data.length;
                 offset += limit; 
 
+                // Wait 3 ms to ensure that we don't get timed out
                 await new Promise(resolve => setTimeout(resolve, 300))
             } else {
                 console.log(`No more records found for ${endpointName}.`);
@@ -95,16 +107,17 @@ async function seedData(endpointName, Model, accessToken) {
 }
 
 async function run() {
+    // Establish connection with database
     await mongoose.connect(process.env.MONGO_URI_GAMES);
     console.log("Mongo connected for seeding.");
     
     const accessToken = await getAccessToken();
     
-    // await seedData('platforms', PlatformModel, accessToken);
+    await seedData('platforms', PlatformModel, accessToken);
     await seedData('genres', GenreModel, accessToken);
     await seedData('franchises', FranchiseModel, accessToken);
     // await seedData('age_ratings', AgeRatingModel, accessToken);
-    // await seedData('covers', CoverModel, accessToken); 
+    await seedData('covers', CoverModel, accessToken); 
     await seedData('game_modes', ModeModel, accessToken);
     await seedData('keywords', KeyModel, accessToken);
     await seedData('languages', LanguageModel, accessToken);

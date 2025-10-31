@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const User = require('./models/Users');
 const url = 'mongodb://localhost:27017/Users';
 
-
 async function addUser(firstName, lastName, email, password) {
     try {
         await mongoose.connect(url);

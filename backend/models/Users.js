@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
   role:      { type: String, enum: ['user', 'dev'], default: 'user' },
-  userGames:[UserGameSchema]
+  userGames: [UserGameSchema]
 }, {
   collection: 'game-users'
 });
