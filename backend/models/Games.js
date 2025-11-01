@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const { gameConnection } = require('../db');
-
 
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({

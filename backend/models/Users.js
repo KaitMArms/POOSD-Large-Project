@@ -113,4 +113,4 @@ userSchema.pre('updateOne', async function(next) {
   }
 });
 
-module.exports = UserGameSchema;
+module.exports = userSchema;
