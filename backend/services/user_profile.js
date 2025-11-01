@@ -1,7 +1,7 @@
 const UserModel = require('../models/Users'); 
 const GameModel = require('../models/Games'); 
 // Ensure the path to your recommend/ML service is correct
-const { transformToFeatureVector, FEATURE_TO_INDEX_SIZE } = require('./ml_prediction_service'); 
+const { transformToFeatureVector, FEATURE_TO_INDEX_SIZE } = require('./recommend'); 
 
 // Retrieves user's liked game IDs, fetches the data from GameDB, hot-encodes them, and computes Profile Vector
 async function buildUserProfileVector(userId) {

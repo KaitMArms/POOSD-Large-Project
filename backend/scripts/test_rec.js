@@ -5,7 +5,7 @@ require('../db');
 const { buildUserProfileVector } = require('../services/user_profile');
 const { getRecommendations } = require('../services/recommend');
 const GameModel = require('../models/Games'); 
-const TEST_USER_ID = '60c72b2f9b1d8c001f8e4e6a'; 
+const TEST_USER_ID = '690642a016356720a54b25e4'; 
 
 async function runTest() {
     console.log(`Testing for User ID: ${TEST_USER_ID}`);

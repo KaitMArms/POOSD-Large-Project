@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const GameModel = require('../models/Games'); 
 
-const CENTER_PATH = path.join(__dirname, '..', 'prediction_center.json');
+const CENTER_PATH = path.join(__dirname, '.', 'prediction_centers.json');
 const EPSILON = 1e-10; 
 
 let k_clusters, feature_names, centroids, FEATURE_TO_INDEX;

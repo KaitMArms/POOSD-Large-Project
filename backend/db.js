@@ -19,5 +19,12 @@ function createDbConnection(uri, dbName){
 const userConnection = createDbConnection(process.env.MONGO_URI_USERS, 'Users');
 const gameConnection = createDbConnection(process.env.MONGO_URI_GAMES, 'GameDB');
 
+const connectionsReady = Promise.all([
+	userConnection.asPromise(),
+	gameConnection.asPromise()
+]).then(() => {
+	console.log("Connections ready");
+});
+
 // Export connections
-module.exports = { userConnection, gameConnection };
+module.exports = { userConnection, gameConnection, connectionsReady };
