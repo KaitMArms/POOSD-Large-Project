@@ -8,4 +8,4 @@ const keywordsModel = new mongoose.Schema({
 
 keywordsModel.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('KeyWords', keywordsModel);
+module.exports = keywordsModel;

@@ -8,4 +8,4 @@ const genreSchema = new mongoose.Schema({
 
 genreSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Genre', genreSchema);
+module.exports = genreSchema;

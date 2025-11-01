@@ -8,4 +8,4 @@ const perspectiveSchema = new mongoose.Schema({
 
 perspectiveSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Perspective', perspectiveSchema);
+module.exports = perspectiveSchema;

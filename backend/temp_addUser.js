@@ -105,7 +105,7 @@ async function addUserWithGames(firstName, lastName, email, password, gamesToAdd
 async function createTestUsers() {
     console.log("--- Starting to create test users ---");
     
-    await addUserWithGames('Gage', 'Lappin', 'GageLappin119@gmail.com', '', testUserGames);
+    await addUserWithGames('Gage', 'Lappin', 'GageLappin119@gmail.com', 'password', testUserGames);
     
     await addUserWithGames('Hatunse', 'Aedo', 'HatunseAedo@gmail.com', 'JohnAedo', [
         { id: 3008, name: "Baldur's Gate 3", status: 'in-progress', isLiked: true }

@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '../.env' });
-
 require('../db'); 
+
+const { connectionsReady } = require('../db');
 
 const { buildUserProfileVector } = require('../services/user_profile');
 const { getRecommendations } = require('../services/recommend');
@@ -9,6 +10,8 @@ const TEST_USER_ID = '690642a016356720a54b25e4';
 
 async function runTest() {
     console.log(`Testing for User ID: ${TEST_USER_ID}`);
+
+    await connectionsReady;
 
     try {
         console.log("\nBuilding User Profile Vector...");
