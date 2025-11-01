@@ -3,7 +3,7 @@ const { gameConnection } = require('../db');
 
 
 // Mongoose schema to store the Game schema
-const gamemodesModel = new mongoose.Schema({
+const gameSchema = new mongoose.Schema({
     // IGDB game reference id
     id: { type: Number, required: true}, 
     clusterId: {type: Number, index: true},
@@ -36,4 +36,4 @@ const gamemodesModel = new mongoose.Schema({
 gameSchema.index({id: 1}, {unique: true});
 
 // Creates the Game collection
-module.exports = gamemodesModel;
+module.exports = gameSchema;
