@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_game_list_mobile/password_collect.dart';
 import 'package:my_game_list_mobile/profile.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
 
@@ -43,7 +44,7 @@ class _LogInState extends State<LogIn>{
               controller: username,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Username/Email",
+                labelText: "Username",
               )
             ),
 
@@ -93,7 +94,7 @@ class _LogInState extends State<LogIn>{
             ElevatedButton(
               onPressed: () {
                 Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const Profile())
+                    MaterialPageRoute(builder: (context) => const PasswordCollect())
                     );
               },
               child: Text("Forgot Your Password?"),

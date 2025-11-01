@@ -173,11 +173,21 @@ class PlayedIt extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xFFDAE1F1),
         //text button fill colors -> light
         inputDecorationTheme: InputDecorationTheme(
-            labelStyle: TextStyle(color: Colors.black),
+            labelStyle: TextStyle(
+              color: Colors.black,
+              //fontSize: 16,
+              ),
             fillColor: Color(0xFFbecbf4),
             filled: true,
         ),
         
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(
+                fontSize: 16,
+              )
+            ),
+        ),
         //text color -> dark
         //text font -> orbitron
       ),
@@ -190,12 +200,22 @@ class PlayedIt extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xFF192642),
         //text button fill colors -> dark
         inputDecorationTheme: InputDecorationTheme(
-          labelStyle: TextStyle(color: const Color.fromARGB(255, 215, 215, 215)),
+          labelStyle: TextStyle(
+            color: const Color.fromARGB(255, 215, 215, 215),
+            //fontSize: 16,
+            ),
           fillColor: Color(0xFF2047C0),
           filled: true,
-        )
+        ),
         //text color -> light
         //text font -> orbitron
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(
+                fontSize: 16,
+              )
+            ),
+        ),
       ),
       home: const LogIn(), //home is a property that means that home is the first screen shown on start-up
     );
