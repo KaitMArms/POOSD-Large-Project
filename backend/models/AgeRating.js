@@ -8,4 +8,4 @@ const ageratingSchema = new mongoose.Schema({
 
 ageratingSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('AgeRating', ageratingSchema);
+module.exports = ageratingSchema;

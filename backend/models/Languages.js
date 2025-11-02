@@ -7,4 +7,4 @@ const languageScheme = new mongoose.Schema({
 
 languageScheme.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Languages', languageScheme);
+module.exports = languageScheme;
