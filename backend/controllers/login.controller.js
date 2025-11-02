@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
+const OTP = require('../middleware/generateOTP');
+const generateOTP = require('../middleware/generateOTP');
 
 const JWT_EXPIRES = '1d';
 
@@ -30,19 +32,31 @@ exports.register = async(req, res) => {
         if (emailTaken) return res.status(409).json({ message: 'Email already in use.' });
         if (usernameTaken) return res.status(409).json({ message: 'Username already taken.' });
 
+        /*
+        Martin - Verify OTP before or after creating user.
+        Verifying after creating requires deleting user if authentication could not be established.
+        Otherwise, continue as normal.
+        */
+
+        const otp = generateOTP();
+        //                                Miliseconds  Seconds  Minutes   => Lasts 5 minutes
+        const otpExpiresIn = Date.now() * 1000 * 60 * 5;
+        // Generate and send email to email received with code to email address
+
+
         const user = await User.create({
             firstName: String(firstName).trim(),
             lastName: String(lastName).trim(),
             email: String(email).toLowerCase().trim(),
-            username:  String(username).toLowerCase().trim(),
+            username: String(username).toLowerCase().trim(),
             password
         });
         res.status(201).json({ message: 'Registration successful. Please log in.' });
     } catch (err) {
-        if (err?.code === 11000) {
-            if (err.keyPattern?.email) return res.status(409).json({ message: 'Email already in use.' });
-            if (err.keyPattern?.username) return res.status(409).json({ message: 'Username already taken.' });
-    }
+        if (err ? .code === 11000) {
+            if (err.keyPattern ? .email) return res.status(409).json({ message: 'Email already in use.' });
+            if (err.keyPattern ? .username) return res.status(409).json({ message: 'Username already taken.' });
+        }
         console.error('Register error:', err);
         return res.status(500).json({ message: 'Server error.' });
     }
