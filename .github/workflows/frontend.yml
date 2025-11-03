@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build-artifact: ${{ steps.upload.outputs.artifact_id }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
