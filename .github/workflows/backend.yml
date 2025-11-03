@@ -40,5 +40,5 @@ jobs:
           cd /var/www/html/backend
           git pull origin main
           npm ci --omit=ddev
-          pm2 restart server
+          pm2 restart server || pm2 start server.js --name server
           EOF
