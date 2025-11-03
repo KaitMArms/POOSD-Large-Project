@@ -20,15 +20,30 @@ jobs:
       - name: Install dependencies
         run: |
             cd frontend
-            npm install
+            npm ci
+
+      - name: Build production files
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload build artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build
+          retention-days: 1
 
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: build
 
       - name: Setup SSH key
         env:
@@ -47,10 +62,5 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
-          cd /var/www/html
-          git pull origin main
-          npm install
-          npm run build
-          systemctl restart nginx
-          EOF
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" build/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "sudo systemctl restart nginx"
