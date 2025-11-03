@@ -1,5 +1,7 @@
 const User = require('../models/Users');
 const Game = require('../models/Games');
+const recommend = require('../services/recommend');
+const user_profile = require('../services/user_profile');
 
 exports.searchGames = async(req, res) => {
     //search all games in the database based on name only (add filters later if we can)
@@ -16,7 +18,13 @@ exports.searchGames = async(req, res) => {
 };
 
 exports.recommendedGames = async(req, res) => {
-    //via LLM, recommend games based on user's preferences
+
+    // Get usergames IDs
+    let curUser = req.user.userID;
+    let GamesIDs = curUser.userGames;
+    // Call functions for recommending games
+    return recommend.getRecommendations(user_profile.buildUserProfileVector, GamesIDs).json;
+
 };
 
 exports.addUserGame = async(req, res) => {
