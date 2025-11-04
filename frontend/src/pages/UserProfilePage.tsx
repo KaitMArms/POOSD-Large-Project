@@ -2,7 +2,8 @@
 import PageTitle from '../components/PageTitle.tsx';
 import LoadUser from '../components/LoadUser.tsx';
 import LoadDevUser from '../components/LoadDevUser.tsx';
-import"./UserProfile.css"
+import "../DevUserProfile.css"
+import "../UserProfile.css"
 const UserProfilePage = () =>
 {
     const devFlag = false; // figure out dynamic solution temp placeholder
