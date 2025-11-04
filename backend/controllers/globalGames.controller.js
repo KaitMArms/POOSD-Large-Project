@@ -4,8 +4,11 @@ const Game = require('../models/Games');
 exports.searchGames = async(req, res) => {
     //search all games in the database based on name only (add filters later if we can)
     try {
+        // Get user input for game search
         const { gameName } = req.body.name;
 
+        // Do partial search with all results ignoring case sensitivity
+        // TODO -> Break results by pages
         const games = Game.find({ name: { $regex: gameName, $options: "i" } });
         res.json(games);
 

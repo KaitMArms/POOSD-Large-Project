@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const requireAuth = require('../middleware/requireAuth');
 const {searchGames, recommendedGames, addUserGame} = require('../controllers/globalGames.controller');
 
 router.use(requireAuth);

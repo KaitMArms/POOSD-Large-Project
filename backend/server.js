@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user.routes');
 const devRoutes = require('./routes/dev.routes');
 const userGamesRoutes = require('./routes/userGames.routes');
 const globalGamesRoures = require('./routes/globalGames.routes');
+//const passwordRoutes = require('./routes/password.routes');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/dev', devRoutes);
 app.use('/api/user/games', userGamesRoutes);
 app.use('/api/globalgames', globalGamesRoures);
+//app.use('/api/password/', passwordRoutes);
 
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
 app.use((_req, res) => res.status(404).json({ message: 'Not found' }));

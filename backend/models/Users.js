@@ -8,18 +8,36 @@ const SALT_WORK_FACTOR = 10;
 // Simple bcrypt-hash detector (to avoid double-hashing on updates)
 const BCRYPT_RE = /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/;
 
+// Users.js
+const SettingsSchema = new mongoose.Schema({
+  theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true },
   lastName:  { type: String, required: true, trim: true },
   email:     { type: String, required: true, unique: true, lowercase: true, trim: true },
+  username:  {
+    type: String, required: true, unique: true, trim: true, lowercase: true,
+    minlength: 3, maxlength: 30, match: /^[a-z0-9._-]+$/
+  },
   password:  { type: String, required: true, trim: true },
+  avatarUrl: { type: String, trim: true },
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
+  bio:       { type: String, trim: true, maxlength: 300 },
   role:      { type: String, enum: ['user', 'dev'], default: 'user' },
+  settings:  { type: SettingsSchema, default: {} },
+  emailVerified: { type: Boolean, default: false },
+  otpHash: { type: String, select: false },
+  otpExpiresAt: { type: Date,  select: false },
+  otpAttempts:   { type: Number, default: 0, select: false },
+  otpLastSentAt: { type: Date, select: false }, 
   userGames: [UserGameSchema]
 }, {
   collection: 'game-users'
 });
+
 
 // Hide password in JSON responses
 userSchema.set('toJSON', {
