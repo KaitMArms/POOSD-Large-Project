@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { gameConnection } = require('../db');
 
+const { Schema, Types } = mongoose;
 
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({
@@ -26,7 +27,8 @@ const gameSchema = new mongoose.Schema({
     keywords: [{type: Number}],
     game_modes: [{type: Number}],
     game_type:{type: Number},
-    player_perspectives:[{type: Number}]
+    player_perspectives:[{type: Number}],
+    developers: [{ type: Types.ObjectId, index: true }]
 }, 
 { 
     timestamps: true 

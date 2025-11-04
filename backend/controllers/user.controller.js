@@ -1,5 +1,5 @@
 const User = require('../models/Users');
-const Game = require('../models/Game'); 
+const Game = require('../models/Games'); 
 const mongoose = require('mongoose');
 const BIO_MAX = 300; // schema maxlength
 
@@ -7,7 +7,7 @@ exports.profile = async (req, res) => {
   try {
     const userID = req.user.sub;
     const user = await User.findById(userID)
-      .select('firstName lastName username email avatarUrl bio');
+      .select('firstName lastName username email avatarUrl bio role');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -163,49 +163,54 @@ exports.settingsUpd = async (req, res) => {
   }
 };
 
+// users.controller.js
 exports.deleteAccount = async (req, res) => {
-  const session = await mongoose.startSession();
+  const session = await mongoose.startSession();  
   try {
     const { currentPassword, deleteAvatar = false } = req.body;
-    if (!currentPassword) {
-      return res.status(400).json({ message: 'Current password is required.' });
-    }
+    if (!currentPassword) return res.status(400).json({ message: 'Current password is required.' });
 
-    // Load user (needs password hash available for compare)
     const user = await User.findById(req.user.sub).session(session);
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
     const ok = await user.checkPassword(currentPassword);
     if (!ok) return res.status(401).json({ message: 'Current password is incorrect.' });
 
-    // Start atomic transaction
+    // 1) Atomic delete of the User on the default connection
     await session.withTransaction(async () => {
-      const uid = user._id;
-
-      // Delete all standalone resources owned by the user
-      await Game.deleteMany({ createdBy: uid }, { session });
-
-      // If we add more collections later, delete them here too:
-
-      // Finally, delete the User
-      await User.deleteOne({ _id: uid }, { session });
+      await User.deleteOne({ _id: user._id }, { session });
     });
+    session.endSession();
 
-    // Best-effort external cleanup after DB commit
+    //    Remove this user from any game's developers list
+    try {
+      await Game.updateMany(
+        { developers: user._id },
+        { $pull: { developers: user._id } }
+      );
+
+      // Optional: delete orphaned games (no developers left)
+      // const orphanIds = await Game.find({ developers: { $size: 0 } }, { _id: 1 }).lean();
+      // if (orphanIds.length) await Game.deleteMany({ _id: { $in: orphanIds.map(d => d._id) } });
+    } catch (e) {
+      console.error('Post-commit Game cleanup failed:', e);
+    }
+
+    // 3) Optional avatar cleanup
     if (deleteAvatar && user.avatarUrl) {
       try {
-        // await deleteAvatarIfExternal(user.avatarUrl); // optional helper for S3/Cloudinary
+        // await deleteAvatarIfExternal(user.avatarUrl);
       } catch (e) {
         console.error('Avatar cleanup failed:', e);
       }
     }
 
-
-    return res.status(200).json({ success: true, message: 'Account and related data deleted.' });
+    return res.status(200).json({ success: true, message: 'Account deleted and references cleaned up.' });
   } catch (err) {
     console.error('deleteAccount error:', err);
     return res.status(500).json({ message: 'Server error.' });
   } finally {
+    if (session.inTransaction()) await session.abortTransaction();
     session.endSession();
   }
 };
