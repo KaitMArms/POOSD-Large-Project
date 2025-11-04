@@ -2,6 +2,7 @@ const mongoose  = require('mongoose');
 const bcrypt    = require('bcryptjs');
 require('./Counter');
 const UserGameSchema = require('./UserGame'); 
+const { userConnection } = require('../db');
 
 const SALT_WORK_FACTOR = 10;
 
@@ -21,7 +22,7 @@ const userSchema = new mongoose.Schema({
     type: String, required: true, unique: true, trim: true, lowercase: true,
     minlength: 3, maxlength: 30, match: /^[a-z0-9._-]+$/
   },
-  password:  { type: String, required: true, trim: true },
+  password:  { type: String, required: true, trim: true, select: false },
   avatarUrl: { type: String, trim: true },
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
@@ -131,4 +132,4 @@ userSchema.pre('updateOne', async function(next) {
   }
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = userConnection.models.user || userConnection.model('User', userSchema);

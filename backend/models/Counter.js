@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const { userConnection } = require('../db');
 
 const CounterSchema = new mongoose.Schema({
   _id:      { type: String, required: true },
   sequence: { type: Number, default: 0 }
 }, { collection: 'counters' });
 
-module.exports = mongoose.models.Counter || mongoose.model('Counter', CounterSchema);
+module.exports = userConnection.models.Counter || userConnection.model('Counter', CounterSchema);
