@@ -66,8 +66,8 @@ jobs:
         run: |
             ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
             sudo mkdir -p /var/www/html/frontend
-            sudo chown -R $USER:$USER /var/www/html/frontend
-            sudo chmod -R 755 /var/www/html/frontend
+            sudo chown -R $USER:devs /var/www/html/frontend
+            sudo chmod -R 775 /var/www/html/frontend
             EOF
 
       - name: Deploy to DigitalOcean Droplet
