@@ -5,6 +5,37 @@ function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+exports.browseGames = async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+    const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
+    const limit = Math.min(limitReq, 50); // cap at 50 per page
+
+    const sort = { first_release_date: -1, name: 1, _id: 1 };
+
+    const [items, total] = await Promise.all([
+      Game.find({}, null).sort(sort).skip((page - 1) * limit).limit(limit).lean(),
+      Game.estimatedDocumentCount() // fast count; good enough for browse
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    return res.json({
+      data: items,
+      paging: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasPrev: page > 1,
+        hasNext: page < totalPages
+      }
+    });
+  } catch (err) {
+    console.error('browseGames error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
 exports.searchGames = async (req, res) => {
   try {
     const qRaw = (req.query.q || '').trim();
