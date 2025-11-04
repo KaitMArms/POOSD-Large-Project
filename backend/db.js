@@ -1,4 +1,3 @@
-// db.js
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -34,3 +33,4 @@ const userConnection = createDbConnection(required('MONGO_URI_USERS'), 'Users');
 const gameConnection = createDbConnection(required('MONGO_URI_GAMES'), 'GameDB');
 
 module.exports = { userConnection, gameConnection };
+ 
