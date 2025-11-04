@@ -29,7 +29,8 @@ const gameSchema = new mongoose.Schema({
     game_modes: [{type: Number}],
     game_type:{type: Number},
     player_perspectives:[{type: Number}],
-    developers: [{ type: Types.ObjectId, index: true }]
+    developers: [{ type: Types.ObjectId, index: true }],
+    isDev: {type: Boolean, default: false, index: true}
 }, 
 { 
     timestamps: true 

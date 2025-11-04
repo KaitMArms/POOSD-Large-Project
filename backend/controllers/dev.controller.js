@@ -1,17 +1,60 @@
+const mongoose = require('mongoose');
 const User = require('../models/Users');
 const Game = require('../models/Games'); 
 const GameCounter = require('../models/GameCounter'); 
 
-async function getNextGameId() {
+async function getNextDevGameId() {
   const doc = await GameCounter.findOneAndUpdate(
-    { _id: 'gameId' },
+    { _id: 'devGameId' },
     { $inc: { sequence: 1 } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   );
+  // hard guard if a bad seed ever sneaks in
+  if (doc.sequence < 1000000000) {
+    const fixed = await GameCounter.findOneAndUpdate(
+      { _id: 'devGameId' },
+      { $set: { sequence: 1000000000 } },
+      { new: true }
+    );
+    return fixed.sequence;
+  }
   return doc.sequence;
 }
 
-// GET /dev/games?name=halo&limit=20&skip=0
+function slugify(input) {
+  return String(input)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function parseRequiredNumArray(fieldName, value) {
+  if (!Array.isArray(value)) {
+    throw new Error(`${fieldName} must be a non-empty array of numbers`);
+  }
+  const arr = value.map(Number).filter(n => Number.isFinite(n));
+  if (arr.length === 0) {
+    throw new Error(`${fieldName} must be a non-empty array of numbers`);
+  }
+  return arr;
+}
+
+// Accept either unix seconds as a number OR an ISO date string and convert.
+function parseFirstReleaseDate(val) {
+  if (typeof val === 'number') {
+    if (!Number.isFinite(val) || val < 0) throw new Error('first_release_date must be a non-negative number (unix seconds)');
+    return Math.floor(val);
+  }
+  if (typeof val === 'string') {
+    const t = Date.parse(val);
+    if (!Number.isFinite(t)) throw new Error('first_release_date string must be a valid ISO date');
+    return Math.floor(t / 1000); // to unix seconds
+  }
+  throw new Error('first_release_date is required (number unix seconds or ISO date string)');
+}
+
+
 exports.viewGames = async (req, res) => {
   try {
     const { name, limit = 20, skip = 0 } = req.query;
@@ -31,51 +74,129 @@ exports.viewGames = async (req, res) => {
 
 exports.addGame = async (req, res) => {
   try {
-    if (req.user?.role !== 'dev') {
-      return res.status(403).json({ error: 'Only devs can add games' });
-    }
+    const callerId = req.user?.sub;
+    if (!callerId) return res.status(401).json({ error: 'Unauthorized' });
+    if (req.user.role !== 'dev') return res.status(403).json({ error: 'Only devs can add games' });
 
-    let { id, name, developersUsernames = [] } = req.body;
+    let {
+      id,                       // optional; must be >= 1_000_000_000 if provided
+      name,                     // REQUIRED (string)
+      summary,                  // REQUIRED (string)
+      first_release_date,       // REQUIRED (number unix seconds OR ISO string)
+      platforms,                // REQUIRED (non-empty array of numbers)
+      genres,                   // REQUIRED (non-empty array of numbers)
+      slug,                     // optional (auto from name if omitted)
+      cover,                    // optional (number) — keep as-is for now
+      developersUsernames = []  // optional extra devs
+    } = req.body;
 
+    // --- Required fields ---
     if (!name || !String(name).trim()) {
       return res.status(400).json({ error: 'name is required' });
     }
     name = String(name).trim();
 
-    // allocate internal numeric id if client didn't provide one
-    let numericId = (typeof id === 'number') ? id : await getNextGameId();
-    if (!Number.isFinite(numericId)) {
-      return res.status(500).json({ error: 'Could not allocate game id' });
+    if (!summary || !String(summary).trim()) {
+      return res.status(400).json({ error: 'summary is required' });
+    }
+    summary = String(summary).trim();
+    if (summary.length > 2000) {
+      return res.status(400).json({ error: 'summary must be ≤ 2000 characters' });
     }
 
-    // resolve developers list
-    let devs = [];
-    if (developersUsernames.length) {
+    let firstRelease;
+    try {
+      firstRelease = parseFirstReleaseDate(first_release_date);
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
+    }
+
+    let platformsArr, genresArr;
+    try {
+      platformsArr = parseRequiredNumArray('platforms', platforms);
+      genresArr    = parseRequiredNumArray('genres', genres);
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
+    }
+
+    // slug: auto-generate if absent
+    slug = slug && String(slug).trim() ? String(slug).trim() : slugify(name);
+
+    // optional: cover
+    let coverId = undefined;
+    if (cover !== undefined) {
+      const c = Number(cover);
+      if (!Number.isFinite(c) || c < 0) {
+        return res.status(400).json({ error: 'cover must be a non-negative number' });
+      }
+      coverId = c;
+    }
+
+    // --- Dev ID policy (≥ 1_000_000_000) ---
+    let numericId;
+    if (typeof id === 'number') {
+      if (id < 1000000000) {
+        return res.status(400).json({ error: 'Dev game id must be >= 1000000000' });
+      }
+      numericId = id;
+    } else {
+      numericId = await getNextDevGameId();
+    }
+
+    // --- Resolve developers (always include caller) ---
+    const callerObjId = new mongoose.Types.ObjectId(callerId);
+    let devIds = [callerObjId];
+
+    if (Array.isArray(developersUsernames) && developersUsernames.length) {
       const usernames = developersUsernames.map(u => String(u).toLowerCase());
-      devs = await User.find({ username: { $in: usernames }, role: 'dev' }, '_id username');
+      const devs = await User.find(
+        { username: { $in: usernames }, role: 'dev' },
+        '_id username'
+      );
       if (devs.length !== usernames.length) {
         const found = new Set(devs.map(d => d.username));
         const missing = usernames.filter(u => !found.has(u));
         return res.status(400).json({ error: `Unknown or non-developer usernames: ${missing.join(', ')}` });
       }
-    } else {
-      // default to the caller; IMPORTANT: use req.user.sub, then fetch _id
-      const me = await User.findById(req.user.sub).select('_id username role');
-      if (!me || me.role !== 'dev') return res.status(403).json({ error: 'Only devs can add games' });
-      devs = [me];
+      devIds.push(...devs.map(d => d._id));
     }
+    devIds = Array.from(new Set(devIds.map(id => String(id)))).map(id => new mongoose.Types.ObjectId(id));
 
-    // guard against null ids sneaking in
-    const devIds = devs.map(d => d._id).filter(Boolean);
+    // --- Upsert into global GamesDB ---
+    const setPayload = {
+      name,
+      slug,
+      summary,
+      first_release_date: firstRelease,
+      platforms: platformsArr,
+      genres: genresArr
+    };
+    if (coverId !== undefined) setPayload.cover = coverId;
 
     const game = await Game.findOneAndUpdate(
       { id: numericId },
       {
-        $setOnInsert: { id: numericId, createdBy: req.user.sub },
-        $set: { name }, // allow name updates on re-run
+        $setOnInsert: { id: numericId, isDev: true },
+        $set: setPayload,
         $addToSet: { developers: { $each: devIds } },
       },
       { upsert: true, new: true }
+    );
+
+    // --- Mirror into caller's userGames ---
+    await User.findByIdAndUpdate(
+      callerId,
+      {
+        $addToSet: {
+          userGames: {
+            id: numericId,
+            name,
+            status: 'to-play',
+            isLiked: false
+          }
+        }
+      },
+      { new: false }
     );
 
     return res.status(201).json({ message: 'Game upserted', game });
@@ -85,6 +206,8 @@ exports.addGame = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 
 // PATCH /dev/games/:id   body: { name?, addDevelopersUsernames?:[], removeDevelopersUsernames?:[] }
 exports.editGame = async (req, res) => {
@@ -145,3 +268,5 @@ exports.deleteGame = async (req, res) => {
     return res.status(500).json({ error: e.toString() });
   }
 };
+
+exports.search = async (req, res) => {};
