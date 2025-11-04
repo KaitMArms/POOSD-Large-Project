@@ -8,8 +8,8 @@ const requireRole = require('../middleware/requireRole');
 router.use(requireAuth);
 router.use(requireRole('dev')); //requires auth first
 
-router.get('/games', viewGames);
-router.post('/games', addGame);
+router.get('/games/view', viewGames);
+router.post('/games/add', addGame);
 router.patch('/games/:id', editGame);
 router.delete('/games/:id', deleteGame);
 

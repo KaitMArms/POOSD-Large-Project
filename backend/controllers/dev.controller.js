@@ -1,6 +1,15 @@
-// controllers/dev.controller.js
 const User = require('../models/Users');
-const Game = require('../models/Games'); // <-- FIX: this is the global games catalog (gameConnection)
+const Game = require('../models/Games'); 
+const GameCounter = require('../models/GameCounter'); 
+
+async function getNextGameId() {
+  const doc = await GameCounter.findOneAndUpdate(
+    { _id: 'gameId' },
+    { $inc: { sequence: 1 } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+  return doc.sequence;
+}
 
 // GET /dev/games?name=halo&limit=20&skip=0
 exports.viewGames = async (req, res) => {
@@ -20,42 +29,60 @@ exports.viewGames = async (req, res) => {
   }
 };
 
-// POST /dev/games  body: { id, name, developersUsernames?: [] }
 exports.addGame = async (req, res) => {
   try {
-    const { id, name, developersUsernames = [] } = req.body;
-    if (typeof id !== 'number') return res.status(400).json({ error: 'id (IGDB Number) is required' });
-
-    // Only devs can add
-    if (req.user?.role !== 'dev') return res.status(403).json({ error: 'Only devs can add games' });
-
-    // Resolve developer usernames -> user _ids (and ensure role === 'dev')
-    const usernames = developersUsernames.map(u => String(u).toLowerCase());
-    const devs = usernames.length
-      ? await User.find({ username: { $in: usernames }, role: 'dev' }, '_id username role')
-      : [ { _id: req.user._id, username: req.user.username, role: 'dev' } ];
-
-    if (developersUsernames.length && devs.length !== usernames.length) {
-      const found = new Set(devs.map(d => d.username));
-      const missing = usernames.filter(u => !found.has(u));
-      return res.status(400).json({ error: `Unknown or non-developer usernames: ${missing.join(', ')}` });
+    if (req.user?.role !== 'dev') {
+      return res.status(403).json({ error: 'Only devs can add games' });
     }
 
-    // Upsert by IGDB id; add developers with $addToSet
+    let { id, name, developersUsernames = [] } = req.body;
+
+    if (!name || !String(name).trim()) {
+      return res.status(400).json({ error: 'name is required' });
+    }
+    name = String(name).trim();
+
+    // allocate internal numeric id if client didn't provide one
+    let numericId = (typeof id === 'number') ? id : await getNextGameId();
+    if (!Number.isFinite(numericId)) {
+      return res.status(500).json({ error: 'Could not allocate game id' });
+    }
+
+    // resolve developers list
+    let devs = [];
+    if (developersUsernames.length) {
+      const usernames = developersUsernames.map(u => String(u).toLowerCase());
+      devs = await User.find({ username: { $in: usernames }, role: 'dev' }, '_id username');
+      if (devs.length !== usernames.length) {
+        const found = new Set(devs.map(d => d.username));
+        const missing = usernames.filter(u => !found.has(u));
+        return res.status(400).json({ error: `Unknown or non-developer usernames: ${missing.join(', ')}` });
+      }
+    } else {
+      // default to the caller; IMPORTANT: use req.user.sub, then fetch _id
+      const me = await User.findById(req.user.sub).select('_id username role');
+      if (!me || me.role !== 'dev') return res.status(403).json({ error: 'Only devs can add games' });
+      devs = [me];
+    }
+
+    // guard against null ids sneaking in
+    const devIds = devs.map(d => d._id).filter(Boolean);
+
     const game = await Game.findOneAndUpdate(
-      { id },
+      { id: numericId },
       {
-        $setOnInsert: { id, name },
-        $addToSet: { developers: { $each: devs.map(d => d._id) } },
+        $setOnInsert: { id: numericId, createdBy: req.user.sub },
+        $set: { name }, // allow name updates on re-run
+        $addToSet: { developers: { $each: devIds } },
       },
       { upsert: true, new: true }
     );
 
     return res.status(201).json({ message: 'Game upserted', game });
   } catch (e) {
-    if (e.code === 11000) return res.status(409).json({ error: 'Game with that id already exists' });
-    console.error('Database Insertion Error:', e);
-    return res.status(500).json({ error: e.toString() });
+    if (e?.code === 11000) return res.status(409).json({ error: 'Game with that id already exists' });
+    console.error('addGame error:', e);
+    return res.status(500).json({ error: 'Server error' });
   }
 };
 

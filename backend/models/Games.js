@@ -6,7 +6,8 @@ const { Schema, Types } = mongoose;
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({
     // IGDB game reference id
-    id: { type: Number, required: true}, 
+    id: { type: Number, required: true},
+    gameId: { type: Number, unique: true},
     clusterId: {type: Number, index: true},
     name: { type: String, required: true },
     // url-tag

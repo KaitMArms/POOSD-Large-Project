@@ -163,40 +163,31 @@ exports.settingsUpd = async (req, res) => {
   }
 };
 
-// users.controller.js
 exports.deleteAccount = async (req, res) => {
-  const session = await mongoose.startSession();  
   try {
     const { currentPassword, deleteAvatar = false } = req.body;
-    if (!currentPassword) return res.status(400).json({ message: 'Current password is required.' });
+    if (!currentPassword) {
+      return res.status(400).json({ message: 'Current password is required.' });
+    }
 
-    const user = await User.findById(req.user.sub).session(session);
+    // Make sure password is selectable for check
+    const user = await User.findById(req.user.sub).select('+password');
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
     const ok = await user.checkPassword(currentPassword);
     if (!ok) return res.status(401).json({ message: 'Current password is incorrect.' });
 
-    // 1) Atomic delete of the User on the default connection
-    await session.withTransaction(async () => {
-      await User.deleteOne({ _id: user._id }, { session });
-    });
-    session.endSession();
+    // Remove this user from any game's developers list
+    // (uses Game's own connection; safe without a transaction)
+    await Game.updateMany(
+      { developers: user._id },
+      { $pull: { developers: user._id } }
+    );
 
-    //    Remove this user from any game's developers list
-    try {
-      await Game.updateMany(
-        { developers: user._id },
-        { $pull: { developers: user._id } }
-      );
+    // Optional: delete orphan games (no developers left)
+    await Game.deleteMany({ developers: { $size: 0 } });
 
-      // Optional: delete orphaned games (no developers left)
-      // const orphanIds = await Game.find({ developers: { $size: 0 } }, { _id: 1 }).lean();
-      // if (orphanIds.length) await Game.deleteMany({ _id: { $in: orphanIds.map(d => d._id) } });
-    } catch (e) {
-      console.error('Post-commit Game cleanup failed:', e);
-    }
-
-    // 3) Optional avatar cleanup
+    // Optional avatar cleanup
     if (deleteAvatar && user.avatarUrl) {
       try {
         // await deleteAvatarIfExternal(user.avatarUrl);
@@ -205,12 +196,12 @@ exports.deleteAccount = async (req, res) => {
       }
     }
 
+    // Finally delete the user
+    await User.deleteOne({ _id: user._id });
+
     return res.status(200).json({ success: true, message: 'Account deleted and references cleaned up.' });
   } catch (err) {
     console.error('deleteAccount error:', err);
     return res.status(500).json({ message: 'Server error.' });
-  } finally {
-    if (session.inTransaction()) await session.abortTransaction();
-    session.endSession();
   }
 };
