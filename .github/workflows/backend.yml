@@ -49,7 +49,6 @@ jobs:
 
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
           cd /var/www/html/backend
-          git pull origin main
           npm ci --omit=dev
           pm2 restart server || pm2 start server.js --name server
           EOF
