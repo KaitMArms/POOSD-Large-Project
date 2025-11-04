@@ -28,6 +28,17 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 22 ${SSH_HOST} >> ~/.ssh/known_hosts
 
+      - name: Prepare target directory permissions
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        run: |
+            ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+            sudo mkdir -p /var/www/html/backend
+            sudo chown -R $USER:$USER /var/www/html/backend
+            sudo chmod -R 755 /var/www/html/backend
+            EOF
+
       - name: Deploy
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
