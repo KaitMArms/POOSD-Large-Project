@@ -2,14 +2,18 @@ const express = require('express');
 const router = express.Router();
 const GameModel = require('../models/Games'); 
 
+// API request to handle adding imported games
 router.post('/', async (req, res) => {
     const games = req.body.games; 
     
+    // Reject an incorrect request
     if (!games || !Array.isArray(games) || games.length === 0) {
         return res.status(400).json({ error: 'Request body must be an array of games.' });
     }
 
+    // If a game array was passed through, trie to insert it
     try {
+        // Attempts to insert all the games in the batch, if it encounters an error skip the batch
         const result = await GameModel.insertMany(games, { ordered: false }); 
         return res.status(201).json({ 
             message: `Successfully added ${result.length} new games to the database.`,

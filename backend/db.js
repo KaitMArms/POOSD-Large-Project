@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Handles having multiple databases
 function createDbConnection(uri, dbName){
 	const db = mongoose.createConnection(uri)
 
@@ -18,4 +19,5 @@ function createDbConnection(uri, dbName){
 const userConnection = createDbConnection(process.env.MONGO_URI_USERS, 'Users');
 const gameConnection = createDbConnection(process.env.MONGO_URI_GAMES, 'GameDB');
 
+// Export connections
 module.exports = { userConnection, gameConnection };

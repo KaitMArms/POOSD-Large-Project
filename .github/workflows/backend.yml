@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           cd backend
-          npm install
+          npm ci
 
       - name: Setup SSH key
         env:
@@ -27,16 +27,29 @@ jobs:
           echo "${SSH_KEY}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 22 ${SSH_HOST} >> ~/.ssh/known_hosts
-          sudo apt-get install sshpass
+
+      - name: Prepare target directory permissions
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        run: |
+            ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+            sudo mkdir -p /var/www/html/backend
+            sudo chown -R $USER:devs /var/www/html/backend
+            sudo chmod -R 775 /var/www/html/backend
+            EOF
 
       - name: Deploy
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
+          rsync -avz --delete --exclude='.env' -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+            backend/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/backend/
+
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
           cd /var/www/html/backend
           git pull origin main
-          npm install
-          pm2 restart server
+          npm ci --omit=dev
+          pm2 restart server || pm2 start server.js --name server
           EOF
