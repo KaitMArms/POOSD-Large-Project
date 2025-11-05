@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const GameModel = require('../models/Games'); 
 
 const CENTER_PATH = path.join(__dirname, '.', 'prediction_centers.json');
 const EPSILON = 1e-10; 
@@ -15,8 +14,6 @@ try {
     centroids = model.centroids;
 
     FEATURE_TO_INDEX = Object.fromEntries(feature_names.map((name, i) => [name, i]));
-
-
 } catch (error) {
     console.error("ERROR: Could not load ML model.", error);
 }
@@ -61,7 +58,6 @@ function transformToFeatureVector(rawGameDocument) {
     return featureVector;
 }
 
-
 // Finds the best matching cluster for a given User Profile Vector
 function findBestCluster(userProfileVector) {
     let maxSimilarity = -Infinity;
@@ -83,7 +79,8 @@ function findBestCluster(userProfileVector) {
 }
 
 // Finds the best cluster, queries the DB for games in that cluster, ranks them by similarity to the user's profile, and returns the top 100 IDs.
-async function getRecommendations(userProfileVector, userLikedGameIds) {
+async function getRecommendations(userProfileVector, userLikedGameIds, models) {
+    const { GameModel } = models
     // Find the most relevant cluster for this user
     const bestClusterId = findBestCluster(userProfileVector);
     if (bestClusterId === -1) return []; // No clusters found, return empty
@@ -116,9 +113,9 @@ async function getRecommendations(userProfileVector, userLikedGameIds) {
 
     // Sort the results and return the top 100 IDs
     results.sort((a, b) => b.score - a.score);
-    const top10RankedIds = results.slice(0, 100).map(item => item.id);
+    const topRankedIds = results.slice(0, 100).map(item => item.id);
     
-    return top10RankedIds;
+    return topRankedIds;
 }
 
 module.exports = { 

@@ -1,35 +1,25 @@
 require('dotenv').config({ path: '../.env' });
-const mongoose = require('mongoose');
 
-const UserSchema = require('../models/Users');
-const GameSchema = require('../models/Games');
-const CounterSchema = require('../models/Counter'); 
+const { UserModel, GameModel, connectionsReady } = require('../db');
 
 const { buildUserProfileVector } = require('../services/user_profile');
 const { getRecommendations } = require('../services/recommend');
 
-const TEST_USER_ID = '690642a016356720a54b25e4'; 
+const TEST_USER_ID = '690b87bb490467c28d66aa04'; 
 
 async function runTest() {
     console.log("Starting Recommendation Test");
     
-    let userConnection, gameConnection;
 
     try {
-        userConnection = await mongoose.createConnection(process.env.MONGO_URI_USERS).asPromise();
-        gameConnection = await mongoose.createConnection(process.env.MONGO_URI_GAMES).asPromise();
-        console.log("DB connections established.");
-
-        const LocalUserModel = userConnection.model('User', UserSchema);
-        const LocalGameModel = gameConnection.model('Game', GameSchema);
-        userConnection.model('Counter', CounterSchema);
-
+        await connectionsReady;
+        console.log("db connections established");
         console.log(`\nTesting for User ID: ${TEST_USER_ID}`);
         
         console.log("Building User Profile");
         const userProfileVector = await buildUserProfileVector(TEST_USER_ID, {
-            UserModel: LocalUserModel,
-            GameModel: LocalGameModel  
+            UserModel: UserModel,
+            GameModel: GameModel  
         });
 
         if (!userProfileVector || userProfileVector.every(v => v === 0)) {
@@ -38,10 +28,10 @@ async function runTest() {
         console.log(`SUCCESS: User Profile Vector created.`);
 
         console.log("\nGetting Top Recommendation IDs...");
-        const user = await LocalUserModel.findById(TEST_USER_ID, 'userGames').lean();
+        const user = await UserModel.findById(TEST_USER_ID, 'userGames').lean();
         const userLikedGameIds = user ? user.userGames.map(g => g.id) : [];
         
-        const topIds = await getRecommendations(userProfileVector, userLikedGameIds);
+        const topIds = await getRecommendations(userProfileVector, userLikedGameIds, {GameModel: GameModel});
 
         if (!topIds || topIds.length === 0) {
             throw new Error("getRecommendations returned an empty list.");
@@ -49,7 +39,7 @@ async function runTest() {
         console.log(`SUCCESS: Received ${topIds.length} recommended game IDs.`);
 
         console.log("\n3. Fetching Full Game Details for Recommendations...");
-        const finalGameDetails = await LocalGameModel.find({ id: { $in: topIds } }).lean();
+        const finalGameDetails = await GameModel.find({ id: { $in: topIds } }).lean();
 
         const gameMap = new Map(finalGameDetails.map(g => [g.id, g.name]));
         const sortedFinalGames = topIds.map(id => ({ id, name: gameMap.get(id) }));
@@ -65,6 +55,7 @@ async function runTest() {
     } catch (error) {
         console.error("\nTEST FAILED with an error:", error);
     } finally {
+        const {userConnection, gameConnection} = require('../db');
         if (userConnection) await userConnection.close();
         if (gameConnection) await gameConnection.close();
         console.log("\nTest finished. All MongoDB connections closed.");
