@@ -35,7 +35,7 @@ async function importGames() {
             
             // Request to twitch's servers, requests information about limit games with an increment of offset
             const igdbResponse = await axios.post('https://api.igdb.com/v4/games',
-                `fields name,slug,summary,first_release_date,genres,cover,age_ratings,franchise,platforms,game_modes,keywords,language_supports,themes,game_type,player_perspectives; limit ${limit}; offset ${offset}; where platforms != null;`,
+                `fields name,slug,summary,first_release_date,genres,cover,age_ratings,franchise,platforms,game_modes,keywords,language_supports,themes,game_type,player_perspectives, rating, rating_count; limit ${limit}; offset ${offset}; where platforms != null;`,
                 {
                     headers: {
                         'Client-ID': process.env.TWITCH_CLIENT_ID,
