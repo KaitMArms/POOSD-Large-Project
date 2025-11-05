@@ -15,7 +15,6 @@ function createDbConnection(uri, dbName){
 		process.exit(1);
 	});
 
-  return conn;
   return db;
 }
 
