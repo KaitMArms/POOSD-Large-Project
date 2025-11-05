@@ -1,7 +1,4 @@
 const mongoose = require('mongoose');
-const { gameConnection } = require('../db');
-
-const { Schema, Types } = mongoose;
 
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({
@@ -40,4 +37,4 @@ const gameSchema = new mongoose.Schema({
 gameSchema.index({id: 1}, {unique: true});
 
 // Creates the Game collection
-module.exports = gameConnection.models.game || gameConnection.model('Game', gameSchema);
+module.exports = gameSchema;

@@ -132,4 +132,4 @@ userSchema.pre('updateOne', async function(next) {
   }
 });
 
-module.exports = userConnection.models.user || userConnection.model('User', userSchema);
+module.exports = userSchema;

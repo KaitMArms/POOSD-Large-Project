@@ -8,4 +8,4 @@ const gamemodesModel = new mongoose.Schema({
 
 gamemodesModel.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('GameModes', gamemodesModel);
+module.exports = gamemodesModel;
