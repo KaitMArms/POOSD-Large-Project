@@ -1,0 +1,13 @@
+.dev-title{
+    font-size: 20vw;
+    font-weight: bold;
+    font-style: italic;
+    color: #72139B;
+}
+
+.dev-games{
+    width: auto;
+    height: 50vw;
+    padding: 5em;
+    background-color: var(--div-color);
+}

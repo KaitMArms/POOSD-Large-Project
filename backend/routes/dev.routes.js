@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {addGame, editGame, deleteGame, viewGames} = require('../controllers/dev.controller');
+const {addGame, editGame, deleteGame, viewGames, search} = require('../controllers/dev.controller');
 const requireAuth = require('../middleware/requireAuth');
 const requireRole = require('../middleware/requireRole');
 
@@ -8,9 +8,10 @@ const requireRole = require('../middleware/requireRole');
 router.use(requireAuth);
 router.use(requireRole('dev')); //requires auth first
 
-router.get('/games', viewGames);
-router.post('/games', addGame);
+router.get('/games/view', viewGames);
+router.post('/games/add', addGame);
 router.patch('/games/:id', editGame);
 router.delete('/games/:id', deleteGame);
+router.get('/games/search', search); 
 
 module.exports = router;

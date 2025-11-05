@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({
     // IGDB game reference id
-    id: { type: Number, required: true}, 
+    id: { type: Number, required: true},
+    gameId: { type: Number, unique: true},
     clusterId: {type: Number, index: true},
     name: { type: String, required: true },
     // url-tag
@@ -24,7 +25,9 @@ const gameSchema = new mongoose.Schema({
     keywords: [{type: Number}],
     game_modes: [{type: Number}],
     game_type:{type: Number},
-    player_perspectives:[{type: Number}]
+    player_perspectives:[{type: Number}],
+    developers: [{ type: Types.ObjectId, index: true }],
+    isDev: {type: Boolean, default: false, index: true}
 }, 
 { 
     timestamps: true 

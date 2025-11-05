@@ -1,3 +1,6 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const mongoose = require('mongoose');
 
 function createDbConnection(uri, dbName){
@@ -12,7 +15,7 @@ function createDbConnection(uri, dbName){
 		process.exit(1);
 	});
 
-	return db;
+  return conn;
 }
 
 const userConnection = createDbConnection(process.env.MONGO_URI_USERS, 'UsersDB');
