@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const UserSchema = require('./Users'); 
 
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({
@@ -26,7 +27,7 @@ const gameSchema = new mongoose.Schema({
     game_modes: [{type: Number}],
     game_type:{type: Number},
     player_perspectives:[{type: Number}],
-    developers: [{ type: Types.ObjectId, index: true }],
+    developers: [{ type: mongoose.Schema.Types.ObjectID, index: true , ref: 'User'}],
     isDev: {type: Boolean, default: false, index: true}
 }, 
 { 

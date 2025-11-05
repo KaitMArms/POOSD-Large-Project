@@ -16,6 +16,7 @@ function createDbConnection(uri, dbName){
 	});
 
   return conn;
+  return db;
 }
 
 const userConnection = createDbConnection(process.env.MONGO_URI_USERS, 'UsersDB');
