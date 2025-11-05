@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const GameModel = require('../models/Games'); 
+const {GameModel} = require('../db'); 
 
 // API request to handle adding imported games
 router.post('/', async (req, res) => {
