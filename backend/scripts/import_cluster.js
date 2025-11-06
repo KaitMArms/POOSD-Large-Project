@@ -4,7 +4,7 @@ const { parse } = require('csv-parse');
 const { GameModel, connectionsReady, userConnection, gameConnection } = require('../db');
 
 // --- CONFIGURATION ---
-const CSV_FILE_PATH = './final_game_cluster_assignments.csv';
+const CSV_FILE_PATH = './recreated_cluster_assignments.csv';
 const BATCH_SIZE = 5000; // Process 5,000 records at a time. Adjust if needed.
 const DELAY_BETWEEN_BATCHES_MS = 500; // 0.5 second pause between batches.
 
