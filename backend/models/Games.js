@@ -30,7 +30,9 @@ const gameSchema = new mongoose.Schema({
     developers: [{ type: mongoose.Schema.Types.ObjectID, index: true , ref: 'User'}],
     isDev: {type: Boolean, default: false, index: true},
     rating: {type: Number},
-    rating_count: {type: Number}
+    rating_count: {type: Number},
+    version_parent: {type: Number},
+    parent_game: {type: Number}
 }, 
 { 
     timestamps: true 
