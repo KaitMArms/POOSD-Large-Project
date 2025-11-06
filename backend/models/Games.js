@@ -23,11 +23,19 @@ const gameSchema = new mongoose.Schema({
     themes: [ {type: Number}],
     language_supports: [{type: Number}],
     keywords: [{type: Number}],
-    game_modes: [{type: Number}],
     game_type:{type: Number},
     player_perspectives:[{type: Number}],
+<<<<<<< Updated upstream
     developers: [{ type: Types.ObjectId, index: true }],
     isDev: {type: Boolean, default: false, index: true}
+=======
+    developers: [{ type: mongoose.Schema.Types.ObjectID, index: true , ref: 'User'}],
+    isDev: {type: Boolean, default: false, index: true},
+    rating: {type: Number},
+    rating_count: {type: Number},
+    version_parent: {type: Number},
+    parent_game: {type: Number}
+>>>>>>> Stashed changes
 }, 
 { 
     timestamps: true 
