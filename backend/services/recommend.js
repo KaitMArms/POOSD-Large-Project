@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CENTER_PATH = path.join(__dirname, '.', 'prediction_centers.json');
-const EPSILON = 1e-10; 
+const EPSILON = 1e-10;
 
 let k_clusters, feature_names, centroids, FEATURE_TO_INDEX;
 
@@ -113,13 +113,13 @@ async function getRecommendations(userProfileVector, userLikedGameIds, models) {
 
     // Sort the results and return the top 100 IDs
     results.sort((a, b) => b.score - a.score);
-    const topRankedIds = results.slice(0, 100).map(item => item.id);
-    
-    return topRankedIds;
+    const topRankedRes = results.slice(0, 100);
+
+    return topRankedRes;
 }
 
-module.exports = { 
+module.exports = {
     getRecommendations,
-    transformToFeatureVector, 
-    FEATURE_TO_INDEX_SIZE: feature_names ? feature_names.length : 0 
+    transformToFeatureVector,
+    FEATURE_TO_INDEX_SIZE: feature_names ? feature_names.length : 0
 };

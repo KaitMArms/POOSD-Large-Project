@@ -1,84 +1,85 @@
-require('dotenv').config({ path: '../.env' });
-const { MongoClient } = require('mongodb');
+// At the top with your other requires
 const fs = require('fs');
-const {parse} = require('csv-parse');
+const { parse } = require('csv-parse');
+const { GameModel, connectionsReady, userConnection, gameConnection } = require('../db');
 
-const path = './final_game_cluster_assignments.csv';
-const db_uri = process.env.MONGO_URI_GAMES;
+// --- CONFIGURATION ---
+const CSV_FILE_PATH = './final_game_cluster_assignments.csv';
+const BATCH_SIZE = 5000; // Process 5,000 records at a time. Adjust if needed.
+const DELAY_BETWEEN_BATCHES_MS = 500; // 0.5 second pause between batches.
 
+// --- HELPER FUNCTION ---
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function retryOp(operation, maxRetries=5){
-    for (let attempt = 1; attempt <= maxRetries; attempt++){
-        try{
-            return await operation();
-        } catch (err){
-            const isRetryError = err.name === 'MongoNetworkError' || (err.message && err.message.includes('ECONNREFUSED'));
-
-            if (isRetryError && attempt < maxRetries){
-                const delay = 2000 * attempt;
-                await sleep(delay);
-            } else{
-                throw err;
-            }
-        }
-    }
-    return null;
-}
-
-async function runImport(){
-    let client;
+async function runImport() {
+    console.log("--- Starting Cluster ID Import Script (Batch Mode) ---");
     try {
-        client = new MongoClient(db_uri);
-        await client.connect();
-        console.log("MongoDB connected successfully.");
+        // Wait for the connections from db.js to be established.
+        await connectionsReady;
+        console.log("Database connections are ready.");
 
-        const db = client.db(client.options.dbName); 
-        const gamesCollection = db.collection('games'); 
+        let bulkOperations = [];
+        let totalRecordsProcessed = 0;
 
-        let records;
-        try {
-            const csv_string = fs.readFileSync(path, 'utf8');
+        // Create a readable stream from the file. This is the key to low memory usage.
+        const fileStream = fs.createReadStream(CSV_FILE_PATH);
 
-            records = await new Promise((resolve, reject) => {
-                parse(csv_string, { columns: true, skip_empty_lines: true }, (err, output) => {
-                    if (err) reject(err);
-                    resolve(output);
-                });
-            });
-            console.log(`Successfully parsed ${records.length} records.`);
-
-        } catch (err) {
-            console.error('FATAL ERROR during file reading or parsing:', err.message);
-            await client.close();
-            return;
-        }
-
-        const bulkOperations = records.map(record => ({
-            updateOne: {
-                filter: { id: parseInt(record.game_id) },
-                update: { $set: { clusterId: parseInt(record.cluster_id) } }
-            }
-        }));
-
-        console.log(`Executing bulkWrite for ${bulkOperations.length} records (with retry)...`);
-
-        const result = await retryOp(async() => {
-            return await gamesCollection.bulkWrite(bulkOperations, { ordered: false });
+        // Create the CSV parser stream.
+        const parser = parse({
+            columns: true, // Treat the first line as headers
+            skip_empty_lines: true
         });
 
-        console.log(`  - Matched documents: ${result.matchedCount}`);
-        console.log(`  - Modified documents: ${result.modifiedCount}`);
+        console.log(`Processing '${CSV_FILE_PATH}' in batches of ${BATCH_SIZE}...`);
+
+        // Use a 'for await...of' loop to process the stream line by line.
+        // This is a modern and clean way to handle streams.
+        for await (const record of fileStream.pipe(parser)) {
+            // Add the operation for the current record to our batch array.
+            bulkOperations.push({
+                updateOne: {
+                    filter: { id: parseInt(record.game_id, 10) },
+                    update: { $set: { clusterId: parseInt(record.cluster_id, 10) } },
+                }
+            });
+
+            // When the batch is full, execute it.
+            if (bulkOperations.length >= BATCH_SIZE) {
+                totalRecordsProcessed += bulkOperations.length;
+                console.log(`Executing batch of ${bulkOperations.length}. Total processed: ${totalRecordsProcessed}`);
+
+                // Use await directly on the bulkWrite operation.
+                await GameModel.bulkWrite(bulkOperations, { ordered: false });
+
+                // Clear the array for the next batch.
+                bulkOperations = [];
+
+                // Pause to give the database server some breathing room.
+                await sleep(DELAY_BETWEEN_BATCHES_MS);
+            }
+        }
+
+        // After the loop, process any remaining records that didn't make a full batch.
+        if (bulkOperations.length > 0) {
+            totalRecordsProcessed += bulkOperations.length;
+            console.log(`Executing final batch of ${bulkOperations.length}. Total processed: ${totalRecordsProcessed}`);
+            await GameModel.bulkWrite(bulkOperations, { ordered: false });
+        }
+
+        console.log("\n--- Bulk Write Complete! ---");
+        console.log(`Successfully processed a total of ${totalRecordsProcessed} records.`);
 
     } catch (err) {
-        console.error("FATAL ERROR: The entire import process failed.", err.message);
-
+        console.error("\nFATAL ERROR: The import process failed.", err);
     } finally {
-        if (client) {
-            await client.close();
-            console.log("MongoDB connection closed.");
-        }
+        // Close the connections that db.js opened.
+        await Promise.all([
+            userConnection.close(),
+            gameConnection.close()
+        ]);
+        console.log("\nAll MongoDB connections closed.");
     }
-};
+}
 
+// Run the script
 runImport();
