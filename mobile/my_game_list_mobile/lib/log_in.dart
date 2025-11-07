@@ -29,9 +29,11 @@ class _LogInState extends State<LogIn>{
       body: Padding(
       padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
+            shrinkWrap: true,
+            physics: AlwaysScrollableScrollPhysics(),
+          //mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image(
               image: AssetImage('assets/Mascot.png'),
