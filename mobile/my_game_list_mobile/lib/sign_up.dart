@@ -39,14 +39,14 @@ class SignUpUI extends State<SignUp>  {
   Widget build(BuildContext context) {
     
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Padding(
         //make non-arbitrary, looks good but appears different on everyphone due to it being an assigned value
         padding: EdgeInsets.fromLTRB(24, 90, 24, 24),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 400),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.max,
+        child: Center(
+          //constraints: BoxConstraints(maxWidth: 400),
+          child: ListView(
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
+              //mainAxisSize: MainAxisSize.max,
               children: [
 
                 Text("Welcome to PlayedIt!\nInsert your information below to join our ranks.", 

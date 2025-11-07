@@ -24,10 +24,7 @@ class _PasswordCollect extends State<PasswordCollect>{
         padding: EdgeInsets.fromLTRB(24, 40, 24, 24),
         child: Center(
           //constraints: BoxConstraints(maxWidth: 400),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
+          child: ListView(
             children: [
 
               Text(

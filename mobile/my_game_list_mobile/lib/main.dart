@@ -166,7 +166,7 @@ class PlayedIt extends StatelessWidget {
    Widget build(BuildContext context) {
     //materialApp is defines the set up of our app (theme, routes, title, etc.)
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'PlayedIt',
       theme: ThemeData(
         fontFamily: GoogleFonts.orbitron().fontFamily,
         brightness: Brightness.light,

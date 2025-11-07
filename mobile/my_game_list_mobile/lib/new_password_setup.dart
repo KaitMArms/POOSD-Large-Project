@@ -18,7 +18,9 @@ class NewPassUI extends State<NewPass>  {
   */
 
   final TextEditingController oldPass = TextEditingController();
+  final TextEditingController confirmOldPass = TextEditingController();
   final TextEditingController newPass = TextEditingController();
+  final TextEditingController confirmNewPass = TextEditingController();
   
   @override
   void dispose() {
@@ -31,16 +33,14 @@ class NewPassUI extends State<NewPass>  {
   Widget build(BuildContext context) {
     
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Padding(
         //make non-arbitrary, looks good but appears different on everyphone due to it being an assigned value
-        padding: EdgeInsets.fromLTRB(24, 90, 24, 24),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 400),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.max,
+        padding: EdgeInsets.fromLTRB(24, 10, 24, 24),
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            physics: AlwaysScrollableScrollPhysics(),
               children: [
-
                 Text("Type in your old password and new password below.", 
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -50,7 +50,7 @@ class NewPassUI extends State<NewPass>  {
                     color: Colors.deepPurpleAccent,
                   ),
                 ),
-                SizedBox(height: 50,),
+                SizedBox(height: 55,),
 
                 TextField(
                   controller: oldPass,
@@ -63,7 +63,7 @@ class NewPassUI extends State<NewPass>  {
                 SizedBox(height: 16,),
 
                 TextField(
-                  controller: oldPass,
+                  controller: confirmOldPass,
                   decoration: InputDecoration(
                     filled: true,
                     labelText: "Confirm Old Password",
@@ -83,7 +83,7 @@ class NewPassUI extends State<NewPass>  {
                 SizedBox(height: 16,),
 
                 TextField(
-                  controller: newPass,
+                  controller: confirmNewPass,
                   decoration: InputDecoration(
                     filled: true,
                     labelText: "Confirm New Password",
