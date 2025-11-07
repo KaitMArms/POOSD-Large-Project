@@ -37,3 +37,44 @@ button {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
+
+.dev-check-container {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+}
+
+.dev-check-container input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkmark {
+  width: 2.5vw;
+  height: 2.5vw;
+  border: 2px solid var(--button-bg);
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.checkmark::after{
+  content: "";
+  position: absolute;
+  width: 0.6vw;
+  height: 1.2vw;
+  border: solid var(--button-bg);
+  border-width: 0 3px 3px 0;
+  top: 2px;
+  left: 6px;
+  transform: rotate(45deg);
+  display: none;
+}
+
+.dev-check-container input:checked + .checkmark::after {
+  display: block;
+}
