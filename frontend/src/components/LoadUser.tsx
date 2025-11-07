@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import EditUser from '../components/EditUser.tsx';
 
 // Light & Dark Mode Controller
@@ -12,7 +12,6 @@ function LoadUser()
     // todo: verify that this is actually how it's serialized
     let _ud : any = localStorage.getItem('user_data');
     let ud = JSON.parse(_ud);
-    let uid : string = ud.id;
 
     // If we're editing the user, then use a EditUser component instead of this one. 
     if (editing) {

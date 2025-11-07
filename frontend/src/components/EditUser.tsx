@@ -34,9 +34,9 @@ export default function EditUser({initial, onClose}: {initial: ProfileUser; onCl
   const [username, setUsername] = useState(initial.username);
   const [bio, setBio] = useState(initial.bio || "");
   const [avatarUrl, setAvatarUrl] = useState(initial.avatarUrl || "");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [, setSaving] = useState(false);
+  const [, setError] = useState<string | null>(null);
+  const [, setSuccess] = useState(false);
 
 async function request<T>(
   path: string,
