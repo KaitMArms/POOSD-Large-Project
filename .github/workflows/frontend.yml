@@ -77,3 +77,4 @@ jobs:
         run: |
           rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" build/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/
           ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "sudo systemctl restart nginx"
+          ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "cp /var/www/html/frontend/index.html /var/www/html/index.html"
