@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import EditUser from '../components/EditUser.tsx';
 
 // Light & Dark Mode Controller
 // This component page will load the users profile after login
@@ -16,7 +16,7 @@ function LoadUser()
 
     // If we're editing the user, then use a EditUser component instead of this one. 
     if (editing) {
-        return <EditUser onClose={() => setEditing(false)} />;
+        return <EditUser initial={ud} onClose={() => setEditing(false)} />;
     }
 
     // Button controller
@@ -41,6 +41,13 @@ function LoadUser()
             </div>
             <div id="settings-container">
                 <button id="mode-toggle">Toggle Page's Color Mode</button>
+                <label id='dev-check-container'>
+                    <input type="checkbox">
+                        <span id="checkmark"></span>
+                        <span id="label-checkbox">Toggle Dev User</span>
+                    </input>
+                </label>
+
             </div>
         </div>
         //Maybe put an if statement here for if a flag is positive user is developer and another section for dev realted stuff pops up

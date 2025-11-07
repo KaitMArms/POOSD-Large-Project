@@ -28,7 +28,7 @@ export interface ProfileUpdateResponse {
   user: ProfileUser;
 }
 
-export default function EditUser({initial, onClose}: {initial: ProfileUser; onClose () => void;}) {
+export default function EditUser({initial, onClose}: {initial: ProfileUser; onClose: () => void;}) {
   const [firstName, setFirstName] = useState(initial.firstName);
   const [lastName, setLastName] = useState(initial.lastName);
   const [username, setUsername] = useState(initial.username);
