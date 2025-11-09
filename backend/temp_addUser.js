@@ -60,6 +60,102 @@ const testUserGames = [
         name: "Terraria",
         status: 'completed',
         isLiked: true
+    },
+    {
+        id: 14593,
+        name: "Hollow Knight",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 130788,
+        name: "Necesse",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 325176,
+        name: "Little Rocket Lab",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
     }
 ];
 
