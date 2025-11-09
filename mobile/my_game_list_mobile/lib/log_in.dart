@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_game_list_mobile/password_collect.dart';
 import 'package:my_game_list_mobile/profile.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -26,29 +26,27 @@ class _LogInState extends State<LogIn>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF192642),
       body: Padding(
-      padding: EdgeInsets.fromLTRB(24, 70, 24, 24),
+      padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
+            shrinkWrap: true,
+            physics: AlwaysScrollableScrollPhysics(),
+          //mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Image(
+              image: AssetImage('assets/Mascot.png'),
+              fit: BoxFit.cover,
+            ),
+
+            SizedBox(height: 30),
+
             TextField(
               controller: username,
-              style: GoogleFonts.orbitron(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Username/Email",
-                labelStyle: GoogleFonts.orbitron(
-                  color: const Color.fromARGB(255, 243, 239, 239),
-                  fontWeight: FontWeight.bold,
-                ),
-                fillColor: Color(0xFF2047C0),
-                filled: true,
+                labelText: "Username",
               )
             ),
 
@@ -57,19 +55,9 @@ class _LogInState extends State<LogIn>{
             TextField(
               controller: password,
               obscureText: _obscure,
-              style: GoogleFonts.orbitron(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Password",
-                labelStyle: GoogleFonts.orbitron(
-                  color: const Color.fromARGB(255, 243, 239, 239),
-                  fontWeight: FontWeight.bold,
-                ),
-                fillColor: Color(0xFF2047C0),
-                filled: true,
                 suffixIcon: IconButton(
                     icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                     onPressed: (){
@@ -101,6 +89,17 @@ class _LogInState extends State<LogIn>{
                     );
               },
               child: Text("Log In"),
+            ),
+
+            SizedBox(height: 14),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) => const PasswordCollect())
+                    );
+              },
+              child: Text("Forgot Your Password?"),
             )
           ],
         )

@@ -1,35 +1,47 @@
 
 import 'package:flutter/material.dart';
-import 'package:my_game_list_mobile/future_log_in.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key, required String title});
+class NewPass extends StatefulWidget {
+  const NewPass({super.key});
 
   @override
-  State<SignUp> createState() => LogInUI();
+  State<NewPass> createState() => NewPassUI();
 
 }
 
-class LogInUI extends State<SignUp>  {
+class NewPassUI extends State<NewPass>  {
   /*
   we need to make something that:
   1. Moves the text boxes slightly down
   2. Puts the text fields in mild boxes instead
   3. First name, last name text boxes too
   */
+
+  final TextEditingController oldPass = TextEditingController();
+  final TextEditingController confirmOldPass = TextEditingController();
+  final TextEditingController newPass = TextEditingController();
+  final TextEditingController confirmNewPass = TextEditingController();
+  
+  @override
+  void dispose() {
+    oldPass.dispose();
+    newPass.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(24, 80, 24, 24),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 400),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.max,
+      body: Padding(
+        //make non-arbitrary, looks good but appears different on everyphone due to it being an assigned value
+        padding: EdgeInsets.fromLTRB(24, 10, 24, 24),
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            physics: AlwaysScrollableScrollPhysics(),
               children: [
-
-                Text("Welcome to PlayedIt!\nInsert your information below to join our ranks.", 
+                Text("Type in your old password and new password below.", 
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -38,55 +50,54 @@ class LogInUI extends State<SignUp>  {
                     color: Colors.deepPurpleAccent,
                   ),
                 ),
-                SizedBox(height: 16,),
+                SizedBox(height: 55,),
 
                 TextField(
+                  controller: oldPass,
                   decoration: InputDecoration(
-                    labelText: "First Name",
+                    filled: true,
+                    labelText: "Type Old Password",
                     border: OutlineInputBorder(),
                   ), 
                 ),
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: confirmOldPass,
                   decoration: InputDecoration(
-                    labelText: "Last Name",
+                    filled: true,
+                    labelText: "Confirm Old Password",
                     border: OutlineInputBorder(),
                   ), 
                 ),
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: newPass,
                   decoration: InputDecoration(
-                    labelText: "Email",
+                    filled: true,
+                    labelText: "Type New Password",
                     border: OutlineInputBorder(),
                   ), 
                 ),
                 SizedBox(height: 16,),
 
                 TextField(
+                  controller: confirmNewPass,
                   decoration: InputDecoration(
-                    labelText: "Username",
+                    filled: true,
+                    labelText: "Confirm New Password",
                     border: OutlineInputBorder(),
                   ), 
                 ),
-                SizedBox(height: 16,),
 
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    border: OutlineInputBorder(),
-                  ), 
-                ),
                 SizedBox(height: 16,),
                 ElevatedButton(
                   onPressed: () {
                     //NavigationBar to sign_up.dart
-                    Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const LogIn())
-                    );
+                    Navigator.popUntil(context, (route) => route.isFirst);
                   }, 
-                  child: Text("Log In"))
+                  child: Text("Back to Log-In"))
               ],
             )
           )
