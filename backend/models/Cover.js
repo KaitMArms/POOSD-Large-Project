@@ -14,4 +14,4 @@ const coverSchema = new mongoose.Schema({
 
 coverSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Cover', coverSchema);
+module.exports = coverSchema;

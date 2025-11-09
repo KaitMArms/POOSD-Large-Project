@@ -7,4 +7,4 @@ const gametypeModel = new mongoose.Schema({
 
 gametypeModel.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('GameTypes', gametypeModel);
+module.exports = gametypeModel;

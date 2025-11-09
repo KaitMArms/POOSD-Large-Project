@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const { gameConnection } = require('../db');
-
-const { Schema, Types } = mongoose;
+const UserSchema = require('./Users'); 
 
 // Mongoose schema to store the Game schema
 const gameSchema = new mongoose.Schema({
@@ -22,15 +20,19 @@ const gameSchema = new mongoose.Schema({
     franchise: {type: Number},
     // Stores what platform the game is available on
     platforms: [ {type: Number}],
-    rating: {type : Number, default: 0},
+    userRating: {type : Number, default: 0},
     themes: [ {type: Number}],
     language_supports: [{type: Number}],
     keywords: [{type: Number}],
     game_modes: [{type: Number}],
     game_type:{type: Number},
     player_perspectives:[{type: Number}],
-    developers: [{ type: Types.ObjectId, index: true }],
-    isDev: {type: Boolean, default: false, index: true}
+    developers: [{ type: mongoose.Schema.Types.ObjectID, index: true , ref: 'User'}],
+    isDev: {type: Boolean, default: false, index: true},
+    rating: {type: Number},
+    rating_count: {type: Number},
+    version_parent: {type: Number},
+    parent_game: {type: Number}
 }, 
 { 
     timestamps: true 
@@ -40,4 +42,4 @@ const gameSchema = new mongoose.Schema({
 gameSchema.index({id: 1}, {unique: true});
 
 // Creates the Game collection
-module.exports = gameConnection.models.game || gameConnection.model('Game', gameSchema);
+module.exports = gameSchema;

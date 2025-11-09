@@ -8,4 +8,4 @@ const franchiseSchema = new mongoose.Schema({
 
 franchiseSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Franchise', franchiseSchema);
+module.exports = franchiseSchema;

@@ -33,8 +33,8 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-build
-          path: frontend/build
+          name: frontend-dist
+          path: frontend/dist
           retention-days: 1
 
 
@@ -45,8 +45,8 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: frontend-build
-          path: build
+          name: frontend-dist
+          path: dist
 
       - name: Setup SSH key
         env:
@@ -75,5 +75,5 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" build/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" dist/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/frontend
           ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "sudo systemctl restart nginx"

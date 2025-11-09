@@ -1,6 +1,7 @@
 const User = require('../models/Users');
 const Game = require('../models/Games');
-const recommend = require('../services/recommend')
+const recommend = require('../services/recommend');
+const user_profile = require('../services/user_profile');
 
 function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

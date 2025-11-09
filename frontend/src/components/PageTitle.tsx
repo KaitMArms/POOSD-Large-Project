@@ -6,10 +6,10 @@ function PageTitle()
         <div id='title-container'>
             <h1 id="title">PlayedIt</h1>
             <nav>
-                <a href="">Profile</a>
-                <a href="">My Games</a>
-                <a href="">All Games</a>
-                <a href="">Sign Out</a>
+                <a href="frontend\src\pages\UserProfilePage.tsx">Profile</a>
+                <a href="frontend\src\pages\UserGamesPage.tsx">My Games</a>
+                <a href="frontend\src\pages\GlobalGamesPage.tsx">All Games</a>
+                <a href="frontend\src\pages\LoginPage.tsx">Sign Out</a>
             </nav>
         </div>
     );
