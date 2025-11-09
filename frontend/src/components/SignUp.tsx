@@ -1,4 +1,4 @@
-import "frontend\src\index.css"
+import "frontend/src/index.css"
 
 function SignUp()
 {
