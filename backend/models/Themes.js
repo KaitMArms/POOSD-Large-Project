@@ -8,4 +8,4 @@ const themeSchema = new mongoose.Schema({
 
 themeSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Themes', themeSchema);
+module.exports = themeSchema;

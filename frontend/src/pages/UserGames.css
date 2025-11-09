@@ -1,0 +1,44 @@
+.page-container {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vw;
+    padding: 2em;
+}
+
+.page-title{
+    height: 30;
+    font-size: 15;
+    color: #72139B;
+}
+
+.game-container{
+    background-color: var(--div-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    column-gap: 10px;
+    padding: 1em;
+}
+.game-column{
+    background-color: var(--div-color);
+    color: var(--text-color);
+    float: left;
+    overflow-y: scroll;
+    width: 16vw;
+    height: 50vw;
+}
+
+.column-title{
+    height: 20;
+    font-size: 10;
+    color: #72139B;
+}
+
+span{
+    background-color: var(--button-bg);
+  color: var(--button-text);
+  border-width: 2px;
+  border-color: #72139B;
+}

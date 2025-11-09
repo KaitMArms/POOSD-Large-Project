@@ -8,27 +8,45 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build-artifact: ${{ steps.upload.outputs.artifact_id }}
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20.16.0
 
       - name: Install dependencies
         run: |
             cd frontend
-            npm install
+            npm ci
+
+      - name: Build production files
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload build artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build
+          retention-days: 1
 
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: build
 
       - name: Setup SSH key
         env:
@@ -40,17 +58,23 @@ jobs:
           echo "${SSH_KEY}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 22 ${SSH_HOST} >> ~/.ssh/known_hosts
-          sudo apt-get install sshpass
+
+      - name: Prepare target directory permissions
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        run: |
+            ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+            sudo mkdir -p /var/www/html/frontend
+            sudo chown -R $USER:devs /var/www/html/frontend
+            sudo chmod -R 775 /var/www/html/frontend
+            EOF
 
       - name: Deploy to DigitalOcean Droplet
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
-          cd /var/www/html
-          git pull origin main
-          npm install
-          npm run build
-          systemctl restart nginx
-          EOF
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" build/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/
+          ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "sudo systemctl restart nginx"
+          ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "cp /var/www/html/frontend/index.html /var/www/html/index.html"

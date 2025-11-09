@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -11,15 +11,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
@@ -66,3 +57,54 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.page-container{
+  display: flex;
+  overflow-y: auto;
+  margin: 5vw;
+}
+
+nav{
+  border-radius: 4vw;
+  padding: 1em;
+  display: flex;
+  justify-content: space-around;
+}
+
+nav a{
+  font-size: 3vw;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  background-color: #2047C0;
+}
+
+nav a:hover{
+  background-color: hsl(225, 95%, 58%);
+}
+
+.title-container{
+  position: relative;
+  display: flex;
+}
+
+.title{
+  font: (put font here);
+  font-size: 10vm;
+}
+
+body[data-theme="light"] {
+  --bg-color: #dae1f1;
+  --text-color: black;
+  --div-color: #becbf4;
+  --button-bg: #2047c0;
+  --button-text: black;
+}
+
+body[data-theme="dark"] {
+  --bg-color: #192642;
+  --text-color: white;
+  --div-color: #0f2157;
+  --button-bg: #2047c0;
+  --button-text: white;
+}
+

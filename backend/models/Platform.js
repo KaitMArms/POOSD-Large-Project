@@ -8,4 +8,4 @@ const platformSchema = new mongoose.Schema({
 
 platformSchema.index({ id: 1 }, { unique: true });
 
-module.exports = mongoose.model('Platform', platformSchema);
+module.exports = platformSchema;
