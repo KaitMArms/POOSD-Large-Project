@@ -151,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
 */
 //imports Flutter's material design library (has Flutter's pre-built widgets): Scaffold, AppBar, Text, FloatingActionButton, etc.
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:my_game_list_mobile/log_in.dart';
 
 void main() {
@@ -165,9 +166,56 @@ class PlayedIt extends StatelessWidget {
    Widget build(BuildContext context) {
     //materialApp is defines the set up of our app (theme, routes, title, etc.)
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'PlayedIt',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+        fontFamily: GoogleFonts.orbitron().fontFamily,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Color(0xFFDAE1F1),
+        //text button fill colors -> light
+        inputDecorationTheme: InputDecorationTheme(
+            labelStyle: TextStyle(
+              color: Colors.black,
+              //fontSize: 16,
+              ),
+            fillColor: Color(0xFFbecbf4),
+            filled: true,
+        ),
+        
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(
+                fontSize: 16,
+              )
+            ),
+        ),
+        //text color -> dark
+        //text font -> orbitron
+      ),
+
+      darkTheme: ThemeData(
+        fontFamily: GoogleFonts.orbitron(
+          fontWeight: FontWeight.bold,
+        ).fontFamily,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Color(0xFF192642),
+        //text button fill colors -> dark
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(
+            color: const Color.fromARGB(255, 215, 215, 215),
+            //fontSize: 16,
+            ),
+          fillColor: Color(0xFF2047C0),
+          filled: true,
+        ),
+        //text color -> light
+        //text font -> orbitron
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(
+                fontSize: 16,
+              )
+            ),
+        ),
       ),
       home: const LogIn(), //home is a property that means that home is the first screen shown on start-up
     );
