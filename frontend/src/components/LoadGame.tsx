@@ -3,8 +3,7 @@ function LoadGame()
 {
     return(
         //code inside container
-        <div id="GameContainer">
-            
+        <div id="GameContainer">  
         </div>
     );
 };
