@@ -26,19 +26,19 @@ const testUserGames = [
         isLiked: true
     },
     {
-        id: 207026,
+        id: 427,
         name: "Final Fantasy VII",
         status: 'completed',
         isLiked: true
     },
     {
-        id: 115282,
+        id: 119374,
         name: "Final Fantasy VIII Remastered",
         status: 'completed',
         isLiked: true
     },
     {
-        id: 119374,
+        id: 119282,
         name: "Tetris 99",
         status: 'completed',
         isLiked: true
@@ -52,6 +52,102 @@ const testUserGames = [
     {
         id: 17000,
         name: "Stardew Valley",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 14593,
+        name: "Hollow Knight",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 130788,
+        name: "Necesse",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 325176,
+        name: "Little Rocket Lab",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 1879,
+        name: "Terraria",
         status: 'completed',
         isLiked: true
     },

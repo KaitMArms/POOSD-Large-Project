@@ -35,6 +35,9 @@ const ThemeSchema = require('./models/Themes');
 const UserSchema = require('./models/Users');
 const FranchiseSchema = require('./models/Franchise');
 const KeywordSchema = require('./models/KeyWords');
+const ICompaniesSchema = require('./models/ICompanies');
+const GameEngineSchema = require('./models/GameEngine');
+const CollectionsSchema = require('./models/Collections');
 
 const UserModel = userConnection.models.User || userConnection.model('User', UserSchema);
 const CounterModel = userConnection.models.Counter || userConnection.model('Counter', CounterSchema);
@@ -51,7 +54,9 @@ const LanguageModel = gameConnection.models.Language || gameConnection.model('La
 const PerspectiveModel = gameConnection.models.Perspective || gameConnection.model('Perspective', PerspectiveSchema);
 const ThemeModel = gameConnection.models.Theme || gameConnection.model('Theme', ThemeSchema);
 const KeywordModel = gameConnection.models.Keyword || gameConnection.model('Keyword', KeywordSchema);
-
+const ICompaniesModel = gameConnection.models.ICompanies || gameConnection.model('Theme', ICompaniesSchema);
+const GameEngineModel = gameConnection.models.GameEngine || gameConnection.model('Theme', GameEngineSchema);
+const CollectionsModel = gameConnection.models.Collections || gameConnection.model('Theme', CollectionsSchema);
 
 const connectionsReady = Promise.all([
 	userConnection.asPromise(),
@@ -79,5 +84,8 @@ module.exports = {
     LanguageModel,
     PerspectiveModel,
     ThemeModel,
-    KeywordModel
+    KeywordModel,
+    ICompaniesModel,
+    GameEngineModel,
+    CollectionsModel
 };
