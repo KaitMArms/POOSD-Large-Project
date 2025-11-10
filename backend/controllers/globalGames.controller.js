@@ -1,5 +1,5 @@
-const User = require('../models/Users');
-const Game = require('../models/Games');
+const { UserModel: User } = require('../db');
+const { GameModel: Game } = require('../db');
 const recommend = require('../services/recommend');
 const user_profile = require('../services/user_profile');
 

@@ -132,4 +132,6 @@ userSchema.pre('updateOne', async function(next) {
   }
 });
 
+userSchema.index({ _id: 1, 'userGames.id': 1 }, { unique: true });
+
 module.exports = userSchema;
