@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -10,6 +9,12 @@ class Profile extends StatefulWidget {
 
 }
 class _ProfileState extends State<Profile> {
+  int myIndex = 0;
+  List<Widget> widgetList = const [
+    Text("Explore", style: TextStyle(fontSize: 40)),
+    Text("Your Info", style: TextStyle(fontSize: 40)),
+    Text("For Later", style: TextStyle(fontSize: 40)),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +83,7 @@ class _ProfileState extends State<Profile> {
                   );
                 },),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 30),
               SizedBox(
                 height: 160,
                 child: ListView.separated(
@@ -126,7 +131,7 @@ class _ProfileState extends State<Profile> {
                   itemCount: profileCompletionCards.length,
                 ),
               ),
-              SizedBox(height: 35),
+              SizedBox(height: 30),
               ...List.generate(
                 customListTiles.length, 
               (index) {
@@ -152,13 +157,18 @@ class _ProfileState extends State<Profile> {
 
       //default Scaffold retains base colors of light mode = light blue, dark mode = dark blue
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
+        onTap: (index) {
+          setState(() {
+            myIndex = index;
+          });
+        },
+        currentIndex: myIndex,
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(MdiIcons.accountOutline),
-            activeIcon: Icon(MdiIcons.account),
-            label: "Explore"
+            icon: Icon(MdiIcons.viewListOutline),
+            activeIcon: Icon(MdiIcons.viewList),
+            label: "Explore",
           ),
 
           BottomNavigationBarItem(
