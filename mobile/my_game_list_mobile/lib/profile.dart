@@ -23,20 +23,67 @@ class _ProfileState extends State<Profile> {
           )
         ],
       ),
-
       body: ListView(
-        children: const [
+        children:  [
           Column(
-            children: const [
+            children: [
+              GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context, 
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top:Radius.circular(15))
+                    ),
+                    builder: (context) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: Icon(MdiIcons.imageMultipleOutline),
+                            title: Text("Choose From Gallery"),
+                            onTap:() {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                               SnackBar(content: Text("Gallery Import Coming Soon")),
+                              );
+                            },
+                          ),
+
+                          ListTile(
+                            leading: Icon(MdiIcons.robotHappyOutline),
+                            title: Text("Pick a Mascot Avatar"),
+                            onTap:() {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                               SnackBar(content: Text("Mascot Gallery Coming Soon")),
+                              );
+                            },
+                          ),
+
+                          ListTile(
+                            leading: Icon(MdiIcons.cameraOutline),
+                            title: Text("Take Upload"),
+                            onTap:() {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                               SnackBar(content: Text("Photo Upload Coming Soon")),
+                              );
+                            },
+                          ),
+                          Divider(),
+                        ],
+                      );
+                    },                  
+                  );
+                },
+              ),
               CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage("assets/Mascot.png"),
-
               ),
               SizedBox(height: 10),
               Text(
                 "Connect Name API from Log-In Here",
-
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
