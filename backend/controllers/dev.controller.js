@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const User = require('../models/Users');
-const Game = require('../models/Games'); 
-const GameCounter = require('../models/GameCounter'); 
+const { UserModel: User } = require('../db');
+const { GameModel: Game } = require('../db');
+const GameCounter = require('../models/GameCounter');
 
 async function getNextDevGameId() {
   const doc = await GameCounter.findOneAndUpdate(
@@ -9,7 +9,6 @@ async function getNextDevGameId() {
     { $inc: { sequence: 1 } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   );
-  // hard guard if a bad seed ever sneaks in
   if (doc.sequence < 1000000000) {
     const fixed = await GameCounter.findOneAndUpdate(
       { _id: 'devGameId' },
@@ -54,18 +53,32 @@ function parseFirstReleaseDate(val) {
   throw new Error('first_release_date is required (number unix seconds or ISO date string)');
 }
 
-
+/**
+ * GET /dev/games/view
+ * Returns ONLY the caller's dev games (isDev: true, developers includes caller).
+ * Optional name filter; supports limit/skip.
+ */
 exports.viewGames = async (req, res) => {
   try {
+    const callerSub = req.user?.sub;
+    if (!callerSub) return res.status(401).json({ error: 'Unauthorized' });
+
     const { name, limit = 20, skip = 0 } = req.query;
-    const q = name ? { name: new RegExp(name, 'i') } : {};
+    const q = {
+      isDev: true,
+      developers: new mongoose.Types.ObjectId(callerSub),
+      ...(name ? { name: new RegExp(String(name), 'i') } : {})
+    };
+
+    const lim = Math.min(Number(limit) || 20, 100);
+    const skp = Number(skip) || 0;
 
     const [games, total] = await Promise.all([
-      Game.find(q).sort({ updatedAt: -1 }).skip(Number(skip)).limit(Math.min(Number(limit), 100)),
+      Game.find(q).sort({ updatedAt: -1 }).skip(skp).limit(lim),
       Game.countDocuments(q),
     ]);
 
-    return res.status(200).json({ total, count: games.length, skip: Number(skip), limit: Number(limit), games });
+    return res.status(200).json({ total, count: games.length, skip: skp, limit: lim, games });
   } catch (e) {
     console.error('Database Search Error:', e);
     return res.status(500).json({ error: e.toString() });
@@ -86,7 +99,7 @@ exports.addGame = async (req, res) => {
       platforms,                // REQUIRED (non-empty array of numbers)
       genres,                   // REQUIRED (non-empty array of numbers)
       slug,                     // optional (auto from name if omitted)
-      cover,                    // optional (number) — keep as-is for now
+      cover,                    // optional (number)
       developersUsernames = []  // optional extra devs
     } = req.body;
 
@@ -192,7 +205,8 @@ exports.addGame = async (req, res) => {
             id: numericId,
             name,
             status: 'to-play',
-            isLiked: false
+            isLiked: false,
+            isDeveloperGame: true,
           }
         }
       },
@@ -207,8 +221,6 @@ exports.addGame = async (req, res) => {
   }
 };
 
-
-
 // PATCH /dev/games/:id   body: { name?, addDevelopersUsernames?:[], removeDevelopersUsernames?:[] }
 exports.editGame = async (req, res) => {
   try {
@@ -219,13 +231,17 @@ exports.editGame = async (req, res) => {
     if (!game) return res.status(404).json({ error: 'Game not found' });
 
     // Only listed developers can edit
-    if (!game.developers.some(d => d.equals(req.user._id))) {
+    const callerObjId = new mongoose.Types.ObjectId(req.user.sub);
+    if (!game.developers.some(d => d.equals(callerObjId))) {
       return res.status(403).json({ error: 'Not a developer of this game' });
     }
 
     const { name, addDevelopersUsernames = [], removeDevelopersUsernames = [] } = req.body;
     const update = {};
-    if (name) update.name = name;
+    if (name && name.trim() !== game.name.trim()) {
+      update.name = name.trim();
+      update.slug = slugify(name);
+    }
 
     // Add/remove developers (role=dev enforced)
     if (addDevelopersUsernames.length || removeDevelopersUsernames.length) {
@@ -257,11 +273,19 @@ exports.deleteGame = async (req, res) => {
     const game = await Game.findOne({ id });
     if (!game) return res.status(404).json({ error: 'Game not found' });
 
-    if (!game.developers.some(d => d.equals(req.user._id))) {
+    const callerObjId = new mongoose.Types.ObjectId(req.user.sub);
+    if (!game.developers.some(d => d.equals(callerObjId))) {
       return res.status(403).json({ error: 'Not a developer of this game' });
     }
 
     await game.deleteOne();
+
+    // Also remove from all users' userGames
+    await User.updateMany(
+      { 'userGames.id': id },
+      { $pull: { userGames: { id } } }
+    );
+
     return res.status(200).json({ message: 'Game deleted' });
   } catch (e) {
     console.error('Database Deletion Error:', e);
@@ -269,4 +293,38 @@ exports.deleteGame = async (req, res) => {
   }
 };
 
-exports.search = async (req, res) => {};
+/**
+ * GET /dev/games/search?name=foo&limit=20&skip=0
+ * Requires 'name' (non-empty). Searches ONLY within caller's dev games.
+ */
+exports.search = async (req, res) => {
+  try {
+    const callerSub = req.user?.sub;
+    if (!callerSub) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { name, limit = 20, skip = 0 } = req.query;
+    if (!name || !String(name).trim()) {
+      return res.status(400).json({ error: 'name is required' });
+    }
+
+    const regex = new RegExp(String(name).trim(), 'i');
+    const q = {
+      isDev: true,
+      developers: new mongoose.Types.ObjectId(callerSub),
+      name: regex
+    };
+
+    const lim = Math.min(Number(limit) || 20, 100);
+    const skp = Number(skip) || 0;
+
+    const [games, total] = await Promise.all([
+      Game.find(q).sort({ updatedAt: -1 }).skip(skp).limit(lim),
+      Game.countDocuments(q),
+    ]);
+
+    return res.status(200).json({ total, count: games.length, skip: skp, limit: lim, games });
+  } catch (e) {
+    console.error('Dev search error:', e);
+    return res.status(500).json({ error: e.toString() });
+  }
+};

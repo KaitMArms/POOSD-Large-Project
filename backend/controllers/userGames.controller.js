@@ -1,5 +1,4 @@
-const User = require('../models/Users');
-
+const { UserModel: User } = require('../db');
 
 exports.viewUserGames = async (req, res) => {
   try {
@@ -157,7 +156,7 @@ exports.editGameInfo = async (req, res) => {
     const update = {};
     if (status !== undefined)  update['userGames.$.status']  = status;
     if (isLiked !== undefined) update['userGames.$.isLiked'] = !!isLiked;
-    if (rating !== undefined)  update['userGames.$.rating']  = Number(rating);
+    if (rating !== undefined)  update['userGames.$.userRating']  = Number(rating);
     if (review !== undefined)  update['userGames.$.review']  = review;
 
     const updatedDoc = await User.findOneAndUpdate(
