@@ -23,6 +23,32 @@ class _ProfileState extends State<Profile> {
           )
         ],
       ),
+
+      body: ListView(
+        children: const [
+          Column(
+            children: const [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage("assets/Mascot.png"),
+
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Connect Name API from Log-In Here",
+
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Connect Number of Games Committed Here (Possibly if Not for Your Data Part, either that or email API too)"
+              ),
+            ],
+          )
+        ],
+      ),
       //default Scaffold retains base colors of light mode = light blue, dark mode = dark blue
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 3,
