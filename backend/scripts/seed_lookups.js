@@ -14,6 +14,11 @@ const LanguageModel = require('../models/Languages');
 const TheseModel = require('../models/Themes');
 const TypeModel = require('../models/GameType');
 const PerspectiveModel = require('../models/Perspective');
+const CollectionsModel = require('../models/Collections');
+const GameEngineModel = require('../models/GameEngine');
+const ICompaniesModel = require('../models/ICompanies');
+
+
 
 // Authenticates with twitch 
 async function getAccessToken() {
@@ -124,6 +129,10 @@ async function run() {
     await seedData('themes', TheseModel, accessToken);
     await seedData('game_types', TypeModel, accessToken);
     await seedData('player_perspectives', PerspectiveModel, accessToken);
+    await seedData('involved_companies', ICompaniesModel, accessToken);
+    await seedData('collections', CollectionsModel, accessToken);
+    await seedData('game_engines', GameEngineModel, accessToken);
+
 
     await mongoose.connection.close();
     console.log("\nSeeding complete. Mongo connection closed.");

@@ -30,7 +30,13 @@ const gameSchema = new mongoose.Schema({
     rating: {type: Number},
     rating_count: {type: Number},
     version_parent: {type: Number},
-    parent_game: {type: Number}
+    parent_game: {type: Number},
+    involved_companies: [{type: Number}],
+    game_engines: [{type: Number}],
+    collections: [{type: Number}],
+    first_release_date: {type: Timestamp},
+    storyline: {type: String}, 
+    summary: {type: String}
 }, 
 { 
     timestamps: true 
