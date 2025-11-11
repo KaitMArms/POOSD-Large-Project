@@ -63,10 +63,10 @@ function SignUp()
                         {showPassword ? "👁️" : "👁️‍🗨️"}
                     </button>
                 </div>
-                <input type="submit" id="loginButton" className="buttons" value = "Do It"
+                <input type="submit" id="loginButton" className="buttons" value = "Sign Up"
                 onClick={doSignUp} />
                 <span id="sign-up-result"></span>
-                <p className="login-link"> Already have an account? <Link to="/">Log In</Link></p>
+                <p className="login-link"> Already have an account? <br /><Link to="/">Log In</Link></p>
             </div>
         </div>
     );
