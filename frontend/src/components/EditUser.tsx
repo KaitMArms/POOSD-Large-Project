@@ -113,16 +113,16 @@ async function request<T>(
     return (
         <form onSubmit={handleSubmit}>
             <div id="signUpDiv">
-            <span id="inner-title">Edit User Details</span><br />
-            <input type="text" id="avatarURL" placeholder="Avatar URL" onChange={(e) => setAvatarUrl(e.target.value)}/><br />
-            <input type="text" id="loginName" placeholder="Username" onChange={(e) => setUsername(e.target.value)}/><br />  
-            <input type="text" id="firstName" placeholder="First Name" onChange={(e) => setFirstName(e.target.value)}/><br />
-            <input type="text" id="lastName" placeholder="Last Name" onChange={(e) => setLastName(e.target.value)}/><br />
-            <input type="text" id="bio" placeholder="I am a gamer!" onChange={(e) => setBio(e.target.value)}/><br />
+              <span id="inner-title">Edit User Details</span><br />
+              <input type="text" id="avatarURL" placeholder="Avatar URL" onChange={(e) => setAvatarUrl(e.target.value)}/><br />
+              <input type="text" id="loginName" placeholder="Username" onChange={(e) => setUsername(e.target.value)}/><br />  
+              <input type="text" id="firstName" placeholder="First Name" onChange={(e) => setFirstName(e.target.value)}/><br />
+              <input type="text" id="lastName" placeholder="Last Name" onChange={(e) => setLastName(e.target.value)}/><br />
+              <input type="text" id="bio" placeholder="I am a gamer!" onChange={(e) => setBio(e.target.value)}/><br />
             </div>
             <div id="signUpButtonsDiv">
-            <input type="submit" id="submitButton" className="buttons" value = "Submit" onClick={onClose} />
-            <input type="Cancel" id="cancelButton" className="buttons" value = "Cancel" onClick={onClose} /> // todo: make this red or some other color that's good for indicating that it's 
+              <input type="submit" id="submitButton" className="buttons" value = "Submit" onClick={onClose} />
+              <input type="Cancel" id="cancelButton" className="buttons" value = "Cancel" onClick={onClose} /> // todo: make this red or some other color that's good for indicating that it's 
             </div>
         </form>
     );
