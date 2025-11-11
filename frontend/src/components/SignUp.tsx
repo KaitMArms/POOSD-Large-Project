@@ -41,6 +41,7 @@ function SignUp()
 
     // put function for sign up here that calls login in after signup okayed by server
     return(
+        <body>
         <div id="page-container">
             <div id="sign-up-container">
                 <span id="inner-title">Welcome to PlayedIt! <br>Insert your information below to join our ranks.</br></span><br />
@@ -68,6 +69,7 @@ function SignUp()
                 <p className="login-link"> Already have an account? <Link to="/">Log In</Link></p>
             </div>
         </div>
+        </body>
     );
 };
 export default SignUp;
