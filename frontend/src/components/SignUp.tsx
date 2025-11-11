@@ -24,8 +24,7 @@ function SignUp()
 
             if (response.ok) {
             console.log('Sign up successful:', data);
-            // ✅ Redirect to login page after success
-            window.location.href = "/";
+            window.location.href = "/verify-email";
             } else {
             console.error('Sign up failed:', data.message);
             const result = document.getElementById("sign-up-result");
@@ -35,7 +34,7 @@ function SignUp()
         } catch (error) {
             console.error('An error occurred:', error);
             const result = document.getElementById("sign-up-result");
-            if (result) result.innerText = "Server error — try again later.";
+            if (result) result.innerText = "\nServer error — try again later.";
         }
     }
 
