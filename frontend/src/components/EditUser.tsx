@@ -122,7 +122,7 @@ async function request<T>(
             </div>
             <div id="signUpButtonsDiv">
               <input type="submit" id="submitButton" className="buttons" value = "Submit" onClick={onClose} />
-              <input type="Cancel" id="cancelButton" className="buttons" value = "Cancel" onClick={onClose} /> // todo: make this red or some other color that's good for indicating that it's 
+              <input type="Cancel" id="cancelButton" className="buttons" value = "Cancel" onClick={onClose} /> 
             </div>
         </form>
     );
