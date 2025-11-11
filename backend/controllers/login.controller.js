@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { UserModel: User } = require('../db');
 const generateOTP = require('../middleware/generateOTP');
+const { sendEmail } = require('../services/sendEmail');
 
 const JWT_EXPIRES = '1d';
 
@@ -42,19 +44,22 @@ exports.register = async (req, res) => {
     });
 
     // Issue OTP
-    //const otp = generateOTP(6);
-    //const otpHash = await bcrypt.hash(otp, 10);
-    //const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const otp = generateOTP(6);
+    const otpHash = await bcrypt.hash(otp, 10);
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    //await User.findByIdAndUpdate(user._id, { $set: { otpHash, otpExpiresAt } });
+    await User.findByIdAndUpdate(user._id, { $set: { otpHash, otpExpiresAt } });
 
-    // TODO: send `otp` to user's email here (SendGrid, SES, etc.)
-    // e.g., await sendEmail({ to: user.email, subject: 'Your code', text: `Code: ${otp}` });
+    // send `otp` to user's email here
+    await sendEmail({
+      to: user.email,
+      subject: 'Your verification code',
+      text: `Your code is ${otp}. It expires in 5 minutes.`,
+      html: `<p>Your verification code is: <b>${otp}</b></p><p>This code expires in 5 minutes.</p>`
+    });
 
     return res.status(201).json({
       message: 'Registration started. We emailed you a 6-digit code to verify your email.',
-      // For development you might return otp, but DO NOT in prod:
-      // devCode: otp
     });
   } catch (err) {
     if (err?.code === 11000) {
@@ -79,9 +84,9 @@ exports.login = async (req, res) => {
     const ok = await user.checkPassword(password);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials.' });
 
-    //if (!user.emailVerified) {
-      //return res.status(403).json({ message: 'Please verify your email before logging in.' });
-    //}
+    if (!user.emailVerified) {
+      return res.status(403).json({ message: 'Please verify your email before logging in.' });
+    }
 
     const token = signToken(user);
     return res.status(200).json({ token, user: user.toJSON() });
