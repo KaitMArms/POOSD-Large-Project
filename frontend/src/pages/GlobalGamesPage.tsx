@@ -2,6 +2,8 @@
 import PageTitle from '../components/PageTitle.tsx';
 import LoadGlobalGame from '../components/GlobalGame.tsx';
 import "./GlobalGames.css"
+import "../index.css";
+
 const GlobalGamesPage = () =>
 {
     return(

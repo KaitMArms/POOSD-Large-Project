@@ -42,12 +42,16 @@ async function request<T>(
   path: string,
   opts: RequestInit = {}
 ): Promise<T> {
+  const token = localStorage.getItem('token');
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(opts.headers as Record<string, string> || {}),
   };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
-  const res = await fetch(`${path}`, {
+  const res = await fetch(`http://localhost:8080/api${path}`, {
     ...opts,
     headers,
   });
@@ -74,7 +78,7 @@ async function request<T>(
     payload: ProfileUpdateRequest
   ): Promise<ProfileUpdateResponse> {
     return request<ProfileUpdateResponse>("/user/profile", {
-      method: "PUT",
+      method: "PATCH",
       body: JSON.stringify(payload),
     });
   }

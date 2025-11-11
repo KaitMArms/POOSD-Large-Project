@@ -2,7 +2,9 @@
 // Sections: Completed, In Progress, Dropped, To Play
 import PageTitle from '../components/PageTitle.tsx';
 import LoadUserGames from '../components/LoadUserGames.tsx';
-import "./UserGames.css"
+import "./UserGames.css";
+import "../index.css";
+
 const UserGamesPage = () =>
 {
     return(
