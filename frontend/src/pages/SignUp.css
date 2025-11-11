@@ -1,19 +1,24 @@
 .page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; 
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: 100vw;
-  padding: 2em;
+  padding: 2rem;
 }
 
 .sign-up-container{
-  position: relative;
+  max-width: 350px;
+  width: 90%;
+  background-color: var(--div-color);
+  border-radius: 16px;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 2em;
-  background-color: var(--div-color);
+  gap: 1.25rem;
 }
 
 .sign-up-result{
@@ -37,9 +42,60 @@ input{
   border-color: #72139B;
 }
 
-.loginButton{
+.password-field {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 3rem;
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--button-text);
+  padding: 0;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+
+.toggle-eye:hover {
+  opacity: 0.7;
+}
+
+.signupButton {
+  width: 100%;
+  padding: 0.75rem;
   background-color: var(--button-bg);
   color: var(--button-text);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  border-radius: 50px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.signupButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+}
+
+
+.login-link a {
+  color: #72139B;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
 }
