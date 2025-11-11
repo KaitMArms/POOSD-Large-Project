@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_game_list_mobile/main_navigation.dart';
 import 'package:my_game_list_mobile/password_collect.dart';
-import 'package:my_game_list_mobile/profile.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
 
 class LogIn extends StatefulWidget {
@@ -85,7 +85,7 @@ class _LogInState extends State<LogIn>{
             ElevatedButton(
               onPressed: () {
                 Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const Profile())
+                    MaterialPageRoute(builder: (context) => const MainNavigation())
                     );
               },
               child: Text("Log In"),

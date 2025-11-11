@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_game_list_mobile/log_out.dart';
 class Profile extends StatefulWidget {
   const Profile({super.key});
 
@@ -19,6 +20,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         title: const Text("Profile"),
@@ -85,7 +87,7 @@ class _ProfileState extends State<Profile> {
               ),
               const SizedBox(height: 30),
               SizedBox(
-                height: 160,
+                height: 170,
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
@@ -99,6 +101,7 @@ class _ProfileState extends State<Profile> {
                         child: Padding(
                           padding: const EdgeInsets.all(15.0),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Icon(
                                 card.icon,
@@ -145,6 +148,13 @@ class _ProfileState extends State<Profile> {
                       title: Text(tile.title),
                       leading: Icon(tile.icon),
                       trailing: Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:(context) => LogOut(),
+                        ));
+                      },
                     ),
                   ),
                 );
@@ -156,40 +166,6 @@ class _ProfileState extends State<Profile> {
       ),
 
       //default Scaffold retains base colors of light mode = light blue, dark mode = dark blue
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          setState(() {
-            myIndex = index;
-          });
-        },
-        currentIndex: myIndex,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.viewListOutline),
-            activeIcon: Icon(MdiIcons.viewList),
-            label: "Explore",
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.chartPieOutline),
-            activeIcon: Icon(MdiIcons.chartPie),
-            label: "Your Info",
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.lockOutline),
-            activeIcon: Icon(MdiIcons.lock),
-            label: "For Later"
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.accountOutline),
-            activeIcon: Icon(MdiIcons.account),
-            label: "Profile"
-          ),
-        ]
-      ),
     );
   }
 }
@@ -219,6 +195,18 @@ List<ProfileCompletionCard> profileCompletionCards = [
   ProfileCompletionCard(
     title: "Add Your Skills",
     buttonText: "Add",
+    icon: CupertinoIcons.square_list,
+  ),
+
+  ProfileCompletionCard(
+    title: "Forgettabooutit",
+    buttonText: "Ten",
+    icon: CupertinoIcons.square_list,
+  ),
+
+  ProfileCompletionCard(
+    title: "Who Want Some",
+    buttonText: "Nine",
     icon: CupertinoIcons.square_list,
   ),
 ];
