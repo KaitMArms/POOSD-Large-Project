@@ -11,6 +11,20 @@ body {
   font-family: 'Orbitron', sans-serif;
 }
 
+body[data-theme="dark"] {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.page-container {
+  background: var(--bg-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 nav{
   border-radius: 4vw;
   padding: 1em;
