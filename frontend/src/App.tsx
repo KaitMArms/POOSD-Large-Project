@@ -6,6 +6,7 @@ import VerifyEmailPage from "./pages/VerifyEmailPage.tsx";
 import UserProfilePage from './pages/UserProfilePage.tsx';
 import GlobalGamesPage from './pages/GlobalGamesPage.tsx';
 import UserGamesPage from './pages/UserGamesPage.tsx';
+import GamePage from "./pages/GamePage.tsx";
 function App()
 {
   return (
@@ -17,6 +18,7 @@ function App()
         <Route path="/profile" element={<UserProfilePage />}/>
         <Route path="/all-games" element={<GlobalGamesPage />}/>
         <Route path="/my-games" element={<UserGamesPage />}/>
+        <Route path="/game/:id" element={<GamePage />} />
       </Routes>
     </Router>
   );
