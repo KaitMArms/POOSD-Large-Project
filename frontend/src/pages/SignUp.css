@@ -54,6 +54,10 @@
   border: none !important;
   box-shadow: none !important;
   text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
     0 0 4px rgba(162, 89, 255, 0.9),
     0 0 10px rgba(162, 89, 255, 0.6),
     0 0 16px rgba(162, 89, 255, 0.4);
@@ -72,21 +76,29 @@ input{
 }
 
 .password-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
   position: relative;
 }
 
+.password-field input {
+  flex: 1;
+  padding-right: 42px; 
+}
+
 .toggle-eye {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
   background: none;
   border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 0 10px;
+  padding: 0;
   display: flex;
   align-items: center;
   font-size: 1.2rem;
-  filter: none !important; 
-  box-shadow: none !important;
 }
+
 .signupButton {
   width: 100%;
   padding: 0.9em;
@@ -109,17 +121,22 @@ input{
   color: #72139B;
   font-weight: bold;
   text-decoration: none;
-  text-shadow:
-    0 0 6px rgba(179, 107, 255, 0.9),
-    0 0 12px rgba(179, 107, 255, 0.6);
   transition: 0.25s ease;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }
 
 .login-link a:hover {
   text-decoration: underline;
-  text-shadow:
-    0 0 10px rgba(208, 147, 255, 1),
-    0 0 20px rgba(208, 147, 255, 0.8),
-    0 0 28px rgba(208, 147, 255, 0.6);
   transform: scale(1.04);
+  text-shadow:
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }
