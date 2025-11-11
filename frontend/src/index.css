@@ -76,6 +76,7 @@ nav a{
   padding: 0.5em 1em;
   border-radius: 5px;
   background-color: #2047C0;
+  text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
 nav a:hover{
@@ -88,14 +89,15 @@ nav a:hover{
 }
 
 .title{
-  font: (put font here);
-  font-size: 10vm;
+  font-size: 20vw;
+  color: #72139B;
+  text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
 body[data-theme="light"] {
   --bg-color: #dae1f1;
   --text-color: black;
-  --div-color: #becbf4;
+  --div-color: #dae1f1;
   --button-bg: #2047c0;
   --button-text: black;
 }
@@ -103,7 +105,7 @@ body[data-theme="light"] {
 body[data-theme="dark"] {
   --bg-color: #192642;
   --text-color: white;
-  --div-color: #0f2157;
+  --div-color: #192642;
   --button-bg: #2047c0;
   --button-text: white;
 }

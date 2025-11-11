@@ -33,7 +33,9 @@ function Login()
 
     return(
         <div id="page-container">
-            <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"></img>
+            <div>
+                <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"></img>
+            </div>
             <br></br>
             <div id="login-div">
                 <span id="inner-title">Welcome Back to PlayedIt!</span><br />
