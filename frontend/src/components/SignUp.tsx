@@ -65,7 +65,7 @@ function SignUp()
                 <input type="submit" id="loginButton" className="buttons" value = "Do It"
                 onClick={doSignUp} />
                 <span id="sign-up-result"></span>
-                <p className="login-link"> Already have an account? <Link to="/">Log In</Link></p>
+                <p className="login-link"> Already have an account? <br></br> <Link to="/">Log In</Link></p>
             </div>
         </div>
     );

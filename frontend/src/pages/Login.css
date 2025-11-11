@@ -10,8 +10,8 @@
 }
 
 img {
-  width: 40vw;
-  max-width: 250px;
+  width: 60vw;
+  max-width: 460px;
   height: auto;
   margin-bottom: 2vh;
 }
@@ -51,6 +51,16 @@ img {
   border-radius: 10px;
 }
 
+#inner-title {
+  font-size: 5.3rem;
+  font-weight: 600;
+  color: #72139B;
+  margin-bottom: 12px;
+  text-align: center;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 
 #loginButton:hover {
   box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
@@ -62,14 +72,16 @@ img {
 }
 
 .toggle-eye {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
   background: none;
   border: none;
+  outline: none;
   cursor: pointer;
-  font-size: 1.1rem;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  filter: none !important; 
+  box-shadow: none !important;
 }
 
 .page-container img {
