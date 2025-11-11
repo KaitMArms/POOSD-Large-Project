@@ -1,9 +1,37 @@
 function SignUp()
 {
-    function doLogin(event:any) : void
+    async function doSignUp(event:any) : Promise<void>
     {
         event.preventDefault();
-        alert('doIt()');
+        
+        const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
+        const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
+        const emailInput = document.getElementById('email') as HTMLInputElement;
+        const loginPasswordInput = document.getElementById('loginPassword') as HTMLInputElement;
+
+        const firstName = firstNameInput.value;
+        const lastName = lastNameInput.value;
+        const email = emailInput.value;
+        const password = loginPasswordInput.value;
+
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ firstName, lastName, email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log('Sign up successful:', data);
+                // maybe redirect to login page
+            } else {
+                console.error('Sign up failed:', data.message);
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
     }
 
     // put function for sign up here that calls login in after signup okayed by server
@@ -16,7 +44,7 @@ function SignUp()
                 <input type="text" id="email" placeholder="eMail" /><br />
                 <input type="password" id="loginPassword" placeholder="Password" /><br />
                 <input type="submit" id="loginButton" className="buttons" value = "Do It"
-                onClick={doLogin} />
+                onClick={doSignUp} />
                 <span id="sign-up-result"></span>
             </div>
         </div>
