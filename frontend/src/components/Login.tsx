@@ -28,6 +28,7 @@ function Login()
     }
 
     return(
+        <body>
         <div id="page-container">
             <div>
                 <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"></img>
@@ -56,6 +57,7 @@ function Login()
                 <p className="signup-link">New to PlayedIt? <Link to="/signup">Sign Up</Link></p>
             </div>
         </div>
+        </body>
     );
 };
 export default Login;

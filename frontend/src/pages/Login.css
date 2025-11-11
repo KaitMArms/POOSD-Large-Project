@@ -45,20 +45,21 @@ input {
   text-align: center;
 }
 
-.loginButton {
-  width: 100%;
-  padding: 0.9em;
-  margin-top: 1em;
-  border-radius: 10px;
+#loginButton {
   background-color: var(--button-bg);
   color: var(--button-text);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   cursor: pointer;
+  transition: 0.25s;
+}
+
+
+#loginButton:hover {
+  box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
+  transform: scale(1.03);
 }
 
 .password-field {
   position: relative;
-  width: 100%;
 }
 
 .toggle-eye {
@@ -69,8 +70,17 @@ input {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.4rem;
-  color: var(--button-text);
+  font-size: 1.1rem;
+}
+
+.page-container img {
+  filter: drop-shadow(0 0 12px rgba(162, 119, 255, 0.45));
+  transition: 0.25s;
+}
+
+.page-container img:hover {
+  transform: scale(1.03);
+  filter: drop-shadow(0 0 20px rgba(162, 119, 255, 0.65));
 }
 
 .signup-link a {
