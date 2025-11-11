@@ -76,6 +76,7 @@ nav a{
   padding: 0.5em 1em;
   border-radius: 5px;
   background-color: #2047C0;
+  text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
 nav a:hover{
@@ -88,8 +89,9 @@ nav a:hover{
 }
 
 .title{
-  font: (put font here);
-  font-size: 10vm;
+  font-size: 20vw;
+  color: #72139B;
+  text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
 body[data-theme="light"] {
