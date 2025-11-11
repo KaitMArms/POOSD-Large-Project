@@ -43,7 +43,7 @@ function SignUp()
     return(
         <div id="page-container">
             <div id="sign-up-container">
-                <span id="inner-title">Welcome to PlayedIt! <br>Insert your information below to join our ranks.</br></span><br />
+                <span id="inner-title">Welcome to PlayedIt! <br />Insert your information below to join our ranks.</span><br />
                 <input type="text" id="firstName" placeholder="First Name"/><br />
                 <input type="text" id="lastName" placeholder="Last Name"/><br />
                 <input type="text" id="email" placeholder="eMail" /><br />
