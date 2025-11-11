@@ -1,21 +1,22 @@
 .page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100vh;
-  background-color: var(--bg-color);
-  padding-top: 3vh;
+  padding-top: 4vh;   
 }
 
-#sign-up-container {
+.sign-up-container{
   background-color: var(--div-color);
-  width: 70%;
-  max-width: 480px;
-  padding: 1.4rem;
-  border-radius: 16px;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 80vw;
+  max-width: 350px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   text-align: center;
-  box-shadow: 0 0 12px rgba(162, 119, 255, 0.35);
 }
 
 #sign-up-container input[type="text"],
@@ -43,9 +44,16 @@
   border-radius: 10px;
 }
 
-#loginButton:hover {
-  box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
-  transform: scale(1.03);
+input{
+  width: 100%;
+  padding: 0.8em;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  border: 2px solid #72139B;
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .password-field {

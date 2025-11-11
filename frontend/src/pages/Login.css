@@ -1,35 +1,43 @@
 .page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100vh;
-  background-color: var(--bg-color);
-  padding-top: 3vh;
+  padding-top: 4vh;
 }
 
-#login-container {
+img {
+  width: 40vw;
+  max-width: 250px;
+  height: auto;
+  margin-bottom: 2vh;
+}
+
+.login-container {
   background-color: var(--div-color);
-  width: 70%;
-  max-width: 480px;
-  padding: 1.4rem;
-  border-radius: 16px;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 80vw;
+  max-width: 350px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   text-align: center;
-  box-shadow: 0 0 12px rgba(162, 119, 255, 0.35);
 }
 
 #login-container input[type="text"],
 #login-container input[type="password"],
 #login-container input[type="email"] {
   width: 100%;
-  padding: 10px;
-  margin: 7px 0;
-  border-radius: 12px;
-  border: 2px solid var(--button-bg);
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  padding: 0.8em;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  border: 2px solid #72139B;
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  box-sizing: border-box;
   text-align: center;
-  font-size: 1rem;
 }
 
 #login-container input[type="submit"] {
