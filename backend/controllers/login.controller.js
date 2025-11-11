@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { UserModel: User } = require('../db');
 const generateOTP = require('../middleware/generateOTP');
+const { sendEmail } = require('../services/sendEmail');
 
 const JWT_EXPIRES = '1d';
 
@@ -24,37 +26,27 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required.' });
     }
 
+    const normEmail = String(email).toLowerCase().trim();
+    const normUser  = String(username).toLowerCase().trim();
+
     const [emailTaken, usernameTaken] = await Promise.all([
-      User.exists({ email: String(email).toLowerCase().trim() }),
-      User.exists({ username: String(username).toLowerCase().trim() })
+      User.exists({ email: normEmail }),
+      User.exists({ username: normUser }),
     ]);
     if (emailTaken)    return res.status(409).json({ message: 'Email already in use.' });
     if (usernameTaken) return res.status(409).json({ message: 'Username already taken.' });
 
-    // Create the user first (unverified)
-    const user = await User.create({
+    await User.create({
       firstName: String(firstName).trim(),
       lastName:  String(lastName).trim(),
-      email:     String(email).toLowerCase().trim(),
-      username:  String(username).toLowerCase().trim(),
+      email:     normEmail,
+      username:  normUser,
       password,
-      emailVerified: false
+      emailVerified: false,    
     });
 
-    // Issue OTP
-    //const otp = generateOTP(6);
-    //const otpHash = await bcrypt.hash(otp, 10);
-    //const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
-
-    //await User.findByIdAndUpdate(user._id, { $set: { otpHash, otpExpiresAt } });
-
-    // TODO: send `otp` to user's email here (SendGrid, SES, etc.)
-    // e.g., await sendEmail({ to: user.email, subject: 'Your code', text: `Code: ${otp}` });
-
     return res.status(201).json({
-      message: 'Registration started. We emailed you a 6-digit code to verify your email.',
-      // For development you might return otp, but DO NOT in prod:
-      // devCode: otp
+      message: 'Account created. Please log in to verify your email.',
     });
   } catch (err) {
     if (err?.code === 11000) {
@@ -73,16 +65,52 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required.' });
 
     const normalizedEmail = String(email).toLowerCase().trim();
-    const user = await User.findOne({ email: normalizedEmail }).select('+password emailVerified role username userID');
+    const user = await User.findOne({ email: normalizedEmail })
+      .select('+password emailVerified role username userID otpLastSentAt');
     if (!user) return res.status(401).json({ message: 'Invalid credentials.' });
 
     const ok = await user.checkPassword(password);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials.' });
 
-    //if (!user.emailVerified) {
-      //return res.status(403).json({ message: 'Please verify your email before logging in.' });
-    //}
+    if (!user.emailVerified) {
+      // Generate & send OTP here (with cooldown)
+      const now = Date.now();
+      const cooldown = 30 * 1000; // 30s between sends
+      let resent = false, wait = 0;
 
+      if (!user.otpLastSentAt || (now - user.otpLastSentAt.getTime()) >= cooldown) {
+        const otp = generateOTP(6);
+        const otpHash = await bcrypt.hash(otp, 10);
+        const otpExpiresAt = new Date(now + 5 * 60 * 1000); // 5 min
+
+        await User.updateOne(
+          { _id: user._id },
+          { $set: { otpHash, otpExpiresAt, otpLastSentAt: new Date(now), otpAttempts: 0 } }
+        );
+
+        // fire-and-forget email
+        sendEmail({
+          to: user.email,
+          subject: 'Your verification code',
+          text: `Your code is ${otp}. It expires in 5 minutes.`,
+          html: `<p>Your verification code is: <b>${otp}</b></p><p>This code expires in 5 minutes.</p>`
+        }).catch(err => console.error('sendEmail error:', err));
+
+        resent = true;
+      } else {
+        wait = Math.ceil((cooldown - (now - user.otpLastSentAt.getTime())) / 1000);
+      }
+
+      return res.status(403).json({
+        code: 'EMAIL_UNVERIFIED',
+        message: 'Please verify your email to continue.',
+        email: user.email,
+        resent,
+        resendWaitSec: wait
+      });
+    }
+
+    // verified -> sign token
     const token = signToken(user);
     return res.status(200).json({ token, user: user.toJSON() });
   } catch (err) {
@@ -98,24 +126,20 @@ exports.verifyOTP = async (req, res) => {
       return res.status(400).json({ message: 'Email and code are required.' });
 
     const user = await User.findOne({ email: String(email).toLowerCase().trim() })
-      .select('+otpHash +otpExpiresAt otpAttempts emailVerified');
+      .select('+otpHash +otpExpiresAt otpAttempts emailVerified role username userID');
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
-    // Too many attempts (lockout)
     if (user.otpAttempts >= 5) {
       return res.status(429).json({ message: 'Too many invalid attempts. Request a new code.' });
     }
-
     if (!user.otpHash || !user.otpExpiresAt)
       return res.status(400).json({ message: 'No active code. Please request a new one.' });
-
     if (Date.now() > new Date(user.otpExpiresAt).getTime())
       return res.status(400).json({ message: 'Code expired. Request a new one.' });
 
     const ok = await bcrypt.compare(String(code), user.otpHash);
-
     if (!ok) {
-      await User.findByIdAndUpdate(user._id, { $inc: { otpAttempts: 1 } });
+      await User.updateOne({ _id: user._id }, { $inc: { otpAttempts: 1 } });
       return res.status(401).json({ message: 'Invalid code.' });
     }
 
@@ -125,7 +149,8 @@ exports.verifyOTP = async (req, res) => {
     user.otpAttempts = 0;
     await user.save();
 
-    return res.status(200).json({ success: true, message: 'Email verified.' });
+    const token = signToken(user);
+    return res.status(200).json({ success: true, message: 'Email verified.', token, user: user.toJSON() });
   } catch (err) {
     console.error('verifyOtp error:', err);
     return res.status(500).json({ message: 'Server error.' });
@@ -142,7 +167,6 @@ exports.resendOTP = async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found.' });
     if (user.emailVerified) return res.status(400).json({ message: 'Email already verified.' });
 
-    // 🚦 Rate-limit resend to once every 30 seconds
     const now = Date.now();
     const cooldown = 30 * 1000;
     if (user.otpLastSentAt && now - user.otpLastSentAt.getTime() < cooldown) {
@@ -152,13 +176,19 @@ exports.resendOTP = async (req, res) => {
 
     const otp = generateOTP(6);
     const otpHash = await bcrypt.hash(otp, 10);
-    const otpExpiresAt = new Date(now + 5 * 60 * 1000); // 5 min expiry
+    const otpExpiresAt = new Date(now + 5 * 60 * 1000);
 
     await User.findByIdAndUpdate(user._id, {
       $set: { otpHash, otpExpiresAt, otpLastSentAt: new Date(now), otpAttempts: 0 }
     });
 
-    // await sendEmail({ to: user.email, subject: 'Your code', text: `Code: ${otp}` });
+    await sendEmail({
+      to: user.email,
+      subject: 'Your verification code',
+      text: `Your code is ${otp}. It expires in 5 minutes.`,
+      html: `<p>Your verification code is: <b>${otp}</b></p><p>This code expires in 5 minutes.</p>`
+    });
+
     return res.status(200).json({ success: true, message: 'Code sent.' });
   } catch (err) {
     console.error('resendOtp error:', err);
@@ -189,15 +219,7 @@ exports.changePassword = async(req, res) => {
     }
 };
 
-exports.logout = async(req, res) => {
-
-    // Set user parameters to null
-    user._id = null;
-    user.userID = null;
-    user.email = null;
-    user.role = null;
-
-    // Invalidate the token
-
-
-}
+exports.logout = async (_req, res) => {
+  // Client should discard the JWT; server stays stateless.
+  return res.status(200).json({ message: 'Logged out.' });
+};
