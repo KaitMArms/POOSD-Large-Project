@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 const ModeContext = createContext<any>(null);
 
 export const ModeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
+  const [mode, setMode] = useState(localStorage.getItem("mode") || "dark");
 
   useEffect(() => {
     document.body.setAttribute("data-theme", mode);
