@@ -1,32 +1,28 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
 function Login()
 {
-    async function doLogin(event:any) : Promise<void>
-    {
+    const [showPassword, setShowPassword] = useState(false);
+
+    async function doLogin(event: any): Promise<void> {
         event.preventDefault();
-        
-        const loginNameInput = document.getElementById('loginName') as HTMLInputElement;
-        const loginPasswordInput = document.getElementById('loginPassword') as HTMLInputElement;
-        const loginName = loginNameInput.value;
-        const loginPassword = loginPasswordInput.value;
+        const loginName = (document.getElementById("loginName") as HTMLInputElement).value;
+        const loginPassword = (document.getElementById("loginPassword") as HTMLInputElement).value;
 
         try {
-            const response = await fetch('http://localhost:8080/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ login: loginName, password: loginPassword })
-            });
+        const response = await fetch('http://localhost:8080/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login: loginName, password: loginPassword })
+        });
 
-            const data = await response.json();
+        const data = await response.json();
+        if (response.ok) console.log('Login successful:', data);
+        else console.error('Login failed:', data.message);
 
-            if (response.ok) {
-                // Handle successful login (e.g., save token, redirect)
-                console.log('Login successful:', data);
-                // window.location.href = '/profile';
-            } else {
-                // Handle login failure
-                console.error('Login failed:', data.message);
-            }
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('An error occurred:', error);
         }
     }
@@ -37,15 +33,28 @@ function Login()
                 <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"></img>
             </div>
             <br></br>
-            <div id="login-div">
+            <div id="login-container">
                 <span id="inner-title">Welcome Back to PlayedIt!</span><br />
-                <input type="text" id="loginName" placeholder="Username" /><br />
-                <input type="password" id="loginPassword" placeholder="Password" /><br />
+                <input type="text" id="loginName" placeholder="Username / Email" /><br />
+                <div className="password-field">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        id="loginPassword"
+                        placeholder="Password"
+                        className="login-input"
+                    />
+                    <button
+                        type="button"
+                        className="toggle-eye"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? "👁️" : "👁️‍🗨️"}
+                    </button>
+                </div>
                 <input type="submit" id="loginButton" className="buttons" value = "Log In" onClick={doLogin} />
                 <span id="login-result"></span>
                 <span id="inner-title">New to PlayedIt? Make an account.</span><br />
-                <a href="../pages/SignUpPage.tsx">Sign Up</a>
-                
+                <p className="signup-link">New to PlayedIt? <Link to="/signup">Sign Up</Link></p>
             </div>
         </div>
     );

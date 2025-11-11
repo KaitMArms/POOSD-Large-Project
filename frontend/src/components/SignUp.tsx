@@ -1,5 +1,10 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
 function SignUp()
 {
+    const [showPassword, setShowPassword] = useState(false);
+
     async function doSignUp(event:any) : Promise<void>
     {
         event.preventDefault();
@@ -42,10 +47,25 @@ function SignUp()
                 <input type="text" id="firstName" placeholder="First Name"/><br />
                 <input type="text" id="lastName" placeholder="Last Name"/><br />
                 <input type="text" id="email" placeholder="eMail" /><br />
-                <input type="password" id="loginPassword" placeholder="Password" /><br />
+                <div className="password-field">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        id="loginPassword"
+                        placeholder="Password"
+                        className="login-input"
+                    />
+                    <button
+                        type="button"
+                        className="toggle-eye"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? "👁️" : "👁️‍🗨️"}
+                    </button>
+                </div>
                 <input type="submit" id="loginButton" className="buttons" value = "Do It"
                 onClick={doSignUp} />
                 <span id="sign-up-result"></span>
+                <p className="login-link"> Already have an account? <Link to="/">Log In</Link></p>
             </div>
         </div>
     );
