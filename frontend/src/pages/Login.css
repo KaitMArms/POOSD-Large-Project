@@ -39,8 +39,10 @@ input {
   margin: 0.5em 0;
   border-radius: 10px;
   border: 2px solid #72139B;
-  background-color: var(--button-bg);
-  color: var(--button-text);
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .loginButton {
