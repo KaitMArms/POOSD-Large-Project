@@ -1,74 +1,53 @@
 .page-container {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: var(--bg-color);
-  color: var(--text-color);
+  justify-content: flex-start;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding-top: 3vh;
 }
 
-img {
-  width: 40vw;
-  max-width: 250px;
-  height: auto;
-  margin-bottom: 2vh;
-}
-
-.login-container {
-  background: var(--div-color);
-  padding: 2rem;
-  border-radius: 28px;
-  width: 85vw;
-  max-width: 380px;
+#login-container {
+  background-color: var(--div-color);
+  width: 70%;
+  max-width: 480px;
+  padding: 1.4rem;
+  border-radius: 16px;
   text-align: center;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-  backdrop-filter: blur(6px);
+  box-shadow: 0 0 12px rgba(162, 119, 255, 0.35);
 }
 
-.inner-title {
-  font-size: 6vw;
-  max-width: 260px;
-  margin: 0 auto 2vh;
-  color: #72139B;
-  font-weight: bold;
-  text-shadow: 0 0 8px #bb91e6;
-}
-
-input {
+#login-container input[type="text"],
+#login-container input[type="password"],
+#login-container input[type="email"],
+#login-container input[type="submit"] {
   width: 100%;
-  padding: 0.9em;
-  margin: 0.6em 0;
-  border-radius: 14px;
-  border: 2px solid #a373e3;
-  background-color: var(--button-bg);
-  color: var(--button-text);
+  padding: 10px;
+  margin: 7px 0;
+  border-radius: 12px;
+  border: 2px solid var(--button-bg);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   text-align: center;
   font-size: 1rem;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
 }
 
-.loginButton {
-  width: 100%;
-  padding: 0.9em;
-  margin-top: 1em;
-  border-radius: 10px;
+#loginButton {
   background-color: var(--button-bg);
   color: var(--button-text);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   cursor: pointer;
+  transition: 0.25s;
 }
 
-.login-result{
-  font-size: 10vw;
-  font-weight: bold;
-  font-style: italic;
-  color: #72139B;
+
+#loginButton:hover {
+  box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
+  transform: scale(1.03);
 }
 
 .password-field {
   position: relative;
-  width: 100%;
 }
 
 .toggle-eye {
@@ -79,8 +58,17 @@ input {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.4rem;
-  color: var(--button-text);
+  font-size: 1.1rem;
+}
+
+.page-container img {
+  filter: drop-shadow(0 0 12px rgba(162, 119, 255, 0.45));
+  transition: 0.25s;
+}
+
+.page-container img:hover {
+  transform: scale(1.03);
+  filter: drop-shadow(0 0 20px rgba(162, 119, 255, 0.65));
 }
 
 .signup-link a {
