@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 // Loads page set up for user's personal game library and associated progress
 // Sections: Completed, In Progress, Dropped, To Play
@@ -41,10 +42,20 @@ function LoadUserGames()
         fetchUserGames();
     }, []);
 
+    // Make each game title a Link to /game/:id so clicking opens the single-game view
     const gamesByStatus = (status: string) => {
-        return games.filter(game => game.status === status).map(game => (
-            <div key={game.gameId}>{game.title}</div>
-        ));
+        return games
+            .filter(game => game.status === status)
+            .map(game => (
+                <div key={game.gameId} className="user-game-row">
+                    <Link to={`/game/${game.gameId}`} className="game-link">
+                        {game.title}
+                    </Link>
+                    {/* keep existing metadata if you want (e.g., progress, platform)
+                        <span className="game-meta">{game.platform}</span>
+                    */}
+                </div>
+            ));
     };
 
     if (loading) {

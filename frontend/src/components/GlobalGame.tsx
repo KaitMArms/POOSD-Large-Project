@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 
-//Component for recommend page with global game databse and ML
 function LoadGlobalGame()
 {
     const [recommendedGames, setRecommendedGames] = useState<any[]>([]);
@@ -68,13 +68,8 @@ function LoadGlobalGame()
         }
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return(
         <div id="page-container">
@@ -82,21 +77,29 @@ function LoadGlobalGame()
                 <h2>Recommended Games</h2>
                 <div id="rec-results">
                     {recommendedGames.map(game => (
-                        <div key={game.id}>{game.name}</div>
+                        <Link key={game.id} to={`/game/${game.id}`} className="game-link">
+                            {game.name}
+                        </Link>
                     ))}
                 </div>
             </div>
+
             <div id="search-games">
-                <input type="text" id="searchGamesInput" placeholder="Game Name here" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/><br />
-                <input type="submit" id="searchButton" className="buttons" value = "Search"
-                onClick={doSearchGame} />
+                <input type="text" id="searchGamesInput" placeholder="Game Name here" 
+                    value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/><br />
+                <input type="submit" id="searchButton" className="buttons" value="Search"
+                    onClick={doSearchGame} />
+
                 <div id="searchResult">
                     {searchedGames.map(game => (
-                        <div key={game.id}>{game.name}</div>
+                        <Link key={game.id} to={`/game/${game.id}`} className="game-link">
+                            {game.name}
+                        </Link>
                     ))}
                 </div>
             </div>            
         </div>
     );
 };
+
 export default LoadGlobalGame;
