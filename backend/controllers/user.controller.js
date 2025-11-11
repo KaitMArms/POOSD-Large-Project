@@ -1,5 +1,5 @@
-const User = require('../models/Users');
-const Game = require('../models/Games'); 
+const { UserModel: User } = require('../db');
+const { GameModel: Game } = require('../db');
 const mongoose = require('mongoose');
 const BIO_MAX = 300; // schema maxlength
 

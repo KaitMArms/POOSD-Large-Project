@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/Users');
+const { UserModel: User } = require('../db');
 const generateOTP = require('../middleware/generateOTP');
 
 const JWT_EXPIRES = '1d';

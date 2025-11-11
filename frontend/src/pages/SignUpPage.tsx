@@ -1,5 +1,5 @@
 import SignUp from '../components/SignUp.tsx';
-import "./SignUp.css"
+import "../pages/SignUp.css";
 const SignUpPage = () =>
 {
     return(

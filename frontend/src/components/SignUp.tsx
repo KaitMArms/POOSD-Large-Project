@@ -1,5 +1,3 @@
-import "frontend\src\index.css"
-
 function SignUp()
 {
     function doLogin(event:any) : void
