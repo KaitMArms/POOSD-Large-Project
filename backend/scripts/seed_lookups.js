@@ -2,23 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const mongoose = require('mongoose');
 
-// Model imports
-const PlatformModel = require('../models/Platform');
-const GenreModel = require('../models/Genre');
-const FranchiseModel = require('../models/Franchise');
-const AgeRatingModel = require('../models/AgeRating');
-const CoverModel = require('../models/Cover');
-const ModeModel = require('../models/GameMode');
-const KeyModel = require('../models/KeyWords');
-const LanguageModel = require('../models/Languages');
-const TheseModel = require('../models/Themes');
-const TypeModel = require('../models/GameType');
-const PerspectiveModel = require('../models/Perspective');
-const CollectionsModel = require('../models/Collections');
-const GameEngineModel = require('../models/GameEngine');
-const ICompaniesModel = require('../models/ICompanies');
-
-
+const {connectionsReady, PlatformModel, GenreModel, FranchiseModel, AgeRatingModel, CoverModel, GameModeModel, KeywordModel, LanguageModel, ThemeModel, GameTypeModel, PerspectiveModel, CollectionsModel, GameEngineModel, ICompaniesModel} = require('../db');
 
 // Authenticates with twitch 
 async function getAccessToken() {
@@ -42,6 +26,8 @@ async function getAccessToken() {
 
 // Send a data request to Twitch Servers
 async function seedData(endpointName, Model, accessToken) {
+    await connectionsReady;
+
     console.log(`\n--- Seeding ${endpointName} ---`);
     
     
@@ -113,7 +99,7 @@ async function seedData(endpointName, Model, accessToken) {
 
 async function run() {
     // Establish connection with database
-    await mongoose.connect(process.env.MONGO_URI_GAMES);
+    await connectionsReady
     console.log("Mongo connected for seeding.");
     
     const accessToken = await getAccessToken();
@@ -123,11 +109,11 @@ async function run() {
     await seedData('franchises', FranchiseModel, accessToken);
     // await seedData('age_ratings', AgeRatingModel, accessToken);
     await seedData('covers', CoverModel, accessToken); 
-    await seedData('game_modes', ModeModel, accessToken);
-    await seedData('keywords', KeyModel, accessToken);
+    await seedData('game_modes', GameModeModel, accessToken);
+    await seedData('keywords', KeywordModel, accessToken);
     await seedData('languages', LanguageModel, accessToken);
-    await seedData('themes', TheseModel, accessToken);
-    await seedData('game_types', TypeModel, accessToken);
+    await seedData('themes', ThemeModel, accessToken);
+    await seedData('game_types', GameTypeModel, accessToken);
     await seedData('player_perspectives', PerspectiveModel, accessToken);
     await seedData('involved_companies', ICompaniesModel, accessToken);
     await seedData('collections', CollectionsModel, accessToken);

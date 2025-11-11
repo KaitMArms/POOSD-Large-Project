@@ -34,7 +34,7 @@ const gameSchema = new mongoose.Schema({
     involved_companies: [{type: Number}],
     game_engines: [{type: Number}],
     collections: [{type: Number}],
-    first_release_date: {type: Timestamp},
+    first_release_date: {type: Number},
     storyline: {type: String}, 
     summary: {type: String}
 }, 
