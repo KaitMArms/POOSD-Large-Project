@@ -5,37 +5,37 @@ function SignUp()
 {
     const [showPassword, setShowPassword] = useState(false);
 
-    async function doSignUp(event:any) : Promise<void>
-    {
+    async function doSignUp(event: any): Promise<void> {
         event.preventDefault();
-        
-        const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
-        const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
-        const emailInput = document.getElementById('email') as HTMLInputElement;
-        const loginPasswordInput = document.getElementById('loginPassword') as HTMLInputElement;
 
-        const firstName = firstNameInput.value;
-        const lastName = lastNameInput.value;
-        const email = emailInput.value;
-        const password = loginPasswordInput.value;
+        const firstName = (document.getElementById('firstName') as HTMLInputElement).value;
+        const lastName = (document.getElementById('lastName') as HTMLInputElement).value;
+        const email = (document.getElementById('email') as HTMLInputElement).value;
+        const password = (document.getElementById('loginPassword') as HTMLInputElement).value;
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ firstName, lastName, email, password })
+            const response = await fetch('https://playedit.games:8080/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName, email, password })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Sign up successful:', data);
-                // maybe redirect to login page
+            console.log('Sign up successful:', data);
+            // ✅ Redirect to login page after success
+            window.location.href = "/";
             } else {
-                console.error('Sign up failed:', data.message);
+            console.error('Sign up failed:', data.message);
+            const result = document.getElementById("sign-up-result");
+            if (result) result.innerText = data.message ?? "Sign up failed.";
             }
+
         } catch (error) {
             console.error('An error occurred:', error);
+            const result = document.getElementById("sign-up-result");
+            if (result) result.innerText = "Server error — try again later.";
         }
     }
 
@@ -63,10 +63,10 @@ function SignUp()
                         {showPassword ? "👁️" : "👁️‍🗨️"}
                     </button>
                 </div>
-                <input type="submit" id="loginButton" className="buttons" value = "Do It"
+                <input type="submit" id="loginButton" className="buttons" value = "Sign Up"
                 onClick={doSignUp} />
                 <span id="sign-up-result"></span>
-                <p className="login-link"> Already have an account? <Link to="/">Log In</Link></p>
+                <p className="login-link"> Already have an account? <br /><Link to="/">Log In</Link></p>
             </div>
         </div>
     );
