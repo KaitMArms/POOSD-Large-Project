@@ -1,5 +1,5 @@
-const User = require('../models/Users');
-const Game = require('../models/Games');
+const { UserModel: User } = require('../db');
+const { GameModel: Game } = require('../db');
 const recommend = require('../services/recommend');
 const user_profile = require('../services/user_profile');
 
@@ -37,6 +37,28 @@ exports.browseGames = async (req, res) => {
     return res.status(500).json({ message: 'Server error.' });
   }
 };
+
+exports.browseRecommended = async (req,res) => {
+
+  try{
+
+    //const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+    //const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
+    //const limit = Math.min(limitReq, 50); // cap at 50 per page
+
+    //Function to get array of recommended games IDs.
+    const gamesIDs = recommend.recommendedGames;
+    
+    // Get games by IDs
+    const games = await Game.find({ _id: { $in: gamesIDs}});
+    return res.json({games});
+
+  }catch(error) {
+    console.error('browseRecommended error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+
+}
 
 exports.searchGames = async (req, res) => {
   try {
