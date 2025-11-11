@@ -53,7 +53,7 @@ function Login()
                 </div>
                 <input type="submit" id="loginButton" className="buttons" value = "Log In" onClick={doLogin} />
                 <span id="login-result"></span>
-                <p className="signup-link">New to PlayedIt? <Link to="/signup">Sign Up</Link></p>
+                <p className="signup-link">New to PlayedIt? <br /><Link to="/signup">Sign Up</Link></p>
             </div>
         </div>
     );
