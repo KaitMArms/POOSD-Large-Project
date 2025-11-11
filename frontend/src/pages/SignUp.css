@@ -97,6 +97,8 @@ input{
   display: flex;
   align-items: center;
   font-size: 1.2rem;
+  width: 44px;
+  height: 44px;
 }
 
 .signupButton {
