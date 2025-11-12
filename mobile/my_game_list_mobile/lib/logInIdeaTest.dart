@@ -146,7 +146,7 @@ class _LogInTestState extends State<LogInIdea>{
               SizedBox(height: 14),
         
         
-              Column(
+             /* Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
@@ -209,7 +209,7 @@ class _LogInTestState extends State<LogInIdea>{
                             [
                               if(!isHoveringSignUp) 
                                 Shadow(
-                                  blurRadius: 8, 
+                                  blurRadius: 12, 
                                   color: Colors.white, 
                                   offset: Offset(0, 0))
                               else
@@ -223,18 +223,90 @@ class _LogInTestState extends State<LogInIdea>{
                   )),
                 ],
               ),
-        
+*/
+              GestureDetector(
+                  onTapDown: (_) => setState(() => isHoveringSignUp = true),
+                  onTapUp: (_) => setState(() => isHoveringSignUp = false),
+                  onTapCancel: () => setState(() => isHoveringSignUp = false),
+                  child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      "New to PlayedIt?",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                          textStyle: TextStyle(
+                            fontSize: 18
+                          ),
+                          padding: EdgeInsets.zero, // removes the default vertical padding
+                          minimumSize: Size(0, 0), // avoids minimum touch size forcing space
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // ensures minimal layout space
+                        ),
+                        onPressed: () {
+                          Navigator.push(context, 
+                              MaterialPageRoute(builder: (context) => const SignUp())
+                              );
+                        }, 
+                        child: Stack(
+                          children: [
+                            Text(
+                              "Sign Up!",
+                              style: TextStyle(
+                                foreground: Paint() 
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 3
+                                ..color = isHoveringSignUp ? Colors.purple : Colors.white,
+                                fontWeight: FontWeight.bold,
+                                decoration: isHoveringSignUp ? TextDecoration.underline : TextDecoration.none,
+                                decorationColor: Colors.purple,
+                                decorationThickness: 2
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                      
+                            Text(
+                              "Sign Up!",
+                              style: TextStyle(
+                                color: Colors.deepPurpleAccent,
+                                fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                      
+                            Text(
+                            "Sign Up!",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.deepPurpleAccent,
+                              fontWeight: FontWeight.bold,
+                              shadows: 
+                              [
+                                if(!isHoveringSignUp) 
+                                  Shadow(
+                                    blurRadius: 12, 
+                                    color: Colors.white, 
+                                    offset: Offset(0, 0))
+                                else
+                                  Shadow(blurRadius: 12, color: Colors.purple, offset: Offset(0, 0)),
+                                  Shadow(blurRadius: 16, color: Colors.white, offset: Offset(0, 0)),
+                              ]
+                            ),
+                          ),
+                        ]
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            
               SizedBox(height: 10),
-        
-              /*TextButton(
-                onPressed: () {
-                  Navigator.push(context, 
-                      MaterialPageRoute(builder: (context) => const PasswordCollect())
-                      );
-                }, 
-                child: Text("Get New Password"))*/
-        
-                GestureDetector(
+
+              GestureDetector(
                   onTapDown: (_) => setState(() => isHoveringPassword = true),
                   onTapUp: (_) => setState(() => isHoveringPassword = false),
                   onTapCancel: () => setState(() => isHoveringPassword = false),
@@ -298,7 +370,7 @@ class _LogInTestState extends State<LogInIdea>{
                               [
                                 if(!isHoveringPassword) 
                                   Shadow(
-                                    blurRadius: 8, 
+                                    blurRadius: 12, 
                                     color: Colors.white, 
                                     offset: Offset(0, 0))
                                 else
@@ -307,12 +379,12 @@ class _LogInTestState extends State<LogInIdea>{
                               ]
                             ),
                           ),
-                          ]
-                        ),
+                        ]
                       ),
+                    ),
                   ],
-                                ),
                 ),
+              ),
             ],
           )
         ),
