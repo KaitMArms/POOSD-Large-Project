@@ -10,21 +10,25 @@ function Login() {
   const [cooldown, setCooldown] = useState(0);
   const [verifying, setVerifying] = useState(false);
 
-  // lock background scroll when modal open
+  // Lock background scroll when modal is open
   useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = verifyOpen ? "hidden" : original || "";
-    return () => { document.body.style.overflow = original || ""; };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = verifyOpen ? "hidden" : prev || "";
+    return () => {
+      document.body.style.overflow = prev || "";
+    };
   }, [verifyOpen]);
 
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
-    const email = ((document.getElementById("loginEmail") as HTMLInputElement) || { value: "" }).value.trim().toLowerCase();
-    const password = ((document.getElementById("loginPassword") as HTMLInputElement) || { value: "" }).value;
 
-    // minimal client-side checks (no layout changes)
+    const email = ((document.getElementById("loginEmail") as HTMLInputElement) || { value: "" })
+      .value.trim().toLowerCase();
+    const password = ((document.getElementById("loginPassword") as HTMLInputElement) || { value: "" })
+      .value;
+
     if (!emailRe.test(email)) {
       setMessage("Please enter a valid email address.");
       return;
@@ -35,34 +39,44 @@ function Login() {
     }
 
     try {
-      const response = await fetch('https://playedit.games/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+      const response = await fetch("https://playedit.games/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-        if (data?.token) localStorage.setItem("token", data.token);
+      // ✅ Only redirect if we truly have a token
+      if (response.ok && data?.token) {
+        localStorage.setItem("token", data.token);
         window.location.href = "/dashboard";
-      } else if (response.status === 403 && data?.code === "EMAIL_UNVERIFIED") {
+        return;
+      }
+
+      // ⛔️ Unverified email -> open OTP modal
+      if (response.status === 403 && data?.code === "EMAIL_UNVERIFIED") {
         setVerifyEmail(data.email || email);
         setMessage("");
         setVerifyOpen(true);
 
         if (typeof data.resendWaitSec === "number" && data.resendWaitSec > 0) {
           setCooldown(data.resendWaitSec);
-          const t = setInterval(() => {
+          const t = window.setInterval(() => {
             setCooldown((c) => {
-              if (c <= 1) { clearInterval(t); return 0; }
+              if (c <= 1) {
+                window.clearInterval(t);
+                return 0;
+              }
               return c - 1;
             });
           }, 1000);
         }
-      } else {
-        setMessage(data?.message || "Invalid credentials");
+        return;
       }
+
+      // Generic errors
+      setMessage(data?.message || "Invalid credentials");
     } catch {
       setMessage("Server error — try again later.");
     }
@@ -70,18 +84,20 @@ function Login() {
 
   async function verifyCode() {
     if (!verifyEmail || otp.trim().length < 6) return;
+
     setVerifying(true);
     try {
       const response = await fetch("https://playedit.games/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: verifyEmail, code: otp.trim() })
+        body: JSON.stringify({ email: verifyEmail, code: otp.trim() }),
       });
+
       const data = await response.json();
       setVerifying(false);
 
-      if (response.ok) {
-        if (data?.token) localStorage.setItem("token", data.token);
+      if (response.ok && data?.token) {
+        localStorage.setItem("token", data.token);
         setVerifyOpen(false);
         window.location.href = "/dashboard";
       } else {
@@ -95,19 +111,25 @@ function Login() {
 
   async function resendCode() {
     if (!verifyEmail || cooldown > 0) return;
+
     try {
       const response = await fetch("https://playedit.games/api/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: verifyEmail })
+        body: JSON.stringify({ email: verifyEmail }),
       });
+
       const data = await response.json();
+
       if (response.ok) {
         setMessage("Code resent. Check your email.");
         setCooldown(30);
-        const t = setInterval(() => {
+        const t = window.setInterval(() => {
           setCooldown((c) => {
-            if (c <= 1) { clearInterval(t); return 0; }
+            if (c <= 1) {
+              window.clearInterval(t);
+              return 0;
+            }
             return c - 1;
           });
         }, 1000);
@@ -119,7 +141,6 @@ function Login() {
     }
   }
 
-  // clear inline message as user types (no layout changes)
   function clearMsgOnInput() {
     if (message) setMessage("");
   }
@@ -127,12 +148,25 @@ function Login() {
   return (
     <div id="page-container">
       <div>
-        <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller" />
+        <img
+          src="/Mascot.png"
+          alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"
+        />
       </div>
+
       <br />
+
       <div id="login-container">
         <span id="inner-title">Welcome Back to PlayedIt!</span><br />
-        <input type="email" id="loginEmail" placeholder="Email" onInput={clearMsgOnInput} /><br />
+
+        {/* Email-only login */}
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Email"
+          onInput={clearMsgOnInput}
+        /><br />
+
         <div className="password-field">
           <input
             type={showPassword ? "text" : "password"}
@@ -149,6 +183,7 @@ function Login() {
             {showPassword ? "👁️" : "👁️‍🗨️"}
           </button>
         </div>
+
         <input
           type="submit"
           id="loginButton"
@@ -156,23 +191,28 @@ function Login() {
           value="Log In"
           onClick={doLogin}
         />
-        {/* Inline login error (non-OTP) below the button */}
+
+        {/* Inline login error (for non-OTP errors) */}
         {!verifyOpen && message && (
           <div className="inline-error">{message}</div>
         )}
 
         <span id="login-result"></span>
-        <p className="signup-link">New to PlayedIt? <br /><Link to="/signup">Sign Up</Link></p>
+
+        <p className="signup-link">
+          New to PlayedIt? <br />
+          <Link to="/signup">Sign Up</Link>
+        </p>
       </div>
 
-      {/* Centered OTP modal (unchanged layout) */}
+      {/* Centered OTP modal */}
       {verifyOpen && (
         <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Email verification">
           <div className="modal-card" role="document">
             <h3>Verify your email</h3>
             <p>We sent a 6-digit code to <b>{verifyEmail}</b>.</p>
 
-            {/* message area inside modal */}
+            {/* Message area inside modal */}
             {message && <div className="alert">{message}</div>}
 
             <input
@@ -186,15 +226,28 @@ function Login() {
             />
 
             <div className="modal-actions">
-              <button className="buttons" onClick={verifyCode} disabled={verifying || otp.trim().length < 6}>
+              <button
+                className="buttons"
+                onClick={verifyCode}
+                disabled={verifying || otp.trim().length < 6}
+              >
                 {verifying ? "Verifying..." : "Verify"}
               </button>
 
-              <button className="buttons" onClick={resendCode} disabled={cooldown > 0}>
+              <button
+                className="buttons"
+                onClick={resendCode}
+                disabled={cooldown > 0}
+              >
                 {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
               </button>
 
-              <button className="buttons outline" onClick={() => setVerifyOpen(false)}>Cancel</button>
+              <button
+                className="buttons outline"
+                onClick={() => setVerifyOpen(false)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
