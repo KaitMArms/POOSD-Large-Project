@@ -7,10 +7,11 @@ import "../index.css";
 const GlobalGamesPage = () =>
 {
     return(
-        <div>
+        <div className='page-container'>
             <PageTitle />
             <LoadGlobalGame />
         </div>
     );
 };
+
 export default GlobalGamesPage;

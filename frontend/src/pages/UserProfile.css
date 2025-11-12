@@ -1,14 +1,3 @@
-.page-container {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 4vh;   
-}
-
 .user-container {
   width: auto;
   height: 50vw;
@@ -35,7 +24,7 @@
   background-color: var(--div-color);
 }
 
-button {
+#mode-toggle {
   background-color: var(--button-bg);
   color: var(--button-text);
   border-radius: 8px;

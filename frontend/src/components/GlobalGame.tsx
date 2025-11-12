@@ -72,10 +72,10 @@ function LoadGlobalGame()
     if (error) return <div>Error: {error}</div>;
 
     return(
-        <div id="page-container">
-            <div id="recommend-games-container">
+        <div>
+            <div className="recommend-games-container">
                 <h2>Recommended Games</h2>
-                <div id="rec-results">
+                <div className="rec-results">
                     {recommendedGames.map(game => (
                         <Link key={game.id} to={`/game/${game.id}`} className="game-link">
                             {game.name}
@@ -84,7 +84,7 @@ function LoadGlobalGame()
                 </div>
             </div>
 
-            <div id="search-games">
+            <div className="search-games">
                 <input type="text" id="searchGamesInput" placeholder="Game Name here" 
                     value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/><br />
                 <input type="submit" id="searchButton" className="buttons" value="Search"

@@ -1,3 +1,5 @@
+import '../pages/DevUserProfile.css';
+
 // Load the dev info & related setting on the profile
 type LoadDevUserProps =
 {
@@ -10,9 +12,9 @@ const LoadDevUser: React.FC<LoadDevUserProps> =({ event }) =>
     {
         return(
             // put stuff that is supposed to be on dev user in here
-            <div id="devProfileContainer">
-                <span id="dev-title">Your Games in Development</span>
-                <span id="dev-games"></span>
+            <div className="devProfileContainer">
+                <span className="dev-title">Your Games in Development</span>
+                <span className="dev-games"></span>
             </div>
         );
     }

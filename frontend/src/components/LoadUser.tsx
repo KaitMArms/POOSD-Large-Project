@@ -55,23 +55,23 @@ function LoadUser()
 
     return(
         // HTML code goes inside container. container = html for general page layout and info
-        <div id="page-container">
-            <div id="user-container">
-                <div id="pfp-container">
+        <div>
+            <div className="user-container">
+                <div className="pfp-container">
                     <img></img>
                 </div>
-                <div id="info-container">
-                    <span id="profile-name-span">{user.firstName}'s Profile</span>
-                    <span id="user-info-span">{user.username}</span>
-                    <span id="user-info-span">{user.email}</span>
+                <div className="info-container">
+                    <span className="profile-name-span">{user.firstName}'s Profile</span>
+                    <span className="user-info-span">{user.username}</span>
+                    <span className="user-info-span">{user.email}</span>
                 </div>
             </div>
-            <div id="settings-container">
+            <div className="settings-container">
                 <button id="mode-toggle">Toggle Page's Color Mode</button>
-                <label id='dev-check-container'>
+                <label className='dev-check-container'>
                     <input type="checkbox">
-                        <span id="checkmark"></span>
-                        <span id="label-checkbox">Toggle Dev User</span>
+                        <span className="checkmark"></span>
+                        <span className="label-checkbox">Toggle Dev User</span>
                     </input>
                 </label>
 

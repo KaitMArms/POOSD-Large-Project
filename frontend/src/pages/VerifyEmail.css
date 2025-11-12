@@ -9,18 +9,7 @@
   border-radius: 10px;
 }
 
-.page-container {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 4vh;   
-}
-
-#inner-title {
+.inner-title {
   font-size: 5.3rem;
   font-weight: 600;
   color: #72139B;
@@ -39,7 +28,7 @@
     0 0 16px rgba(162, 89, 255, 0.4);
 }
 
-#inner-smaller-title {
+.inner-smaller-title {
   font-size: 3rem;
   font-weight: 600;
   color: #72139B;
@@ -58,7 +47,7 @@
     0 0 16px rgba(162, 89, 255, 0.4);
 }
 
-input{
+#otpInput{
   width: 100%;
   padding: 0.8em;
   margin: 0.5em 0;
@@ -69,5 +58,3 @@ input{
   box-sizing: border-box;
   text-align: center;
 }
-
-

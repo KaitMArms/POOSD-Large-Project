@@ -8,7 +8,7 @@ import "../index.css";
 const UserGamesPage = () =>
 {
     return(
-        <div>
+        <div className='page-container'>
             <PageTitle />
             <LoadUserGames />
         </div>
