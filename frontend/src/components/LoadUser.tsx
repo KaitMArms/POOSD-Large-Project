@@ -61,7 +61,7 @@ function LoadUser()
                     <img></img>
                 </div>
                 <div className="info-container">
-                    <span className="profile-name-span">{user.firstName}'s Profile</span>
+                    <span className="profile-name-span">{user.firstName} {user.lastName}'s Profile</span>
                     <span className="user-info-span">{user.username}</span>
                     <span className="user-info-span">{user.email}</span>
                 </div>
