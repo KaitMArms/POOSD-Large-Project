@@ -65,6 +65,17 @@
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.3);
 }
 
+.settings-title {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #b26cff;
+  text-shadow: 0 0 8px rgba(162, 89, 255, 0.6);
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+
 #mode-toggle {
   background-color: var(--button-bg);
   color: var(--button-text);
