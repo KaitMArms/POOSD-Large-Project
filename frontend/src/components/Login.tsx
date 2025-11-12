@@ -83,7 +83,7 @@ function Login() {
       if (response.ok) {
         if (data?.token) localStorage.setItem("token", data.token);
         setVerifyOpen(false);
-        window.location.href = "/dashboard";
+        window.location.href = "/profile";
       } else {
         setMessage(data.message || "Invalid code");
       }
