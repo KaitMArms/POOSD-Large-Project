@@ -37,8 +37,8 @@ class _LogInState extends State<LogIn>{
           children: [
             ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: 300,
-                maxHeight: 300,
+                maxWidth: 150,
+                maxHeight: 150,
               ),
               child: Image(
                 image: AssetImage('assets/Mascot.png'),
@@ -53,10 +53,10 @@ class _LogInState extends State<LogIn>{
                   "Welcome Back to PlayedIt!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 35,
                       foreground: Paint()
                         ..style = PaintingStyle.stroke
-                        ..strokeWidth = 1.5
+                        ..strokeWidth = 1.84
                         ..color = Colors.white,
                     ),
                 ),
@@ -65,7 +65,7 @@ class _LogInState extends State<LogIn>{
                   "Welcome Back to PlayedIt!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 35,
                       color: Colors.deepPurpleAccent,
                     ),
                 ),
