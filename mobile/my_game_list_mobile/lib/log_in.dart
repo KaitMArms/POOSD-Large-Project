@@ -35,9 +35,15 @@ class _LogInState extends State<LogIn>{
           //mainAxisAlignment: MainAxisAlignment.center,
           //crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image(
-              image: AssetImage('assets/Mascot.png'),
-              fit: BoxFit.cover,
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 300,
+                maxHeight: 300,
+              ),
+              child: Image(
+                image: AssetImage('assets/Mascot.png'),
+                fit: BoxFit.contain,
+              ),
             ),
 
             SizedBox(height: 30),

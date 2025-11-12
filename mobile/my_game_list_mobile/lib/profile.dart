@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_game_list_mobile/log_out.dart';
+import 'package:my_game_list_mobile/notifications.dart';
 class Profile extends StatefulWidget {
   const Profile({super.key});
 
@@ -152,7 +153,7 @@ class _ProfileState extends State<Profile> {
                         Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder:(context) => LogOut(),
+                          builder:(context) => tile.page,
                         ));
                       },
                     ),
@@ -188,56 +189,30 @@ List<ProfileCompletionCard> profileCompletionCards = [
     icon: CupertinoIcons.person_circle,
   ),
   ProfileCompletionCard(
-    title: "Upload Your Resume",
-    buttonText: "Upload",
-    icon: CupertinoIcons.doc,
+    title: "Make Your First List",
+    buttonText: "Continue",
+    icon: CupertinoIcons.square_list,
   ),
   ProfileCompletionCard(
-    title: "Add Your Skills",
+    title: "Find More Games",
     buttonText: "Add",
-    icon: CupertinoIcons.square_list,
-  ),
-
-  ProfileCompletionCard(
-    title: "Forgettabooutit",
-    buttonText: "Ten",
-    icon: CupertinoIcons.square_list,
-  ),
-
-  ProfileCompletionCard(
-    title: "Who Want Some",
-    buttonText: "Nine",
-    icon: CupertinoIcons.square_list,
+    icon: CupertinoIcons.game_controller,
   ),
 ];
 
 class CustomListTiles {
   final IconData icon;
   final String title;
+  final Widget page;
   CustomListTiles({
     required this.icon,
     required this.title,
+    required this.page,
   });
 }
 
 List<CustomListTiles> customListTiles = [
-  CustomListTiles(
-    icon: Icons.insights, 
-    title: "Activity",
-  ),
+  CustomListTiles(icon: CupertinoIcons.bell, title: "Notifications", page: Notifications()),
 
-  CustomListTiles(
-    icon: Icons.location_on_outlined, 
-    title: "Location"
-  ),
-
-  CustomListTiles(
-    icon: CupertinoIcons.bell, 
-    title: "Notifications"
-  ),
-
-  CustomListTiles(
-    icon: CupertinoIcons.arrow_right_arrow_left, 
-    title: "Logout"
-  ),
+  CustomListTiles(icon: CupertinoIcons.arrow_right_arrow_left, title: "Logout", page: LogOut()),
 ];
