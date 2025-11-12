@@ -87,7 +87,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials.' });
     }
 
-    // --- DEBUG: see exactly what branch prod takes
+    // --- DEBUG:
     console.log('LOGIN GATE', {
       email: user.email,
       emailVerified: user.emailVerified,
