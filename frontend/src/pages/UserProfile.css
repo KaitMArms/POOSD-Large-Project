@@ -30,6 +30,19 @@
   color: var(--text-color);
 }
 
+.info-item {
+  font-size: 1.2rem;
+  margin-top: 0.5em;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 0.6em 1em;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+}
+
+.info-item strong {
+  color: #b26cff;
+}
+
 .profile-name-span {
   font-size: 1.8rem;
   font-weight: 700;
@@ -110,6 +123,29 @@
 
 .dev-check-container input:checked + .checkmark::after {
   display: block;
+}
+
+.edit-profile-container {
+  margin-top: 1.5em;
+}
+
+.edit-profile-btn {
+  background-color: #2047c0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8em 1.5em;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.edit-profile-btn:hover {
+  background-color: hsl(225, 95%, 58%);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(221, 152, 230, 0.8);
 }
 
 @media (max-width: 768px) {
