@@ -84,21 +84,19 @@ function LoadUser() {
       </div>
 
       <div className="settings-container">
+        <span className="settings-title">Settings</span>
         <button id="mode-toggle">Toggle Page's Color Mode</button>
+
+        <div className="edit-profile-container">
+          <button className="edit-profile-btn" onClick={() => setEditing(true)}> Edit Profile </button>
+        </div>
+        <br />
+
         <label className="dev-check-container">
           <input type="checkbox" defaultChecked={user.isDev} />
           <span className="checkmark"></span>
           <span className="label-checkbox">Toggle Dev User</span>
         </label>
-
-        <div className="edit-profile-container">
-          <button
-            className="edit-profile-btn"
-            onClick={() => setEditing(true)}
-          >
-            Edit Profile
-          </button>
-        </div>
       </div>
     </div>
   );
