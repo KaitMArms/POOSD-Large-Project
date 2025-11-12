@@ -16,7 +16,7 @@ function LoadUserGames() {
         }
 
         try {
-        const response = await fetch('https://playedit.games/api/user/games/${id}', {
+        const response = await fetch('https://playedit.games/api/user/games', {
             method: 'GET',
             headers: {
             'Authorization': `Bearer ${token}`,
