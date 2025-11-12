@@ -10,13 +10,16 @@ function Login() {
   const [cooldown, setCooldown] = useState(0);
   const [verifying, setVerifying] = useState(false);
 
+  // 🔒 prevent stale tokens from logging user in by accident
+  useEffect(() => {
+    localStorage.removeItem("token");
+  }, []);
+
   // Lock background scroll when modal is open
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = verifyOpen ? "hidden" : prev || "";
-    return () => {
-      document.body.style.overflow = prev || "";
-    };
+    return () => { document.body.style.overflow = prev || ""; };
   }, [verifyOpen]);
 
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,14 +32,8 @@ function Login() {
     const password = ((document.getElementById("loginPassword") as HTMLInputElement) || { value: "" })
       .value;
 
-    if (!emailRe.test(email)) {
-      setMessage("Please enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setMessage("Password is required.");
-      return;
-    }
+    if (!emailRe.test(email)) { setMessage("Please enter a valid email address."); return; }
+    if (!password) { setMessage("Password is required."); return; }
 
     try {
       const response = await fetch("https://playedit.games/api/auth/login", {
@@ -45,16 +42,18 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      // Parse body safely (HTML fallback would throw; catch will handle)
+      let data: any = null;
+      try { data = await response.json(); } catch { /* ignore */ }
 
-      // ✅ Only redirect if we truly have a token
-      if (response.ok && data?.token) {
+      // 🎯 Only treat VERIFIED login as success when status === 200 AND token exists
+      if (response.status === 200 && data && typeof data.token === "string" && data.token.length > 0) {
         localStorage.setItem("token", data.token);
         window.location.href = "/dashboard";
         return;
       }
 
-      // ⛔️ Unverified email -> open OTP modal
+      // 🚧 Unverified -> OTP modal (must be explicit 403 + code)
       if (response.status === 403 && data?.code === "EMAIL_UNVERIFIED") {
         setVerifyEmail(data.email || email);
         setMessage("");
@@ -64,10 +63,7 @@ function Login() {
           setCooldown(data.resendWaitSec);
           const t = window.setInterval(() => {
             setCooldown((c) => {
-              if (c <= 1) {
-                window.clearInterval(t);
-                return 0;
-              }
+              if (c <= 1) { window.clearInterval(t); return 0; }
               return c - 1;
             });
           }, 1000);
@@ -75,8 +71,8 @@ function Login() {
         return;
       }
 
-      // Generic errors
-      setMessage(data?.message || "Invalid credentials");
+      // Anything else: show server-provided message or generic
+      setMessage((data && data.message) || `Login failed (status ${response.status}).`);
     } catch {
       setMessage("Server error — try again later.");
     }
@@ -93,19 +89,20 @@ function Login() {
         body: JSON.stringify({ email: verifyEmail, code: otp.trim() }),
       });
 
-      const data = await response.json();
-      setVerifying(false);
+      let data: any = null;
+      try { data = await response.json(); } catch {}
 
-      if (response.ok && data?.token) {
+      if (response.status === 200 && data?.token) {
         localStorage.setItem("token", data.token);
         setVerifyOpen(false);
         window.location.href = "/dashboard";
       } else {
-        setMessage(data.message || "Invalid code");
+        setMessage((data && data.message) || `Verification failed (status ${response.status}).`);
       }
     } catch {
-      setVerifying(false);
       setMessage("Server error — try again.");
+    } finally {
+      setVerifying(false);
     }
   }
 
@@ -119,22 +116,20 @@ function Login() {
         body: JSON.stringify({ email: verifyEmail }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch {}
 
-      if (response.ok) {
+      if (response.status === 200) {
         setMessage("Code resent. Check your email.");
         setCooldown(30);
         const t = window.setInterval(() => {
           setCooldown((c) => {
-            if (c <= 1) {
-              window.clearInterval(t);
-              return 0;
-            }
+            if (c <= 1) { window.clearInterval(t); return 0; }
             return c - 1;
           });
         }, 1000);
       } else {
-        setMessage(data.message || "Unable to resend right now.");
+        setMessage((data && data.message) || `Unable to resend (status ${response.status}).`);
       }
     } catch {
       setMessage("Server error — try again.");
@@ -159,7 +154,6 @@ function Login() {
       <div id="login-container">
         <span id="inner-title">Welcome Back to PlayedIt!</span><br />
 
-        {/* Email-only login */}
         <input
           type="email"
           id="loginEmail"
@@ -192,10 +186,7 @@ function Login() {
           onClick={doLogin}
         />
 
-        {/* Inline login error (for non-OTP errors) */}
-        {!verifyOpen && message && (
-          <div className="inline-error">{message}</div>
-        )}
+        {!verifyOpen && message && <div className="inline-error">{message}</div>}
 
         <span id="login-result"></span>
 
@@ -205,14 +196,12 @@ function Login() {
         </p>
       </div>
 
-      {/* Centered OTP modal */}
       {verifyOpen && (
         <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Email verification">
           <div className="modal-card" role="document">
             <h3>Verify your email</h3>
             <p>We sent a 6-digit code to <b>{verifyEmail}</b>.</p>
 
-            {/* Message area inside modal */}
             {message && <div className="alert">{message}</div>}
 
             <input
