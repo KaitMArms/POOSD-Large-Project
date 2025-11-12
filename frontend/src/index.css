@@ -37,6 +37,7 @@ nav Link{
   padding: 0.5em 1em;
   border-radius: 5px;
   background-color: #2047C0;
+  color: var(--text-color);
   text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
@@ -47,6 +48,7 @@ nav Link:hover{
 .title-container{
   position: relative;
   display: flex;
+
 }
 
 .title{
