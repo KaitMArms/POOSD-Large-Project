@@ -81,37 +81,31 @@ exports.login = async (req, res) => {
 
     const ok = await user.checkPassword(password);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials.' });
-
+    
+    // 🔒 Hard gate: never issue a token if not verified
     if (!user.emailVerified) {
-      // Generate & send OTP here (with cooldown)
       const now = Date.now();
-      const cooldown = 30 * 1000; // 30s between sends
+      const cooldown = 30 * 1000;
       let resent = false, wait = 0;
-
+    
       if (!user.otpLastSentAt || (now - user.otpLastSentAt.getTime()) >= cooldown) {
         const otp = generateOTP(6);
         const otpHash = await bcrypt.hash(otp, 10);
-        const otpExpiresAt = new Date(now + 5 * 60 * 1000); // 5 min
-
+        const otpExpiresAt = new Date(now + 5 * 60 * 1000);
         await User.updateOne(
           { _id: user._id },
           { $set: { otpHash, otpExpiresAt, otpLastSentAt: new Date(now), otpAttempts: 0 } }
         );
-        const toEmail = String(user.email || normalizedEmail || '').trim();
-        console.log('DEBUG otp send target:', { toEmail, hasEmail: !!toEmail, userId: user._id });
-
-        sendEmail({
-          to: toEmail,
-          subject: 'Your verification code',
+        sendEmail({ to: user.email, subject: 'Your verification code',
           text: `Your code is ${otp}. It expires in 5 minutes.`,
           html: `<p>Your verification code is: <b>${otp}</b></p><p>This code expires in 5 minutes.</p>`
         }).catch(err => console.error('sendEmail error:', err));
-
         resent = true;
       } else {
         wait = Math.ceil((cooldown - (now - user.otpLastSentAt.getTime())) / 1000);
       }
-
+    
+      res.set('x-handler', 'auth-login-v2');
       return res.status(403).json({
         code: 'EMAIL_UNVERIFIED',
         message: 'Please verify your email to continue.',
@@ -120,13 +114,11 @@ exports.login = async (req, res) => {
         resendWaitSec: wait
       });
     }
-
-    // verified -> sign token
+    
+    // ✅ Verified → token
+    res.set('x-handler', 'auth-login-v2');
     const token = signToken(user);
     return res.status(200).json({ token, user: user.toJSON() });
-  } catch (err) {
-    console.error('Login error:', err);
-    return res.status(500).json({ message: 'Server error.' });
   }
 };
 
