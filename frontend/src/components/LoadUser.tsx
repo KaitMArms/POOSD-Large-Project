@@ -28,7 +28,7 @@ function LoadUser() {
         if (response.ok) {
             const data = await response.json();
             console.log("Fetched user data:", data);
-            setUser(data);
+            setUser(data.user);
         } else {
             const errorData = await response.json().catch(() => ({}));
             setError(errorData.message || "Failed to fetch user profile.");
