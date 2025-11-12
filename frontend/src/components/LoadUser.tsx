@@ -63,39 +63,37 @@ function LoadUser() {
           />
         </div>
 
-        <div className="info-container">
-          <span className="profile-name-span">
-            {user.firstName && user.lastName
-              ? `${user.firstName} ${user.lastName}'s Profile`
-              : `${user.username || "User"}'s Profile`}
-          </span>
+        <div className="info-bio-wrapper">
+          <div className="info-container">
+            <span className="profile-name-span">
+              {user.firstName && user.lastName
+                ? `${user.firstName} ${user.lastName}'s Profile`
+                : `${user.username || "User"}'s Profile`}
+            </span>
 
-          <div className="info-grid">
-            <div className="info-details">
-              <div className="info-item">
-                <strong>Username:</strong> <span>{user.username || "N/A"}</span>
-              </div>
-
-              <div className="info-item">
-                <strong>Email:</strong> <span>{userEmail}</span>
-              </div>
-
-              <div className="info-item">
-                <strong>Account Type:</strong>{" "}
-                <span>{user.isDev ? "Developer" : "Player"}</span>
-              </div>
-
-              {user.role && (
-                <div className="info-item">
-                  <strong>Role:</strong> <span>{user.role}</span>
-                </div>
-              )}
+            <div className="info-item">
+              <strong>Username:</strong> <span>{user.username || "N/A"}</span>
             </div>
 
-            <div className="bio-container">
-              <strong>Bio:</strong>
-              <p>{user.bio || "This user hasn’t written a bio yet."}</p>
+            <div className="info-item">
+              <strong>Email:</strong> <span>{userEmail}</span>
             </div>
+
+            <div className="info-item">
+              <strong>Account Type:</strong>{" "}
+              <span>{user.isDev ? "Developer" : "Player"}</span>
+            </div>
+
+            {user.role && (
+              <div className="info-item">
+                <strong>Role:</strong> <span>{user.role}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="bio-side">
+            <strong>Bio:</strong>
+            <p>{user.bio || "This user hasn’t written a bio yet."}</p>
           </div>
         </div>
       </div>
