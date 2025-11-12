@@ -32,16 +32,16 @@ nav{
   justify-content: space-around;
 }
 
-nav a{
-  font-size: 1.5vw;
-  padding: 0.5em 0.5em;
+nav Link{
+  font-size: 3vw;
+  padding: 0.5em 1em;
   border-radius: 5px;
   background-color: #2047C0;
   color: var(--text-color);
   text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
-nav a:hover{
+nav Link:hover{
   background-color: hsl(225, 95%, 58%);
 }
 
@@ -52,7 +52,7 @@ nav a:hover{
 }
 
 .title{
-  font-size: 5.3rem;
+  font-size: 2.3rem;
   font-weight: 600;
   color: #72139B;
   margin-bottom: 12px;
