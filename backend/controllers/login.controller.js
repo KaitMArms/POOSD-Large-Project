@@ -66,9 +66,8 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ message: 'Email and password are required.' });
-    }
 
     const normalizedEmail = String(email).toLowerCase().trim();
     if (!EMAIL_RE.test(normalizedEmail)) {
@@ -78,29 +77,18 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email: normalizedEmail })
       .select('+email +password emailVerified role username userID otpLastSentAt');
 
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
-    }
+    if (!user) return res.status(401).json({ message: 'Invalid credentials.' });
 
     const ok = await user.checkPassword(password);
-    if (!ok) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
-    }
+    if (!ok) return res.status(401).json({ message: 'Invalid credentials.' });
 
-    // --- DEBUG:
-    console.log('LOGIN GATE', {
-      email: user.email,
-      emailVerified: user.emailVerified,
-      now: new Date().toISOString()
-    });
-
-    // 🔒 Hard gate: NEVER issue a token if not verified
     if (!user.emailVerified) {
+      // Generate & send OTP here (with cooldown)
       const now = Date.now();
       const cooldown = 30 * 1000; // 30s between sends
       let resent = false, wait = 0;
 
-      if (!user.otpLastSentAt || (now - new Date(user.otpLastSentAt).getTime()) >= cooldown) {
+      if (!user.otpLastSentAt || (now - user.otpLastSentAt.getTime()) >= cooldown) {
         const otp = generateOTP(6);
         const otpHash = await bcrypt.hash(otp, 10);
         const otpExpiresAt = new Date(now + 5 * 60 * 1000); // 5 min
@@ -109,10 +97,11 @@ exports.login = async (req, res) => {
           { _id: user._id },
           { $set: { otpHash, otpExpiresAt, otpLastSentAt: new Date(now), otpAttempts: 0 } }
         );
+        const toEmail = String(user.email || normalizedEmail || '').trim();
+        console.log('DEBUG otp send target:', { toEmail, hasEmail: !!toEmail, userId: user._id });
 
-        // fire-and-forget email (log errors but don't crash login flow)
         sendEmail({
-          to: String(user.email || normalizedEmail).trim(),
+          to: toEmail,
           subject: 'Your verification code',
           text: `Your code is ${otp}. It expires in 5 minutes.`,
           html: `<p>Your verification code is: <b>${otp}</b></p><p>This code expires in 5 minutes.</p>`
@@ -120,11 +109,9 @@ exports.login = async (req, res) => {
 
         resent = true;
       } else {
-        wait = Math.ceil((cooldown - (now - new Date(user.otpLastSentAt).getTime())) / 1000);
+        wait = Math.ceil((cooldown - (now - user.otpLastSentAt.getTime())) / 1000);
       }
 
-      console.log('UNVERIFIED → 403 returned');
-      res.set('x-handler', 'auth-login-v2');
       return res.status(403).json({
         code: 'EMAIL_UNVERIFIED',
         message: 'Please verify your email to continue.',
@@ -134,12 +121,9 @@ exports.login = async (req, res) => {
       });
     }
 
-    // ✅ Verified → token (only success path)
-    console.log('VERIFIED → 200 with token');
-    res.set('x-handler', 'auth-login-v2');
+    // verified -> sign token
     const token = signToken(user);
     return res.status(200).json({ token, user: user.toJSON() });
-
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ message: 'Server error.' });
