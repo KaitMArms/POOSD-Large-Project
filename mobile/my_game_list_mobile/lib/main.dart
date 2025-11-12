@@ -192,7 +192,6 @@ class PlayedIt extends StatelessWidget {
         
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFbecbf4),
               textStyle: TextStyle(
                 fontSize: 16,
               )

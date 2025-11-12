@@ -46,6 +46,31 @@ class _LogInState extends State<LogIn>{
               ),
             ),
 
+            Stack(       
+              alignment: Alignment.center,
+              children: [     
+                Text(
+                  "Welcome Back to PlayedIt!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 30,
+                      foreground: Paint()
+                        ..style = PaintingStyle.stroke
+                        ..strokeWidth = 1.5
+                        ..color = Colors.white,
+                    ),
+                ),
+
+                Text(
+                  "Welcome Back to PlayedIt!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                ),
+              ]
+            ),
             SizedBox(height: 30),
 
             TextField(
@@ -76,7 +101,7 @@ class _LogInState extends State<LogIn>{
             SizedBox(height: 20),
 
             ElevatedButton(
-              style: ButtonStyle(
+              style: ElevatedButton.styleFrom(
                 //backgroundColor: Color(0xFFbecbf4),
               ),
               onPressed: () {

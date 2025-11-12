@@ -189,7 +189,7 @@ List<ProfileCompletionCard> profileCompletionCards = [
     icon: CupertinoIcons.person_circle,
   ),
   ProfileCompletionCard(
-    title: "Make Your First List",
+    title: "Manage Your Lists",
     buttonText: "Continue",
     icon: CupertinoIcons.square_list,
   ),
