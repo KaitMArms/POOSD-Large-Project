@@ -18,7 +18,7 @@ function LoadGlobalGame() {
     }
 
     try {
-    const response = await fetch('https://playedit.games/api/globalgames/recommended', {
+    const response = await fetch('https://playedit.games/api/globalgames', {
         method: 'GET',
         headers: {
         'Authorization': `Bearer ${token}`,
