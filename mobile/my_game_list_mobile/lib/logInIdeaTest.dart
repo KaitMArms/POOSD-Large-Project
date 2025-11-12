@@ -15,6 +15,8 @@ class _LogInTestState extends State<LogInIdea>{
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool _obscure = true;
+  bool isHoveringSignUp = false;
+  bool isHoveringPassword = false;
   
   @override
   void dispose() {
@@ -136,6 +138,7 @@ class _LogInTestState extends State<LogInIdea>{
                     "New to PlayedIt?",
                     style: TextStyle(
                       fontSize: 18,
+                      fontWeight: FontWeight.bold    
                     ),
                   ),
                   TextButton(
@@ -150,10 +153,56 @@ class _LogInTestState extends State<LogInIdea>{
                           MaterialPageRoute(builder: (context) => const SignUp())
                           );
                     }, 
-                  child: Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      fontSize: 19,
+                  child: GestureDetector(
+                    onTapDown: (_) => setState(() => isHoveringSignUp = true),
+                    onTapUp: (_) => setState(() => isHoveringSignUp = false),
+                    onTapCancel: () => setState(() => isHoveringSignUp = false),
+                    child: Stack(
+                      children: [ 
+                      Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          fontSize: 18,
+                          foreground: Paint() 
+                          ..style = PaintingStyle.stroke
+                          ..strokeWidth = 3
+                          ..color = isHoveringSignUp ? Colors.purple : Colors.white,
+                          fontWeight: FontWeight.bold,
+                          decoration: isHoveringSignUp ? TextDecoration.underline : TextDecoration.none,
+                          decorationColor: Colors.purple,
+                          decorationThickness: 2
+                        ),
+                      ),
+                    
+                      Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.deepPurpleAccent,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    
+                      Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.deepPurpleAccent,
+                          fontWeight: FontWeight.bold,
+                            shadows: 
+                            [
+                              if(!isHoveringSignUp) 
+                                Shadow(
+                                  blurRadius: 8, 
+                                  color: Colors.white, 
+                                  offset: Offset(0, 0))
+                              else
+                                Shadow(blurRadius: 12, color: Colors.purple, offset: Offset(0, 0)),
+                                Shadow(blurRadius: 16, color: Colors.white, offset: Offset(0, 0)),
+                            ]
+                        ),
+                      ),
+                    ]
                     ),
                   )),
                 ],
@@ -169,44 +218,85 @@ class _LogInTestState extends State<LogInIdea>{
                 }, 
                 child: Text("Get New Password"))*/
         
-                Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    textAlign: TextAlign.center,
-                    "Forgot Password?",
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      textStyle: TextStyle(
-                        fontSize: 18
+                GestureDetector(
+                  onTapDown: (_) => setState(() => isHoveringPassword = true),
+                  onTapUp: (_) => setState(() => isHoveringPassword = false),
+                  onTapCancel: () => setState(() => isHoveringPassword = false),
+                  child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      "Forgot Password?",
+                      style: TextStyle(
+                        fontSize: 18,
                       ),
-                      padding: EdgeInsets.zero, // removes the default vertical padding
-                      minimumSize: Size(0, 0), // avoids minimum touch size forcing space
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // ensures minimal layout space
                     ),
-                    onPressed: () {
-                      Navigator.push(context, 
-                          MaterialPageRoute(builder: (context) => const PasswordCollect())
-                          );
-                    }, 
-                  child: Text(
-                    "Get New One Here!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = 0.5
-                      ..color = Colors.white
-                      ,
-                      fontSize: 18
-                    ),
-                    )),
-                ],
-              ),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                          textStyle: TextStyle(
+                            fontSize: 18
+                          ),
+                          padding: EdgeInsets.zero, // removes the default vertical padding
+                          minimumSize: Size(0, 0), // avoids minimum touch size forcing space
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // ensures minimal layout space
+                        ),
+                        onPressed: () {
+                          Navigator.push(context, 
+                              MaterialPageRoute(builder: (context) => const PasswordCollect())
+                              );
+                        }, 
+                        child: Stack(
+                          children: [
+                            Text(
+                              "Get New One Here!",
+                              style: TextStyle(
+                                foreground: Paint() 
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 3
+                                ..color = isHoveringPassword ? Colors.purple : Colors.white,
+                                fontWeight: FontWeight.bold,
+                                decoration: isHoveringPassword ? TextDecoration.underline : TextDecoration.none,
+                                decorationColor: Colors.purple,
+                                decorationThickness: 2
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                      
+                            Text(
+                              "Get New One Here!",
+                              style: TextStyle(
+                                color: Colors.deepPurpleAccent,
+                                fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                      
+                            Text(
+                            "Get New One Here!",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.deepPurpleAccent,
+                              fontWeight: FontWeight.bold,
+                              shadows: 
+                              [
+                                if(!isHoveringPassword) 
+                                  Shadow(
+                                    blurRadius: 8, 
+                                    color: Colors.white, 
+                                    offset: Offset(0, 0))
+                                else
+                                  Shadow(blurRadius: 12, color: Colors.purple, offset: Offset(0, 0)),
+                                  Shadow(blurRadius: 16, color: Colors.white, offset: Offset(0, 0)),
+                              ]
+                            ),
+                          ),
+                          ]
+                        ),
+                      ),
+                  ],
+                                ),
+                ),
             ],
           )
         ),
@@ -215,50 +305,4 @@ class _LogInTestState extends State<LogInIdea>{
     );
   }
 }
-
-
-
-  /*final TextEditingController username = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(24, 80, 24, 24),
-          child: Column(
-          children: [
-
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Username/Email",
-                fillColor: Color.fromARGB(3, 6, 16, 245),
-              )
-            ),
-
-            SizedBox(height: 16),
-
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Password",
-                fillColor: Color.fromARGB(3, 6, 16, 245),
-                )
-            ),
-
-            SizedBox(height: 16),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const SignUp())
-                    );
-              },
-              child: Text("Log In"),
-            )
-          ],
-        )
-      )
-    );
-  }
-}*/
 
