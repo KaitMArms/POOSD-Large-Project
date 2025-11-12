@@ -36,8 +36,12 @@ body[data-theme="dark"] {
   backdrop-filter: blur(8px);
 }
 
+body {
+  margin-top: 0;
+}
+
 .nav-bar {
-  width: 90%;
+  width: 92%;
   max-width: 1200px;
   display: flex;
   justify-content: space-between;
@@ -52,13 +56,13 @@ body[data-theme="dark"] {
 }
 
 .mascot {
-  width: 60px;
+  width: 100px;
   height: auto;
   filter: drop-shadow(0 0 8px rgba(162, 89, 255, 0.7));
 }
 
 .title {
-  font-size: 2.2rem;
+  font-size: 2.6rem;
   font-weight: 700;
   color: #72139B;
   text-shadow:
