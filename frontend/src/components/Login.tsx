@@ -10,69 +10,59 @@ function Login() {
   const [cooldown, setCooldown] = useState(0);
   const [verifying, setVerifying] = useState(false);
 
-  // 🔒 prevent stale tokens from logging user in by accident
+  // lock background scroll when modal open
   useEffect(() => {
-    localStorage.removeItem("token");
-  }, []);
-
-  // Lock background scroll when modal is open
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = verifyOpen ? "hidden" : prev || "";
-    return () => { document.body.style.overflow = prev || ""; };
+    const original = document.body.style.overflow;
+    document.body.style.overflow = verifyOpen ? "hidden" : original || "";
+    return () => { document.body.style.overflow = original || ""; };
   }, [verifyOpen]);
 
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
+    const email = ((document.getElementById("loginEmail") as HTMLInputElement) || { value: "" }).value.trim().toLowerCase();
+    const password = ((document.getElementById("loginPassword") as HTMLInputElement) || { value: "" }).value;
 
-    const email = ((document.getElementById("loginEmail") as HTMLInputElement) || { value: "" })
-      .value.trim().toLowerCase();
-    const password = ((document.getElementById("loginPassword") as HTMLInputElement) || { value: "" })
-      .value;
-
-    if (!emailRe.test(email)) { setMessage("Please enter a valid email address."); return; }
-    if (!password) { setMessage("Password is required."); return; }
+    // minimal client-side checks (no layout changes)
+    if (!emailRe.test(email)) {
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+    if (!password) {
+      setMessage("Password is required.");
+      return;
+    }
 
     try {
-      const response = await fetch("https://playedit.games/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await fetch('https://playedit.games/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       });
 
-      // Parse body safely (HTML fallback would throw; catch will handle)
-      let data: any = null;
-      try { data = await response.json(); } catch { /* ignore */ }
+      const data = await response.json();
 
-      // 🎯 Only treat VERIFIED login as success when status === 200 AND token exists
-      if (response.status === 200 && data && typeof data.token === "string" && data.token.length > 0) {
-        localStorage.setItem("token", data.token);
+      if (response.ok) {
+        if (data?.token) localStorage.setItem("token", data.token);
         window.location.href = "/dashboard";
-        return;
-      }
-
-      // 🚧 Unverified -> OTP modal (must be explicit 403 + code)
-      if (response.status === 403 && data?.code === "EMAIL_UNVERIFIED") {
+      } else if (response.status === 403 && data?.code === "EMAIL_UNVERIFIED") {
         setVerifyEmail(data.email || email);
         setMessage("");
         setVerifyOpen(true);
 
         if (typeof data.resendWaitSec === "number" && data.resendWaitSec > 0) {
           setCooldown(data.resendWaitSec);
-          const t = window.setInterval(() => {
+          const t = setInterval(() => {
             setCooldown((c) => {
-              if (c <= 1) { window.clearInterval(t); return 0; }
+              if (c <= 1) { clearInterval(t); return 0; }
               return c - 1;
             });
           }, 1000);
         }
-        return;
+      } else {
+        setMessage(data?.message || "Invalid credentials");
       }
-
-      // Anything else: show server-provided message or generic
-      setMessage((data && data.message) || `Login failed (status ${response.status}).`);
     } catch {
       setMessage("Server error — try again later.");
     }
@@ -80,62 +70,56 @@ function Login() {
 
   async function verifyCode() {
     if (!verifyEmail || otp.trim().length < 6) return;
-
     setVerifying(true);
     try {
       const response = await fetch("https://playedit.games/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: verifyEmail, code: otp.trim() }),
+        body: JSON.stringify({ email: verifyEmail, code: otp.trim() })
       });
+      const data = await response.json();
+      setVerifying(false);
 
-      let data: any = null;
-      try { data = await response.json(); } catch {}
-
-      if (response.status === 200 && data?.token) {
-        localStorage.setItem("token", data.token);
+      if (response.ok) {
+        if (data?.token) localStorage.setItem("token", data.token);
         setVerifyOpen(false);
         window.location.href = "/dashboard";
       } else {
-        setMessage((data && data.message) || `Verification failed (status ${response.status}).`);
+        setMessage(data.message || "Invalid code");
       }
     } catch {
-      setMessage("Server error — try again.");
-    } finally {
       setVerifying(false);
+      setMessage("Server error — try again.");
     }
   }
 
   async function resendCode() {
     if (!verifyEmail || cooldown > 0) return;
-
     try {
       const response = await fetch("https://playedit.games/api/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: verifyEmail }),
+        body: JSON.stringify({ email: verifyEmail })
       });
-
-      let data: any = null;
-      try { data = await response.json(); } catch {}
-
-      if (response.status === 200) {
+      const data = await response.json();
+      if (response.ok) {
         setMessage("Code resent. Check your email.");
         setCooldown(30);
-        const t = window.setInterval(() => {
+        const t = setInterval(() => {
           setCooldown((c) => {
-            if (c <= 1) { window.clearInterval(t); return 0; }
+            if (c <= 1) { clearInterval(t); return 0; }
             return c - 1;
           });
         }, 1000);
       } else {
-        setMessage((data && data.message) || `Unable to resend (status ${response.status}).`);
+        setMessage(data.message || "Unable to resend right now.");
       }
     } catch {
       setMessage("Server error — try again.");
     }
   }
 
+  // clear inline message as user types (no layout changes)
   function clearMsgOnInput() {
     if (message) setMessage("");
   }
@@ -143,24 +127,12 @@ function Login() {
   return (
     <div id="page-container">
       <div>
-        <img
-          src="/Mascot.png"
-          alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"
-        />
+        <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller" />
       </div>
-
       <br />
-
       <div id="login-container">
         <span id="inner-title">Welcome Back to PlayedIt!</span><br />
-
-        <input
-          type="email"
-          id="loginEmail"
-          placeholder="Email"
-          onInput={clearMsgOnInput}
-        /><br />
-
+        <input type="email" id="loginEmail" placeholder="Email" onInput={clearMsgOnInput} /><br />
         <div className="password-field">
           <input
             type={showPassword ? "text" : "password"}
@@ -177,7 +149,6 @@ function Login() {
             {showPassword ? "👁️" : "👁️‍🗨️"}
           </button>
         </div>
-
         <input
           type="submit"
           id="loginButton"
@@ -185,23 +156,23 @@ function Login() {
           value="Log In"
           onClick={doLogin}
         />
-
-        {!verifyOpen && message && <div className="inline-error">{message}</div>}
+        {/* Inline login error (non-OTP) below the button */}
+        {!verifyOpen && message && (
+          <div className="inline-error">{message}</div>
+        )}
 
         <span id="login-result"></span>
-
-        <p className="signup-link">
-          New to PlayedIt? <br />
-          <Link to="/signup">Sign Up</Link>
-        </p>
+        <p className="signup-link">New to PlayedIt? <br /><Link to="/signup">Sign Up</Link></p>
       </div>
 
+      {/* Centered OTP modal (unchanged layout) */}
       {verifyOpen && (
         <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Email verification">
           <div className="modal-card" role="document">
             <h3>Verify your email</h3>
             <p>We sent a 6-digit code to <b>{verifyEmail}</b>.</p>
 
+            {/* message area inside modal */}
             {message && <div className="alert">{message}</div>}
 
             <input
@@ -215,28 +186,15 @@ function Login() {
             />
 
             <div className="modal-actions">
-              <button
-                className="buttons"
-                onClick={verifyCode}
-                disabled={verifying || otp.trim().length < 6}
-              >
+              <button className="buttons" onClick={verifyCode} disabled={verifying || otp.trim().length < 6}>
                 {verifying ? "Verifying..." : "Verify"}
               </button>
 
-              <button
-                className="buttons"
-                onClick={resendCode}
-                disabled={cooldown > 0}
-              >
+              <button className="buttons" onClick={resendCode} disabled={cooldown > 0}>
                 {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
               </button>
 
-              <button
-                className="buttons outline"
-                onClick={() => setVerifyOpen(false)}
-              >
-                Cancel
-              </button>
+              <button className="buttons outline" onClick={() => setVerifyOpen(false)}>Cancel</button>
             </div>
           </div>
         </div>
