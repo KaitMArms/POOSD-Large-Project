@@ -179,10 +179,20 @@ class PlayedIt extends StatelessWidget {
               ),
             fillColor: Color(0xFFbecbf4),
             filled: true,
+
+            border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+        enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
         ),
         
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFbecbf4),
               textStyle: TextStyle(
                 fontSize: 16,
               )
@@ -206,6 +216,15 @@ class PlayedIt extends StatelessWidget {
             ),
           fillColor: Color(0xFF2047C0),
           filled: true,
+
+        border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+        enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
         ),
         //text color -> light
         //text font -> orbitron

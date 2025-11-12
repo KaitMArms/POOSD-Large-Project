@@ -51,7 +51,6 @@ class _LogInState extends State<LogIn>{
             TextField(
               controller: username,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
                 labelText: "Username",
               )
             ),
@@ -62,7 +61,6 @@ class _LogInState extends State<LogIn>{
               controller: password,
               obscureText: _obscure,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
                 labelText: "Password",
                 suffixIcon: IconButton(
                     icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
@@ -78,12 +76,15 @@ class _LogInState extends State<LogIn>{
             SizedBox(height: 20),
 
             ElevatedButton(
+              style: ButtonStyle(
+                //backgroundColor: Color(0xFFbecbf4),
+              ),
               onPressed: () {
                 Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const SignUp())
+                    MaterialPageRoute(builder: (context) => const MainNavigation())
                     );
               },
-              child: Text("Sign Up"),
+              child: Text("Log In"),
             ),
 
             SizedBox(height: 14),
@@ -91,10 +92,10 @@ class _LogInState extends State<LogIn>{
             ElevatedButton(
               onPressed: () {
                 Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => const MainNavigation())
+                    MaterialPageRoute(builder: (context) => const SignUp())
                     );
               },
-              child: Text("Log In"),
+              child: Text("Sign Up"),
             ),
 
             SizedBox(height: 14),
