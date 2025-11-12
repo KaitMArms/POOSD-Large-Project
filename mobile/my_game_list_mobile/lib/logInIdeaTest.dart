@@ -57,9 +57,10 @@ class _LogInTestState extends State<LogInIdea>{
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 35,
+                        fontWeight: FontWeight.bold,
                         foreground: Paint()
                           ..style = PaintingStyle.stroke
-                          ..strokeWidth = 1.84
+                          ..strokeWidth = 3
                           ..color = Colors.white,
                       ),
                   ),
@@ -70,8 +71,23 @@ class _LogInTestState extends State<LogInIdea>{
                     style: TextStyle(
                         fontSize: 35,
                         color: Colors.deepPurpleAccent,
+                        fontWeight: FontWeight.bold,
                       ),
                   ),
+
+                  Text(
+                      "Welcome Back to PlayedIt!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35,
+                        color: Colors.deepPurpleAccent,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(blurRadius: 8, color: Colors.white, offset: Offset(0, 0)),
+                          Shadow(blurRadius: 8, color: Colors.white, offset: Offset(0, 0)),
+                        ]
+                      )
+                  )
                 ]
               ),
               SizedBox(height: 30),
