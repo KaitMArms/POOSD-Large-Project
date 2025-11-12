@@ -33,10 +33,11 @@ nav{
 }
 
 nav a{
-  font-size: 3vw;
-  padding: 0.5em 1em;
+  font-size: 1.5vw;
+  padding: 0.5em 0.5em;
   border-radius: 5px;
   background-color: #2047C0;
+  color: var(--text-color);
   text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
 }
 
@@ -47,12 +48,26 @@ nav a:hover{
 .title-container{
   position: relative;
   display: flex;
+
 }
 
 .title{
-  font-size: 20vw;
+  font-size: 5.3rem;
+  font-weight: 600;
   color: #72139B;
-  text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
+  margin-bottom: 12px;
+  text-align: center;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }
 
 body[data-theme="light"] {
