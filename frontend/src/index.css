@@ -56,7 +56,7 @@ body {
 }
 
 .mascot {
-  width: 350px;
+  width: 250px;
   height: auto;
   filter: drop-shadow(0 0 8px rgba(162, 89, 255, 0.7));
 }
