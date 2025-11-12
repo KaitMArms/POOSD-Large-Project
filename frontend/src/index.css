@@ -25,49 +25,87 @@ body[data-theme="dark"] {
   align-items: center;
 }
 
-nav{
-  border-radius: 4vw;
-  padding: 1em;
+.title-container {
+  width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  background-color: var(--div-color);
+  border-radius: 0 0 2vw 2vw;
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.4);
+  padding: 1em 0.5em;
+  backdrop-filter: blur(8px);
 }
 
-nav Link{
-  font-size: 3vw;
-  padding: 0.5em 1em;
-  border-radius: 5px;
-  background-color: #2047C0;
-  color: var(--text-color);
-  text-shadow: 0 0 5px #dd98e6, 0 0 10px #dd98e6, 0 0 15px #dd98e6;
-}
-
-nav Link:hover{
-  background-color: hsl(225, 95%, 58%);
-}
-
-.title-container{
-  position: relative;
+.nav-bar {
+  width: 90%;
+  max-width: 1200px;
   display: flex;
-
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.title{
-  font-size: 2.3rem;
-  font-weight: 600;
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+
+.mascot {
+  width: 60px;
+  height: auto;
+  filter: drop-shadow(0 0 8px rgba(162, 89, 255, 0.7));
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
   color: #72139B;
-  margin-bottom: 12px;
-  text-align: center;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
   text-shadow:
-    -1px -1px 0 var(--text-color),
-    1px -1px 0 var(--text-color),
-    -1px  1px 0 var(--text-color),
-    1px  1px 0 var(--text-color),
-    0 0 4px rgba(162, 89, 255, 0.9),
-    0 0 10px rgba(162, 89, 255, 0.6),
-    0 0 16px rgba(162, 89, 255, 0.4);
+    0 0 5px #dd98e6,
+    0 0 10px #dd98e6,
+    0 0 15px #dd98e6;
+  margin: 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5em;
+}
+
+.nav-links a {
+  font-size: 1.2rem;
+  padding: 0.4em 1em;
+  border-radius: 12px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  background-color: hsl(225, 95%, 58%);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(221, 152, 230, 0.8);
+}
+
+@media (max-width: 768px) {
+  .nav-bar {
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-links a {
+    font-size: 1rem;
+    padding: 0.5em 0.8em;
+  }
 }
 
 body[data-theme="light"] {
