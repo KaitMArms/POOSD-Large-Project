@@ -90,36 +90,37 @@ fetchRecommendedGames();
     if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
     return (
-    <div>
-        <div className="recommend-games-container">
-        <h2>Recommended Games</h2>
-        <div className="rec-results">
-        {
-            recommendedGames.length > 0 ? (
-            recommendedGames.map((game) => (
-                <Link key={game.id} to={`/game/${game.id}`} className="game-link"> {game.name} </Link>
-            ))
-            ) : (
-            <p>No recommended games found.</p>
-        )}
-        </div>
-        </div>
+        <div className="global-games-page">
+            <div className="recommend-games-container">
+                <h2>Recommended Games</h2>
+                <div className="rec-results">
+                    {recommendedGames.length > 0 ? (
+                        recommendedGames.map((game) => (
+                            <Link key={game.id} to={`/game/${game.id}`} className="game-link">
+                            {game.name}
+                            </Link>
+                        ))
+                    ) : (
+                        <p>No recommended games found.</p>
+                    )}
+                </div>
+            </div>
 
         <div className="search-games">
-        <input type="text" id="searchGamesInput" placeholder="Game Name here" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
-        <br />
-        <input type="submit" id="searchButton" className="buttons" value="Search" onClick={doSearchGame}/>
+            <h2>Search Global Games</h2>
+            <input type="text" id="searchGamesInput" placeholder="Game name here" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
+            <br />
+            <input type="submit" id="searchButton" className="buttons" value="Search" onClick={doSearchGame}/>
 
-        <div id="searchResult">
-            {
-                searchedGames.length > 0 ? (
-                searchedGames.map((game) => (
-                    <Link key={game.id} to={`/game/${game.id}`} className="game-link">{game.name}</Link>
-            ))
-            ) : (
-                searchQuery && <p>No games found for your search.</p>
-            )}
-        </div>
+            <div id="searchResult">
+                {searchedGames.length > 0 ? (
+                    searchedGames.map((game) => (
+                        <Link key={game.id} to={`/game/${game.id}`} className="game-link">{game.name}</Link>
+                    ))
+                ) : (
+                    searchQuery && <p>No games found for your search.</p>
+                )}
+            </div>
         </div>
     </div>
   );

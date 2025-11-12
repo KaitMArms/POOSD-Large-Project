@@ -1,12 +1,32 @@
-.page-container {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  min-height: 100vh;
+.global-games-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 4vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 2em 1em;
+}
+
+.page-title {
+  font-size: 2.4rem;
+  color: #b26cff;
+  text-shadow: 0 0 12px rgba(162, 89, 255, 0.7);
+  background-color: var(--div-color);
+  padding: 1em 2em;
+  border-radius: 1.2em;
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
+  margin-bottom: 2rem;
+}
+
+.recommend-games-container,
+.search-games {
+  width: 90%;
+  background-color: var(--div-color);
+  border-radius: 1em;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.25);
+  padding: 1.5em;
+  margin-bottom: 2em;
 }
 
 .game-view-container {
