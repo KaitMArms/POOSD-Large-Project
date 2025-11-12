@@ -66,13 +66,13 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  Text("(1/5)"),
+                  Text("(1/3)"),
                 ],
               ),
 
               SizedBox(height: 10),
               Row(
-                children: List.generate(5, (index) {
+                children: List.generate(3, (index) {
                   return Expanded(
                     child: Container(
                       height: 7,
