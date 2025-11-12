@@ -45,7 +45,7 @@ function Login() {
 
       if (response.ok) {
         if (data?.token) localStorage.setItem("token", data.token);
-        window.location.href = "/dashboard";
+        window.location.href = "/profile";
       } else if (response.status === 403 && data?.code === "EMAIL_UNVERIFIED") {
         setVerifyEmail(data.email || email);
         setMessage("");
