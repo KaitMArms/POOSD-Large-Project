@@ -1,12 +1,14 @@
 .page-title{
+    margin-top: 4em;
     font-size: 3rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #72139B;
     margin-bottom: 12px;
+    padding: 1em 2em;
     text-align: center;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
+    background-color: var(--div-color);
+    border-radius: 1.2em;
+    box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
     text-shadow:
     -1px -1px 0 var(--text-color),
     1px -1px 0 var(--text-color),
@@ -17,42 +19,83 @@
     0 0 16px rgba(162, 89, 255, 0.4);
 }
 
-.game-container{
-    background-color: var(--div-color);
-    color: var(--text-color);
+.game-container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    column-gap: 10px;
-    padding: 1em;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1.5em;
+    margin: 2em 0 3em 0;
+    padding-bottom: 1em;
 }
+
+.game-container::-webkit-scrollbar {
+    height: 10px;
+}
+.game-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+}
+.game-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #7b47ff, #b26cff);
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+.game-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #9f63ff, #c87cff);
+}
+
 .game-column{
     background-color: var(--div-color);
-    color: var(--text-color);
-    float: left;
-    overflow-y: scroll;
-    width: 16vw;
-    height: 50vw;
+    padding: 1em 1.5em;
+    border-radius: 1.2em;
+    min-width: 250px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(162, 89, 255, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .column-title{
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #72139B;
-    margin-bottom: 12px;
-    text-align: center;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #b26cff;
+    letter-spacing: 0.5px;
     text-shadow:
-    -1px -1px 0 var(--text-color),
-    1px -1px 0 var(--text-color),
-    -1px  1px 0 var(--text-color),
-    1px  1px 0 var(--text-color),
-    0 0 4px rgba(162, 89, 255, 0.9),
-    0 0 10px rgba(162, 89, 255, 0.6),
-    0 0 16px rgba(162, 89, 255, 0.4);
+        0 0 6px rgba(162, 89, 255, 0.9),
+        0 0 12px rgba(162, 89, 255, 0.6),
+        0 0 24px rgba(162, 89, 255, 0.4);
+    margin-bottom: 0.8em;
+    padding: 0.6em 1.2em;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    background: linear-gradient(145deg, rgba(20, 20, 60, 0.8), rgba(10, 10, 30, 0.8));
+    box-shadow:
+        0 0 15px rgba(162, 89, 255, 0.3),
+        inset 0 0 8px rgba(162, 89, 255, 0.2);
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-game-row {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-color);
+    padding: 0.5em 1em;
+    border-radius: 0.6em;
+    margin: 0.3em 0;
+    width: 100%;
+    text-align: center;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+.user-game-row:hover {
+    background-color: rgba(162, 89, 255, 0.3);
+    transform: scale(1.02);
 }
 
 .game-link {
@@ -77,4 +120,19 @@
     0 0 4px rgba(162, 89, 255, 0.9),
     0 0 10px rgba(162, 89, 255, 0.6),
     0 0 16px rgba(162, 89, 255, 0.4);
+}
+
+@media (max-width: 900px) {
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .game-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .game-column {
+        min-width: 200px;
+    }
 }
