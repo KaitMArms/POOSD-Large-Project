@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import EditUser from '../components/EditUser';
+import EditUser from "../components/EditUser";
 
 function LoadUser() {
   const [editing, setEditing] = useState(false);
@@ -27,7 +27,7 @@ function LoadUser() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("User data:", data); // Debug once to confirm keys
+          console.log("Fetched user data:", data);
           setUser(data);
         } else {
           const errorData = await response.json().catch(() => ({}));
@@ -51,6 +51,8 @@ function LoadUser() {
   if (error) return <div>Error: {error}</div>;
   if (!user) return <div>No user data found.</div>;
 
+  const userEmail = user.eMail || user.email || "N/A";
+
   return (
     <div>
       <div className="user-container">
@@ -68,29 +70,44 @@ function LoadUser() {
               : `${user.username || "User"}'s Profile`}
           </span>
 
-          <div className="info-item">
-            <strong>Username:</strong> <span>{user.username || "N/A"}</span>
-          </div>
+          <div className="info-grid">
+            <div className="info-details">
+              <div className="info-item">
+                <strong>Username:</strong> <span>{user.username || "N/A"}</span>
+              </div>
 
-          <div className="info-item">
-            <strong>Email:</strong> <span>{user.email || "N/A"}</span>
-          </div>
+              <div className="info-item">
+                <strong>Email:</strong> <span>{userEmail}</span>
+              </div>
 
-          <div className="info-item">
-            <strong>Account Type:</strong>{" "}
-            <span>{user.isDev ? "Developer" : "Player"}</span>
+              <div className="info-item">
+                <strong>Account Type:</strong>{" "}
+                <span>{user.isDev ? "Developer" : "Player"}</span>
+              </div>
+
+              {user.role && (
+                <div className="info-item">
+                  <strong>Role:</strong> <span>{user.role}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="bio-container">
+              <strong>Bio:</strong>
+              <p>{user.bio || "This user hasn’t written a bio yet."}</p>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="settings-container">
         <span className="settings-title">Settings</span>
+
         <button id="mode-toggle">Toggle Page's Color Mode</button>
 
         <div className="edit-profile-container">
-          <button className="edit-profile-btn" onClick={() => setEditing(true)}> Edit Profile </button>
+          <button className="edit-profile-btn"onClick={() => setEditing(true)}> Edit Profile </button>
         </div>
-        <br />
 
         <label className="dev-check-container">
           <input type="checkbox" defaultChecked={user.isDev} />
