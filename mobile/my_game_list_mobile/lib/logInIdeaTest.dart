@@ -145,7 +145,6 @@ class _LogInTestState extends State<LogInIdea>{
         
               SizedBox(height: 14),
         
-        
              /* Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
