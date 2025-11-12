@@ -68,28 +68,28 @@ function LoadUserGames()
 
     return(
         //code inside container, display game in their proper catagories
-        <div id="page-container">
-            <span id="page-title">Your Games List</span><br />
-            <div id="game-container">
-                <div id="game-column">
-                    <span id="column-title">Completed</span>
-                    <span id="completed-games">{gamesByStatus('Completed')}</span>
+        <div>
+            <span className="page-title">Your Games List</span><br />
+            <div className="game-container">
+                <div className="game-column">
+                    <span className="column-title">Completed</span>
+                    <span className="completed-games">{gamesByStatus('Completed')}</span>
                 </div>
-                <div id="game-column">
-                    <span id="column-title">In Progress</span>
-                    <span id="in-prog-games">{gamesByStatus('In Progress')}</span>
+                <div className="game-column">
+                    <span className="column-title">In Progress</span>
+                    <span className="in-prog-games">{gamesByStatus('In Progress')}</span>
                 </div>
-                <div id="game-column">
-                    <span id="column-title">Paused</span>
-                    <span id="paused-games">{gamesByStatus('Paused')}</span>
+                <div className="game-column">
+                    <span className="column-title">Paused</span>
+                    <span className="paused-games">{gamesByStatus('Paused')}</span>
                 </div>
-                <div id="game-column">
-                    <span id="column-title">Dropped</span>
-                    <span id="dropped-games">{gamesByStatus('Dropped')}</span>
+                <div className="game-column">
+                    <span className="column-title">Dropped</span>
+                    <span className="dropped-games">{gamesByStatus('Dropped')}</span>
                 </div>
-                <div id="game-column">
-                    <span id="column-title">To Be Played</span>
-                    <span id="to-play-games">{gamesByStatus('To Be Played')}</span>
+                <div className="game-column">
+                    <span className="column-title">To Be Played</span>
+                    <span className="to-play-games">{gamesByStatus('To Be Played')}</span>
                 </div>
             </div>
         </div>

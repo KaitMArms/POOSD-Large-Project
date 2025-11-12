@@ -2,12 +2,12 @@ import LoadGame from '../components/LoadGame.tsx';
 import "./GamePage.css"
 import "../index.css";
 
-const LoginPage = () =>
+const GamePage = () =>
 {
     return(
-        <div>
+        <div className='page-container'>
             <LoadGame />
         </div>
     );
 };
-export default LoginPage; 
+export default GamePage; 

@@ -1,14 +1,3 @@
-.page-container {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 4vh;   
-}
-
 .page-title{
     font-size: 3rem;
     font-weight: 600;
@@ -66,9 +55,26 @@
     0 0 16px rgba(162, 89, 255, 0.4);
 }
 
-span{
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border-width: 2px;
-    border-color: #72139B;
+.game-link {
+  color: #72139B;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.25s ease;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
+}
+
+.game-link:hover {
+  text-decoration: underline;
+  transform: scale(1.04);
+  text-shadow:
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }

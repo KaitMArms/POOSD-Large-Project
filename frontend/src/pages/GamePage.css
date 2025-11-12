@@ -1,4 +1,15 @@
-#game-view-container {
+.page-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 4vh;
+}
+
+.game-view-container {
   background-color: var(--div-color);
   padding: 2rem;
   border-radius: 20px;
@@ -41,7 +52,7 @@
   filter: drop-shadow(0 0 22px rgba(162, 119, 255, 0.65));
 }
 
-#game-view-container p {
+.game-view-container p {
   margin-top: 10px;
   font-size: 1.05rem;
   color: var(--text-color);

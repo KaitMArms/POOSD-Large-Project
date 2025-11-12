@@ -44,8 +44,7 @@ function LoadGame() {
   if (!game) return <div>Game not found.</div>;
 
   return (
-    <div className="page-container">
-    <div id="game-view-container">
+    <div className="game-view-container">
       <img src={game.coverImageUrl} alt={game.title} id="game-cover" />
 
       <h1 id="game-title">{game.title}</h1>
@@ -55,7 +54,6 @@ function LoadGame() {
 
       <p id="game-description">{game.description}</p>
     </div>
-  </div>
   );
 }
 

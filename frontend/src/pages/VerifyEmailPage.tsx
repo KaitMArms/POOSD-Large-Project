@@ -5,7 +5,7 @@ import "../pages/VerifyEmail.css";
 const VerifyEmailPage = () =>
 {
     return(
-        <div>
+        <div className='page-container'>
             <VerifyEmail />
         </div>
     );

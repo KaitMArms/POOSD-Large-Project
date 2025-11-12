@@ -40,35 +40,33 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <div id="page-container">
-      <div id="sign-up-container">
-        <p id="inner-title">
-          Email Verification Required
-          <br />
-          Check your email and enter the code below.
-        </p>
+    <div className="sign-up-container">
+      <p className="inner-title">
+        Email Verification Required
+        <br />
+        Check your email and enter the code below.
+      </p>
 
-        <input
-          type="text"
-          id="otpInput"
-          placeholder="Verification Code"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-        />
+      <input
+        type="text"
+        id="otpInput"
+        placeholder="Verification Code"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
+      />
 
-        <input
-          type="submit"
-          className="buttons"
-          value="Verify Email"
-          onClick={verifyCode}
-        />
+      <input
+        type="submit"
+        className="buttons"
+        value="Verify Email"
+        onClick={verifyCode}
+      />
 
-        <button className="buttons resend-btn" onClick={resendCode}>
-          Resend Code
-        </button>
+      <button className="buttons resend-btn" onClick={resendCode}>
+        Resend Code
+      </button>
 
-        <span id="verify-result">{message}</span>
-      </div>
+      <span id="verify-result">{message}</span>
     </div>
   );
 }
