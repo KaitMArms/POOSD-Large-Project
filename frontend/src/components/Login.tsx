@@ -35,7 +35,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch('https://playedit.games:8080/api/auth/login', {
+      const response = await fetch('https://playedit.games/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -72,7 +72,7 @@ function Login() {
     if (!verifyEmail || otp.trim().length < 6) return;
     setVerifying(true);
     try {
-      const response = await fetch("https://playedit.games:8080/api/auth/verify-otp", {
+      const response = await fetch("https://playedit.games/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: verifyEmail, code: otp.trim() })
@@ -96,7 +96,7 @@ function Login() {
   async function resendCode() {
     if (!verifyEmail || cooldown > 0) return;
     try {
-      const response = await fetch("https://playedit.games:8080/api/auth/resend-otp", {
+      const response = await fetch("https://playedit.games/api/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: verifyEmail })

@@ -18,7 +18,7 @@ function SignUp() {
     const password  = (document.getElementById('loginPassword') as HTMLInputElement).value;
 
     try {
-      const response = await fetch('https://playedit.games:8080/api/auth/register', {
+      const response = await fetch('https://playedit.games/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email, username, password })
