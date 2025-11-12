@@ -19,9 +19,11 @@ function LoadUserGames()
             }
 
             try {
-                const response = await fetch('http://localhost:8080/api/user/games', {
+                const response = await fetch('https://playedit.games/api/user/games', {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
@@ -29,7 +31,7 @@ function LoadUserGames()
                     const data = await response.json();
                     setGames(data);
                 } else {
-                    const errorData = await response.json();
+                    const errorData = await response.json().catch(() => ({}));
                     setError(errorData.message || "Failed to fetch user games.");
                 }
             } catch (err) {
@@ -42,7 +44,6 @@ function LoadUserGames()
         fetchUserGames();
     }, []);
 
-    // Make each game title a Link to /game/:id so clicking opens the single-game view
     const gamesByStatus = (status: string) => {
         return games
             .filter(game => game.status === status)
@@ -51,9 +52,6 @@ function LoadUserGames()
                     <Link to={`/game/${game.gameId}`} className="game-link">
                         {game.title}
                     </Link>
-                    {/* keep existing metadata if you want (e.g., progress, platform)
-                        <span className="game-meta">{game.platform}</span>
-                    */}
                 </div>
             ));
     };

@@ -19,9 +19,11 @@ function LoadGlobalGame()
             }
 
             try {
-                const response = await fetch('http://localhost:8080/api/globalgames/recommended', {
+                const response = await fetch('https://playedit.games/api/globalgames/recommended', {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
@@ -29,7 +31,7 @@ function LoadGlobalGame()
                     const data = await response.json();
                     setRecommendedGames(data);
                 } else {
-                    const errorData = await response.json();
+                    const errorData = await response.json().catch(() => ({}));
                     setError(errorData.message || "Failed to fetch recommended games.");
                 }
             } catch (err) {
@@ -50,9 +52,11 @@ function LoadGlobalGame()
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/globalgames/search?q=${searchQuery}`, {
+            const response = await fetch(`https://playedit.games/api/globalgames/search?q=${encodeURIComponent(searchQuery)}`, {
+                method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
 
@@ -60,7 +64,7 @@ function LoadGlobalGame()
                 const data = await response.json();
                 setSearchedGames(data);
             } else {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 setError(errorData.message || "Failed to search for games.");
             }
         } catch (err) {
@@ -85,7 +89,7 @@ function LoadGlobalGame()
             </div>
 
             <div className="search-games">
-                <input type="text" id="searchGamesInput" placeholder="Game Name here" 
+                <input type="text" id="searchGamesInput" placeholder="Game Name here"
                     value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/><br />
                 <input type="submit" id="searchButton" className="buttons" value="Search"
                     onClick={doSearchGame} />
@@ -97,7 +101,7 @@ function LoadGlobalGame()
                         </Link>
                     ))}
                 </div>
-            </div>            
+            </div>
         </div>
     );
 };

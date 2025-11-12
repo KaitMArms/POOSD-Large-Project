@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import EditUser from '../components/EditUser.tsx';
+import EditUser from '../components/EditUser'; // extension optional
 
 // Light & Dark Mode Controller
 // This component page will load the users profile after login
@@ -8,19 +8,23 @@ function LoadUser()
     const[editing, setEditing] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 setError("No token found. Please log in.");
+                setLoading(false);
                 return;
             }
 
             try {
-                const response = await fetch('http://localhost:8080/api/user/profile', {
+                const response = await fetch('https://playedit.games/api/user/profile', {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
@@ -28,11 +32,13 @@ function LoadUser()
                     const data = await response.json();
                     setUser(data);
                 } else {
-                    const errorData = await response.json();
+                    const errorData = await response.json().catch(() => ({}));
                     setError(errorData.message || "Failed to fetch user profile.");
                 }
             } catch (err) {
                 setError("An error occurred while fetching the user profile.");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -40,9 +46,13 @@ function LoadUser()
     }, []);
 
 
-    // If we're editing the user, then use a EditUser component instead of this one. 
+    // If we're editing the user, then use a EditUser component instead of this one.
     if (editing) {
         return <EditUser initial={user} onClose={() => setEditing(false)} />;
+    }
+
+    if (loading) {
+        return <div>Loading...</div>;
     }
 
     if (error) {
@@ -50,7 +60,7 @@ function LoadUser()
     }
 
     if (!user) {
-        return <div>Loading...</div>;
+        return <div>No user data.</div>;
     }
 
     return(
@@ -58,7 +68,7 @@ function LoadUser()
         <div>
             <div className="user-container">
                 <div className="pfp-container">
-                    <img></img>
+                    <img alt={`${user.username}'s avatar`} src={user.avatarUrl ?? "/default-pfp.png"} />
                 </div>
                 <div className="info-container">
                     <span className="profile-name-span">{user.firstName} {user.lastName}'s Profile</span>
@@ -69,15 +79,13 @@ function LoadUser()
             <div className="settings-container">
                 <button id="mode-toggle">Toggle Page's Color Mode</button>
                 <label className='dev-check-container'>
-                    <input type="checkbox">
-                        <span className="checkmark"></span>
-                        <span className="label-checkbox">Toggle Dev User</span>
-                    </input>
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                    <span className="label-checkbox">Toggle Dev User</span>
                 </label>
 
             </div>
         </div>
-        //Maybe put an if statement here for if a flag is positive user is developer and another section for dev realted stuff pops up
     );
 };
 
