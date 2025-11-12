@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const { UserModel: User } = require('../db');
 const generateOTP = require('../middleware/generateOTP');
 const { sendEmail } = require('../services/sendEmail');
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const JWT_EXPIRES = '1d';
 
@@ -27,6 +28,10 @@ exports.register = async (req, res) => {
     }
 
     const normEmail = String(email).toLowerCase().trim();
+    if (!EMAIL_RE.test(normEmail)) {
+      return res.status(400).json({ message: 'Valid email is required.' });
+    }
+
     const normUser  = String(username).toLowerCase().trim();
 
     const [emailTaken, usernameTaken] = await Promise.all([
@@ -65,8 +70,13 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required.' });
 
     const normalizedEmail = String(email).toLowerCase().trim();
+    if (!EMAIL_RE.test(normalizedEmail)) {
+      return res.status(400).json({ message: 'Valid email is required.' });
+    }
+
     const user = await User.findOne({ email: normalizedEmail })
-      .select('+password emailVerified role username userID otpLastSentAt');
+      .select('+email +password emailVerified role username userID otpLastSentAt');
+
     if (!user) return res.status(401).json({ message: 'Invalid credentials.' });
 
     const ok = await user.checkPassword(password);
@@ -87,10 +97,11 @@ exports.login = async (req, res) => {
           { _id: user._id },
           { $set: { otpHash, otpExpiresAt, otpLastSentAt: new Date(now), otpAttempts: 0 } }
         );
+        const toEmail = String(user.email || normalizedEmail || '').trim();
+        console.log('DEBUG otp send target:', { toEmail, hasEmail: !!toEmail, userId: user._id });
 
-        // fire-and-forget email
         sendEmail({
-          to: user.email,
+          to: toEmail,
           subject: 'Your verification code',
           text: `Your code is ${otp}. It expires in 5 minutes.`,
           html: `<p>Your verification code is: <b>${otp}</b></p><p>This code expires in 5 minutes.</p>`
