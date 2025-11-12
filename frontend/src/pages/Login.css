@@ -134,3 +134,90 @@ img {
     0 0 10px rgba(162, 89, 255, 0.6),
     0 0 16px rgba(162, 89, 255, 0.4);
 }
+
+/* ======== OTP Modal Styling ======== */
+
+/* Overlay centered, covers whole viewport */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+/* Modal box */
+.modal-card {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--div-color);
+  color: var(--text-color);
+  border-radius: 16px;
+  padding: 1.8rem;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(162, 89, 255, 0.3);
+}
+
+/* Modal input */
+.modal-card input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 2px solid #72139B;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  text-align: center;
+  outline: none;
+  transition: 0.25s;
+}
+
+.modal-card input:focus {
+  box-shadow: 0 0 8px rgba(162, 89, 255, 0.5);
+}
+
+/* Buttons grid inside modal */
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.modal-actions .outline {
+  grid-column: 1 / -1;
+}
+
+/* Message / alert box inside modal */
+.alert {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #5b2b6d;
+  background: rgba(114, 19, 155, 0.15);
+  color: #e8d9ff;
+  font-size: 0.95rem;
+  word-wrap: break-word;
+}
+
+/* Make sure modal is above everything */
+#page-container,
+#login-container {
+  position: relative;
+  z-index: 1;
+}
+
+.inline-error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #b24bcf;   /* fits your purple theme */
+  background: rgba(178, 75, 207, 0.12);
+  color: #ffdfff;
+  font-size: 0.95rem;
+  text-align: center;
+}
