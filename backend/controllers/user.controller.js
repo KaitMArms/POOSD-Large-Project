@@ -3,6 +3,20 @@ const { GameModel: Game } = require('../db');
 const mongoose = require('mongoose');
 const BIO_MAX = 300; // schema maxlength
 const path = require('path');
+const jwt = require('jsonwebtoken');
+const JWT_EXPIRES = '1d';
+
+function signToken(user) {
+  const payload = {
+    sub: user._id.toString(),
+    uid: user.userID,
+    email: user.email,
+    username: user.username,
+    role: user.role,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
+}
+
 
 exports.profile = async (req, res) => {
   try {
@@ -151,12 +165,15 @@ exports.settingsUpd = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    const token = signToken(user);
+
     return res.status(200).json({
       success: true,
       settings: {
         isDev: user.role === 'dev',
         theme: user.settings?.theme ?? 'system'
-      }
+      },
+      token,
     });
   } catch (e) {
     console.error('settingsUpd error:', e);
