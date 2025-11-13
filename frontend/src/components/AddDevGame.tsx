@@ -151,6 +151,7 @@ export default function AddDevGame({ onClose }: { onClose: () => void }) {
                             <option value="paused">Paused</option>
                         </select>
                     </div>
+                    <span>test test is this updating</span>
                 </div>
             </div>
         </div>
