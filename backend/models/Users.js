@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     minlength: 3, maxlength: 30, match: /^[a-z0-9._-]+$/
   },
   password:  { type: String, required: true, trim: true, select: false },
-  avatarUrl: { type: String, trim: true },
+  avatarUrl: { type: String, default: "/Mascot.png" },
   createdAt: { type: Date, default: Date.now },
   userID:    { type: Number, unique: true },
   bio:       { type: String, trim: true, maxlength: 300 },
