@@ -109,19 +109,103 @@
     text-shadow: 0 0 10px rgba(162, 89, 255, 0.6);
 }
 
-.dropdown-themed label {
-    font-weight: bold;
-    margin-right: 8px;
-    color: var(--text-color);
+.dropdown-themed {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.dropdown-label {
+    font-family: var(--font-accent, "Orbitron", sans-serif);
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 6px var(--accent-color);
+    margin-bottom: 4px;
 }
 
 .theme-dropdown {
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 6px 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 2px solid var(--accent-color);
+    background-color: var(--input-bg, rgba(10, 10, 40, 0.9));
+    color: var(--text-color, #fff);
+    font-family: var(--font-accent, "Orbitron", sans-serif);
     font-size: 0.95rem;
+    outline: none;
+    box-shadow: 0 0 10px var(--accent-color);
+    transition: 0.2s ease-in-out;
+}
+
+.theme-dropdown:hover {
+    box-shadow: 0 0 14px var(--accent-color);
+}
+
+.theme-dropdown:focus {
+    box-shadow: 0 0 18px var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.edit-user-fields input,
+.edit-user-fields textarea {
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid var(--accent-color);
+    background-color: var(--input-bg, rgba(15, 15, 40, 0.85));
+    color: var(--text-color, #fff);
+    padding: 8px 10px;
+    font-size: 0.95rem;
+    font-family: var(--font-main, "Poppins", sans-serif);
+    margin-bottom: 10px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+    transition: 0.2s ease-in-out;
+}
+
+.edit-user-fields input:focus,
+.edit-user-fields textarea:focus {
+    outline: none;
+    box-shadow: 0 0 12px var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.edit-user-avatar-wrapper img {
+    border-radius: 12px;
+    box-shadow: 0 0 12px var(--accent-color);
+    transition: transform 0.2s ease-in-out;
+}
+
+.edit-user-avatar-wrapper img:hover {
+    transform: scale(1.03);
+}
+
+.edit-user-avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    cursor: pointer;
+}
+
+.edit-user-avatar-upload input[type="file"] {
+    display: none;
+}
+
+.edit-user-avatar-upload span {
+    padding: 6px 12px;
+    background: transparent;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.edit-user-avatar-upload span:hover {
+    background: var(--accent-color);
+    color: var(--bg-color, #0a0a14);
+    box-shadow: 0 0 12px var(--accent-color);
 }
 
 @media (max-width: 900px) {
