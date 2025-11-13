@@ -6,6 +6,11 @@ type LoadDevUserProps = {
   event: boolean;
 };
 
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080"
+    : "https://playedit.games";
+
 const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
   const [devGames, setDevGames] = useState<any[]>([]);
   const [searchedGames, setSearchedGames] = useState<any[]>([]);
@@ -27,7 +32,8 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
       }
 
       try {
-        const response = await fetch("https://playedit.games/api/dev/games", {
+        // 🔹 match dev.routes.js -> router.get('/games/view', viewGames);
+        const response = await fetch(`${API_BASE}/api/dev/games/view`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,7 +52,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
           setDevGames(list);
         } else {
           const errorData = await response.json().catch(() => ({}));
-          setError(errorData.message || "Failed to fetch developer games.");
+          setError(errorData.message || errorData.error || "Failed to fetch developer games.");
         }
       } catch {
         setError("An error occurred while fetching developer games.");
@@ -66,8 +72,11 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
     }
 
     try {
+      // 🔹 match controller signature: /dev/games/search?name=foo
       const response = await fetch(
-        `https://playedit.games/api/dev/games/search?q=${encodeURIComponent(searchQuery)}`,
+        `${API_BASE}/api/dev/games/search?name=${encodeURIComponent(
+          searchQuery
+        )}`,
         {
           method: "GET",
           headers: {
@@ -88,7 +97,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
         setSearchedGames(list);
       } else {
         const errorData = await response.json().catch(() => ({}));
-        setError(errorData.message || "Failed to search developer games.");
+        setError(errorData.message || errorData.error || "Failed to search developer games.");
       }
     } catch {
       setError("An error occurred while searching developer games.");
@@ -96,8 +105,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
   };
 
   const handleAddGame = () => {
-    // Navigate to the "Add Game" page or trigger modal
-    navigate("/add-game"); // Update this route as needed
+    navigate("/add-game"); // your existing route
   };
 
   if (!event) return null;
@@ -144,7 +152,11 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button id="searchDevButton" className="buttons" onClick={doSearchGame}>
+          <button
+            id="searchDevButton"
+            className="buttons"
+            onClick={doSearchGame}
+          >
             Search
           </button>
         </div>
