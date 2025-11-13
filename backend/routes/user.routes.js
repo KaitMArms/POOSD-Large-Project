@@ -6,7 +6,7 @@ const {
   profileUpd,
   settingsUpd,
   deleteAccount,
-  uploadAvatar,        // 🔹 add this
+  uploadAvatar,   
 } = require('../controllers/user.controller');
 const requireAuth = require('../middleware/requireAuth');
 const avatarUpload = require('../middleware/avatarUpload'); // 🔹 multer config
