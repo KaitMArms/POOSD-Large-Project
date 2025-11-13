@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import EditUser from "../components/EditUser";
+import LoadDevUser from "../components/LoadDevUser";
+import { useColorMode } from "../components/ColorMode";
 
 // same base + resolver as in EditUser
 const API_BASE =
@@ -18,6 +20,9 @@ function LoadUser() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isDevUser, setIsDevUser] = useState(false);
+
+  const { mode, toggleMode } = useColorMode();
 
   const fetchUserProfile = async () => {
     const token = localStorage.getItem("token");
@@ -40,6 +45,7 @@ function LoadUser() {
         const data = await response.json();
         console.log("Fetched user data:", data);
         setUser(data.user); // profile endpoint returns { success, user }
+        setIsDevUser(data.user?.isDev || false);
       } else {
         const errorData = await response.json().catch(() => ({}));
         setError(errorData.message || "Failed to fetch user profile.");
@@ -101,7 +107,7 @@ function LoadUser() {
 
             <div className="info-item">
               <strong>Account Type:</strong>{" "}
-              <span>{user.isDev ? "Developer" : "Player"}</span>
+              <span>{isDevUser ? "Developer" : "Player"}</span>
             </div>
 
             {user.role && (
@@ -121,7 +127,9 @@ function LoadUser() {
       <div className="settings-container">
         <span className="settings-title">Settings</span>
 
-        <button id="mode-toggle">Toggle Page's Color Mode</button>
+        <button id="mode-toggle" onClick={toggleMode}>
+          Toggle to {mode === "light" ? "Dark" : "Light"} Mode
+        </button>
 
         <div className="edit-profile-container">
           <button
@@ -133,11 +141,17 @@ function LoadUser() {
         </div>
 
         <label className="dev-check-container">
-          <input type="checkbox" defaultChecked={user.isDev} />
+          <input
+            type="checkbox"
+            checked={isDevUser}
+            onChange={(e) => setIsDevUser(e.target.checked)}
+          />
           <span className="checkmark"></span>
           <span className="label-checkbox">Toggle Dev User</span>
         </label>
       </div>
+
+      <LoadDevUser event={isDevUser} />
     </div>
   );
 }
