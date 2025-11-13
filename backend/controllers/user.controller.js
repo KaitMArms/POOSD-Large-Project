@@ -2,7 +2,7 @@ const { UserModel: User } = require('../db');
 const { GameModel: Game } = require('../db');
 const mongoose = require('mongoose');
 const BIO_MAX = 300; // schema maxlength
-const path = require('path');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const JWT_EXPIRES = '1d';
 
@@ -224,31 +224,35 @@ exports.deleteAccount = async (req, res) => {
   }
 };
 
-exports.avatarUpload = async (req, res) => {
+exports.uploadAvatar = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded.' });
     }
 
-    const filename = req.file.filename; // from multer
-    const avatarUrl = `/uploads/avatars/${filename}`;
+    const userId = req.user.sub;
+    const relPath = `/uploads/avatars/${req.file.filename}`;
 
     const user = await User.findByIdAndUpdate(
-      req.user.sub,
-      { $set: { avatarUrl } },
+      userId,
+      { $set: { avatarUrl: relPath } },
       { new: true, runValidators: true }
     ).select('firstName lastName username email avatarUrl bio role');
 
     if (!user) {
+      // clean up the file if user not found
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch {}
       return res.status(404).json({ message: 'User not found.' });
     }
 
     return res.status(200).json({
       success: true,
-      user
+      user,
     });
-  } catch (e) {
-    console.error('avatarUpload error:', e);
+  } catch (err) {
+    console.error('uploadAvatar error:', err);
     return res.status(500).json({ message: 'Server error.' });
   }
 };
