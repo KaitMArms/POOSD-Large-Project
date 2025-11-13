@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_game_list_mobile/log_out.dart';
 import 'package:my_game_list_mobile/notifications.dart';
@@ -39,9 +40,12 @@ class _ProfileState extends State<Profile> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage("assets/Mascot.png"),
+              GestureDetector(
+                onTap: ProfileAction,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage("assets/Mascot.png"),
+                ),
               ),
               SizedBox(height: 10),
               Text(
@@ -168,6 +172,15 @@ class _ProfileState extends State<Profile> {
 
       //default Scaffold retains base colors of light mode = light blue, dark mode = dark blue
     );
+  }
+
+  Future<void> ProfileAction() async{
+    //1. Choose Image to Upload 
+    //2. Upload Image to Storage Service
+    //3. Show and Persist Image in the App (FUCK THIS IS APIs)
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if(image == null) return;
   }
 }
 class ProfileCompletionCard {
