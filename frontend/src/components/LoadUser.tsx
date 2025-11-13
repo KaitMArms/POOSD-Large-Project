@@ -33,7 +33,7 @@ function LoadUser() {
     }
 
     try {
-      const response = await fetch("https://playedit.games/api/user/profile", {
+      const response = await fetch(`${API_BASE}/api/user/profile`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,8 +44,11 @@ function LoadUser() {
       if (response.ok) {
         const data = await response.json();
         console.log("Fetched user data:", data);
-        setUser(data.user); // profile endpoint returns { success, user }
-        setIsDevUser(data.user?.isDev || false);
+        // profile endpoint returns { success, user }
+        const u = data.user || data;
+        setUser(u);
+        // 🔹 derive dev status from role
+        setIsDevUser(u.role === "dev");
       } else {
         const errorData = await response.json().catch(() => ({}));
         setError(errorData.message || "Failed to fetch user profile.");
@@ -54,6 +57,45 @@ function LoadUser() {
       setError("An error occurred while fetching the user profile.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 🔹 call /api/user/settings to update role
+  const updateDevSetting = async (nextIsDev: boolean) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/user/settings`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isDev: nextIsDev }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = data.message || data.error || "Failed to update settings.";
+        throw new Error(msg);
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      // backend echoes current dev status + theme
+      const serverIsDev = !!data.settings?.isDev;
+      setIsDevUser(serverIsDev);
+      setUser((prev: any) =>
+        prev ? { ...prev, role: serverIsDev ? "dev" : "user" } : prev
+      );
+    } catch (err: any) {
+      setError(err?.message || "Error updating dev setting.");
     }
   };
 
@@ -75,7 +117,7 @@ function LoadUser() {
   }
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
   if (!user) return <div>No user data found.</div>;
 
   const userEmail = user.eMail || user.email || "N/A";
@@ -109,12 +151,6 @@ function LoadUser() {
               <strong>Account Type:</strong>{" "}
               <span>{isDevUser ? "Developer" : "Player"}</span>
             </div>
-
-            {user.role && (
-              <div className="info-item">
-                <strong>Role:</strong> <span>{user.role}</span>
-              </div>
-            )}
           </div>
 
           <div className="bio-side">
@@ -144,13 +180,17 @@ function LoadUser() {
           <input
             type="checkbox"
             checked={isDevUser}
-            onChange={(e) => setIsDevUser(e.target.checked)}
+            onChange={(e) => {
+              const next = e.target.checked;
+              updateDevSetting(next);   // sync with backend
+            }}
           />
           <span className="checkmark"></span>
           <span className="label-checkbox">Toggle Dev User</span>
         </label>
       </div>
 
+      {/* 🔹 Dev view only renders when backend says you're dev */}
       <LoadDevUser event={isDevUser} />
     </div>
   );
