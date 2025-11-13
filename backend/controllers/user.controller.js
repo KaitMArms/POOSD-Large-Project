@@ -2,6 +2,7 @@ const { UserModel: User } = require('../db');
 const { GameModel: Game } = require('../db');
 const mongoose = require('mongoose');
 const BIO_MAX = 300; // schema maxlength
+const path = require('path');
 
 exports.profile = async (req, res) => {
   try {
@@ -202,6 +203,35 @@ exports.deleteAccount = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Account deleted and references cleaned up.' });
   } catch (err) {
     console.error('deleteAccount error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+exports.avatarUpload = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    const filename = req.file.filename; // from multer
+    const avatarUrl = `/uploads/avatars/${filename}`;
+
+    const user = await User.findByIdAndUpdate(
+      req.user.sub,
+      { $set: { avatarUrl } },
+      { new: true, runValidators: true }
+    ).select('firstName lastName username email avatarUrl bio role');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (e) {
+    console.error('avatarUpload error:', e);
     return res.status(500).json({ message: 'Server error.' });
   }
 };

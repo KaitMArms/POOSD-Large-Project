@@ -16,6 +16,9 @@ const globalGamesRoures = require('./routes/globalGames.routes');
 
 const app = express();
 
+// --- Avatar Static Files ---
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // --- Middleware ---
 app.use(cors({ origin: true, credentials: true }));
 
