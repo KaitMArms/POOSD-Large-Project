@@ -39,7 +39,7 @@ function parseRequiredNumArray(fieldName, value) {
   return arr;
 }
 
-// Accept either unix seconds as a number OR an ISO date string and convert.
+// Accepts either unix seconds as a number OR an ISO date string and convert.
 function parseFirstReleaseDate(val) {
   if (typeof val === 'number') {
     if (!Number.isFinite(val) || val < 0) throw new Error('first_release_date must be a non-negative number (unix seconds)');
