@@ -19,7 +19,7 @@ class NotificationsPage extends State<Notifications>{
         backgroundColor: Colors.transparent,
       ),
       body: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 600),
+        constraints: BoxConstraints(maxWidth: 1000),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ListTile(
