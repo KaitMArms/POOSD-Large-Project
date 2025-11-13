@@ -20,7 +20,6 @@ async function buildUserProfileVector(userId, models) {
 
     const rawGameDocuments = await GameModel.find(
         { id: { $in: likedGameIds } },
-        // Ensure all fields needed for feature transformation are fetched
         'id name genres platforms keywords themes franchise game_modes player_perspectives game_type rating rating_count summary storyline first_release_date game_engines collections -_id'
     ).lean().exec();
 
@@ -28,7 +27,6 @@ async function buildUserProfileVector(userId, models) {
         return zeroVector;
     }
 
-    // Define weights to prioritize strong signals over noisy ones
     const WEIGHTS = {
         CORE_FEATURE: 5.0,    // High weight for genres, keywords, themes, etc.
         NUANCE_FEATURE: 1.0   // Low weight for text tokens and release dates
@@ -44,7 +42,6 @@ async function buildUserProfileVector(userId, models) {
                 const featureName = feature_names[i];
                 let weight;
 
-                // This complete list categorizes every feature type correctly
                 if (featureName.startsWith('genres_') ||
                     featureName.startsWith('keywords_') ||
                     featureName.startsWith('themes_') ||
@@ -59,7 +56,6 @@ async function buildUserProfileVector(userId, models) {
                     
                     weight = WEIGHTS.CORE_FEATURE;
                 } else {
-                    // Everything else (summary, storyline, release_date) is a NUANCE feature.
                     weight = WEIGHTS.NUANCE_FEATURE;
                 }
                 

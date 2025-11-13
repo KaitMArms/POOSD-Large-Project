@@ -1,10 +1,5 @@
 const { centroids, feature_names, FEATURE_TO_INDEX, FEATURE_TO_INDEX_SIZE, EPSILON } = require('./recommend_model_loader');
 
-// =========================================================================
-// SECTION 1: FEATURE TRANSFORMATION
-// This function must be complete and accurate.
-// =========================================================================
-
 function tokenizeText(text) {
     if (typeof text !== 'string' || !text.trim()) return [];
     const tokens = text.toLowerCase().match(/\b[a-z]{3,}\b/g);
@@ -69,11 +64,6 @@ function transformToFeatureVector(rawGameDocument) {
     return featureVector;
 }
 
-
-// =========================================================================
-// SECTION 2: RECOMMENDATION LOGIC
-// =========================================================================
-
 function getMagnitude(vector) {
     return Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
 }
@@ -107,27 +97,22 @@ function findBestCluster(userProfileVector) {
 async function getRecommendations(userProfileVector, userLikedGameIds, models) {
     const { GameModel } = models;
 
-    // Step 1: Find the best cluster to narrow the search space
     const bestClusterId = findBestCluster(userProfileVector);
     if (bestClusterId === -1) return [];
 
     console.log(`[ML Service] User profile best matches Cluster ID: ${bestClusterId}`);
 
-    // Step 2: Fetch all candidate games from that cluster
     const gamesInCluster = await GameModel.find(
         { clusterId: bestClusterId },
-        // Ensure we fetch all fields needed by transformToFeatureVector
         'id name genres platforms keywords themes franchise game_modes player_perspectives game_type rating rating_count summary storyline first_release_date game_engines collections'
     ).lean().exec();
 
     const gamesToRank = gamesInCluster.filter(game => !userLikedGameIds.includes(game.id));
     if (gamesToRank.length === 0) return [];
 
-    // Step 3: Rank games using the Dot Product for a more nuanced score
     const results = [];
     for (const gameDoc of gamesToRank) {
         const gameVector = transformToFeatureVector(gameDoc);
-        // The score is the dot product of the user's weighted profile and the game's binary vector.
         const score = getDotProduct(userProfileVector, gameVector);
 
         if (score > 0) {
@@ -135,7 +120,6 @@ async function getRecommendations(userProfileVector, userLikedGameIds, models) {
         }
     }
 
-    // Sort by this new, more intelligent score
     results.sort((a, b) => b.score - a.score);
     return results.slice(0, 100);
 }
