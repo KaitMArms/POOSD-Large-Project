@@ -90,37 +90,42 @@ fetchRecommendedGames();
     if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
     return (
-        <div className="global-games-page">
-            <div className="recommend-games-container">
-                <h2>Recommended Games</h2>
-                <div className="rec-results">
-                    {recommendedGames.length > 0 ? (
-                        recommendedGames.map((game) => (
-                            <Link key={game.id} to={`/game/${game.id}`} className="game-link">
-                            {game.name}
-                            </Link>
-                        ))
-                    ) : (
-                        <p>No recommended games found.</p>
-                    )}
+    <div className="game-container">
+        <h1 className="page-title">Global Games</h1>
+
+        <div className="recommend-games-container">
+        <h2 className="section-title">Recommended Games</h2>
+        <div className="columns-wrapper">
+            {recommendedGames.length > 0 ? (
+            recommendedGames.map((game) => (
+                <div key={game.id || game.gameId} className="user-game-row">
+                    <Link to={`/game/${game.id || game.gameId}`} className="game-link">{game.name || game.title}</Link>
                 </div>
-            </div>
+            ))
+            ) : (
+                <p>No recommended games found.</p>
+            )}
+        </div>
+        </div>
 
         <div className="search-games">
-            <h2>Search Global Games</h2>
-            <input type="text" id="searchGamesInput" placeholder="Game name here" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
-            <br />
-            <input type="submit" id="searchButton" className="buttons" value="Search" onClick={doSearchGame}/>
+        <h2 className="section-title">Search Global Games</h2>
+        <div className="search-bar">
+            <input type="text" id="searchGamesInput" placeholder="Enter game name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            <button id="searchButton" className="buttons" onClick={doSearchGame}> Search</button>
+        </div>
 
-            <div id="searchResult">
-                {searchedGames.length > 0 ? (
-                    searchedGames.map((game) => (
-                        <Link key={game.id} to={`/game/${game.id}`} className="game-link">{game.name}</Link>
-                    ))
-                ) : (
-                    searchQuery && <p>No games found for your search.</p>
-                )}
-            </div>
+        <div className="columns-wrapper">
+            {searchedGames.length > 0 ? (
+            searchedGames.map((game) => (
+                <div key={game.id || game.gameId} className="user-game-row">
+                    <Link to={`/game/${game.id || game.gameId}`} className="game-link">{game.name || game.title}</Link>
+                </div>
+            ))
+            ) : (
+                searchQuery && <p>No games found for your search.</p>
+            )}
+        </div>
         </div>
     </div>
   );
