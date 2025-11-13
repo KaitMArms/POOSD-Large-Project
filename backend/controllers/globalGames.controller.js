@@ -49,7 +49,7 @@ exports.browseRecommended = async (req,res) => {
       if (userId){
         const userDoc = await User.findById(userId).select('userGames').lean().exec();
         const likedIds = (userDoc?.userGames || [])
-        .fliter(g=>g.isliked === true)
+        .filter(g=>g.isLiked === true)
         .map(g => g.id);
 
         const userProfileVector = await user_profile.buildUserProfileVector(userId, { UserModel: User, GameModel: Game});
@@ -59,8 +59,8 @@ exports.browseRecommended = async (req,res) => {
         const recIds = recs.map(r =>r.id);
         const games = await Game.find({id: {$in: recIds } }).lean().exec();
 
-        const gamesByID = new Map (games.map(g => [g.id, g]));
-        const results  = recs.map (r=> ({ ...r,game: gamesByID.get(r.id) || null}))
+        const gamesById = new Map (games.map(g => [g.id, g]));
+        const results  = recs.map (r=> ({ ...r,game: gamesById.get(r.id) || null}))
         .slice(0,limit);
 
         return res.json ({recommendations: results});
@@ -155,13 +155,13 @@ exports.searchGames = async (req, res) => {
 exports.recommendedGames = async (req, res) => {
   // Get usergames IDs
   try{
-    let curUser = req.user.userID || req.user?.userID ;
+    const curUser = req.user?.sub || req.user?.uid || req.user?.userID;
     if (!curUser) return res.status(401).json({message: 'Unauthorized'});
 
     const userDoc = await User.findById(curUser).select('userGames').lean().exec();
     const likedIds = (userDoc?.userGames || []).map(g=> g.id);
 
-    const userProfileVector = await user_profile.buildUserProfileVector(userID, {UserMode: User, GameModel: Game});
+    const userProfileVector = await user_profile.buildUserProfileVector(curUser, {UserModel: User, GameModel: Game});
     // Call functions for recommending games
     const recommendations = await recommend.getRecommendations(userProfileVector, likedIds, {GameModel: Game});
 
