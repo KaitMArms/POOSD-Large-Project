@@ -220,7 +220,6 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
     }
 
     try {
-      // 🔹 match controller signature: /dev/games/search?name=foo
       const response = await fetch(
         `${API_BASE}/api/dev/games/search?name=${encodeURIComponent(
           searchQuery
@@ -278,21 +277,14 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
       <div className="dev-games-container">
         <div className="dev-section-header">
           <h2 className="section-title">My Development Games</h2>
-          <button className="add-game-button" onClick={handleAddGame}>
-            + Add New Game
-          </button>
+          <button className="add-game-button" onClick={handleAddGame}> + Add New Game</button>
         </div>
 
         <div className="columns-wrapper">
           {devGames.length > 0 ? (
             devGames.map((game) => (
               <div key={game.id || game.gameId} className="dev-game-row">
-                <Link
-                  to={`/game/${game.id || game.gameId}`}
-                  className="game-link"
-                >
-                  {game.name || game.title}
-                </Link>
+                <Link to={`/game/${game.id || game.gameId}`} className="game-link">{game.name || game.title}</Link>
               </div>
             ))
           ) : (
@@ -324,12 +316,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
           {searchedGames.length > 0 ? (
             searchedGames.map((game) => (
               <div key={game.id || game.gameId} className="dev-game-row">
-                <Link
-                  to={`/game/${game.id || game.gameId}`}
-                  className="game-link"
-                >
-                  {game.name || game.title}
-                </Link>
+                <Link to={`/game/${game.id || game.gameId}`} className="game-link"> {game.name || game.title}</Link>
               </div>
             ))
           ) : (
