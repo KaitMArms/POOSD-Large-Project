@@ -131,53 +131,11 @@ exports.searchGames = async (req, res) => {
 };
 
 exports.recommendedGames = async (req, res) => {
-  try {
-    const userId = req.user.sub;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized - no user ID found' });
-    }
-
-    // 1. Fetch the user to get their games list
-    const user = await User.findById(userId).select('userGames').lean();
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const userGameIds = (user.userGames || []).map(g => g.id);
-
-    if (userGameIds.length === 0) {
-      // If user has no games, we can't generate a profile vector.
-      // Return a default list, like top-rated games.
-      const topGames = await Game.find({ rating: { $gt: 90 } }).sort({ rating_count: -1 }).limit(20).lean();
-      return res.json({ games: topGames });
-    }
-
-    // 2. Fetch full game documents for the user's library
-    const userGamesFull = await Game.find({ id: { $in: userGameIds } }).lean();
-
-    // 3. Build the user's profile vector
-    const userProfileVector = await user_profile.buildUserProfileVector(userGamesFull);
-
-    // 4. Get recommendations
-    const recommendedGameInfo = await recommend.getRecommendations(
-      userProfileVector,
-      userGameIds,
-      { GameModel: Game }
-    );
-
-    // 5. The service returns a list of {id, name, score}. Fetch full docs for these.
-    const recommendedGameIds = recommendedGameInfo.map(r => r.id);
-    const games = await Game.find({ id: { $in: recommendedGameIds } }).lean();
-
-    // Optional: Re-order the full docs to match the recommendation score order
-    const orderedGames = recommendedGameIds.map(id => games.find(g => g.id === id)).filter(Boolean);
-
-    return res.json({ games: orderedGames });
-
-  } catch (err) {
-    console.error('Recommendation error:', err);
-    return res.status(500).json({ message: 'Server error during recommendation.' });
-  }
+  // Get usergames IDs
+    let curUser = req.user.userID;
+    let GamesIDs = curUser.userGames;
+    // Call functions for recommending games
+    return recommend.getRecommendations(user_profile.buildUserProfileVector, GamesIDs).json;
 };
 
 exports.addUserGame = async (req, res) => {
