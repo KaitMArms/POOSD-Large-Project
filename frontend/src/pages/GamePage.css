@@ -12,7 +12,7 @@
 .components-container{
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 2em;       
   width: 100%;
 }
@@ -47,6 +47,9 @@
   margin: 0;     
   background-color: var(--div-color);
   border-radius: 1.2em;
+  flex: 1;              
+  display: flex;
+  flex-direction: column;
 }
 
 .section-title {
