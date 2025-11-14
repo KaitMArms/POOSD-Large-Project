@@ -18,7 +18,7 @@ function GamePage() {
 
       try {
         const response = await fetch(
-          `https://playedit.games/api/games/${id}`,
+          `https://playedit.games/api/globalgames/${id}`,
           {
             method: "GET",
             headers: {
