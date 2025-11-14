@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function LoadGame() {
+function GamePage() {
   const { id } = useParams<{ id: string }>();
   const [game, setGame] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -21,13 +21,20 @@ function LoadGame() {
           headers: {
             Authorization: `Bearer ${token}`
           }
-        });
+        );
 
-        if (response.ok) {
-          const data = await response.json();
-          setGame(data);
+        if (!response.ok) {
+          setError("Failed to load games.");
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        const gameData = data.data.find((g: any) => g.id === parseInt(id || ""));
+        if (gameData) {
+          setGame(gameData);
         } else {
-          setError("Failed to load game.");
+          setError("Game not found.");
         }
       } catch (err) {
         setError("Error fetching game details.");
@@ -60,4 +67,4 @@ function LoadGame() {
   );
 }
 
-export default LoadGame;
+export default GamePage;

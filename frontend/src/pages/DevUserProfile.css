@@ -35,9 +35,15 @@
 
 .dev-section-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2em;
+  flex-direction: column;   
+  align-items: center;      
+  gap: 1.5em;               
+}
+
+.add-button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .add-game-button {
@@ -87,9 +93,8 @@
 
 .adddev-grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
-  align-items: start;
+  grid-template-columns: 300px 1fr;
+  gap: 30px;
   width: 100%;
 }
 
@@ -102,6 +107,7 @@
 
 .adddev-cover {
   width: 240px;
+  height: 240px;
   border-radius: 12px;
   object-fit: cover;
   box-shadow: 0 0 12px var(--accent-color);
@@ -159,4 +165,10 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 15px;
+}
+
+@media (max-width: 900px) {
+  .adddev-grid {
+    grid-template-columns: 1fr;
+  }
 }
