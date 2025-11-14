@@ -125,6 +125,7 @@ function LoadGlobalGame() {
   return (
     <div className="game-container">
       <h1 className="page-title">Global Games</h1>
+      <br />
       <div className="recommend-games-container">
         <h2 className="section-title">Recommended Games</h2>
         <div className="columns-wrapper">
