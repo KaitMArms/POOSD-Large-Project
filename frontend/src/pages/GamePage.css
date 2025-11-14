@@ -11,7 +11,7 @@
 
 .page-title {
   margin-top: 1em;
-  display: inline-block;
+  display: block;
   font-size: 3rem;
   font-weight: 700;
   color: #72139B;
@@ -36,7 +36,8 @@
   width: 80%;
   max-width: 900px;
   padding: 2em;
-  margin: 2em auto;   
+  margin-left: 2.5em;
+  margin-right: 2.5em;   
   background-color: var(--div-color);
   border-radius: 1.2em;
   height: auto;  
