@@ -10,7 +10,11 @@
 }
 
 .components-container{
-  flex-direction: row;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2em;       
+  width: 100%;
 }
 
 .page-title {
@@ -37,14 +41,12 @@
 
 .recommend-games-container,
 .search-games {
-  width: 80%;
-  max-width: 900px;
+  width: 45%;
+  display: block;
   padding: 2em;
-  margin-left: 2.5em;
-  margin-right: 2.5em;   
+  margin: 0;     
   background-color: var(--div-color);
   border-radius: 1.2em;
-  height: auto;  
 }
 
 .section-title {
