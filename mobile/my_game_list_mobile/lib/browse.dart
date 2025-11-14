@@ -13,7 +13,71 @@ class AllGamesState extends State<AllGames>{
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("das wassup"),
+        child: Column(
+          children: [
+            SizedBox(height: 50),
+
+            Padding(padding: EdgeInsets.all(8)),
+
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // bigger box
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16), 
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.purpleAccent.withValues(alpha: 0.2),
+                    offset: Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+
+              child: Stack(
+                  children: [
+                    Text(
+                      "Global Games",
+                      style: TextStyle(
+                        color: Colors.deepPurpleAccent,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  
+                    Text(
+                      "Global Games",
+                      style: TextStyle(
+                        foreground: Paint() 
+                        ..style = PaintingStyle.stroke
+                        ..strokeWidth = 3
+                        ..color = Colors.white,
+                        decorationColor: Colors.purple,
+                        decorationThickness: 2,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  
+                    Text(
+                      "Global Games",
+                      style: TextStyle(
+                        color: Colors.deepPurpleAccent,
+                        shadows: 
+                        [
+                          Shadow(
+                            blurRadius: 12, 
+                            color: Colors.white, 
+                            offset: Offset(0, 0))
+                        ],
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+              
+                  ],
+              ),
+            ),
+          ],
+        )
       ),
     );
   }
