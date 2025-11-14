@@ -2,217 +2,117 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import "../pages/DevUserProfile.css";
 
 const API_BASE =
-  window.location.hostname === "localhost" ? "http://localhost:8080" : "https://playedit.games";
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080"
+    : "https://playedit.games";
 
 type Props = {
-  onClose: () => void;
+  onClose?: () => void;
 };
 
 export default function AddDevGame({ onClose }: Props) {
-  const [name, setName] = useState("");
-  const [summary, setSummary] = useState("");
+  const [gameTitle, setGameTitle] = useState("");
+  const [gameSummary, setGameSummary] = useState("");
   const [firstReleaseDate, setFirstReleaseDate] = useState("");
-  const [platforms, setPlatforms] = useState("");
-  const [genres, setGenres] = useState("");
-  const [developersUsernames, setDevelopersUsernames] = useState("");
-  const [status, setStatus] = useState("in-development");
-  const [coverUrl, setCoverUrl] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [platformIds, setPlatformIds] = useState<string[]>([]);
+  const [genreIds, setGenreIds] = useState<string[]>([]);
+  const [developerUsernames, setDeveloperUsernames] = useState<string[]>([]);
+  const [gameStatus, setGameStatus] = useState("In Development");
+  const [description, setDescription] = useState("");
+  const [coverImage, setCoverImage] = useState<string | null>(null);
 
-  async function handleCoverUpload(e: ChangeEvent<HTMLInputElement>) {
+  function handleCoverUpload(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    try {
-      setSaving(true);
-      setError(null);
-
-      const token = localStorage.getItem("token");
-      const formData = new FormData();
-      formData.append("cover", file);
-
-      const res = await fetch(`${API_BASE}/api/dev/games/cover`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || "Failed to upload cover.");
-
-      // server returns coverUrl or id — store raw value and render if it's a url
-      setCoverUrl(data.coverUrl || data.cover || null);
-    } catch (err: any) {
-      setError(err?.message || String(err));
-    } finally {
-      setSaving(false);
-    }
+    const reader = new FileReader();
+    reader.onloadend = () => setCoverImage(reader.result as string);
+    reader.readAsDataURL(file);
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    setError(null);
-    setSuccess(false);
+
+    const body = {
+      gameTitle,
+      gameSummary,
+      firstReleaseDate,
+      platformIds,
+      genreIds,
+      developerUsernames,
+      gameStatus,
+      description,
+      coverImage,
+    };
 
     try {
-      const token = localStorage.getItem("token");
-
-      // parse comma-separated numeric IDs for platforms & genres (same logic as before)
-      const platformsArr = platforms
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .map(Number)
-        .filter((n) => Number.isFinite(n));
-
-      const genresArr = genres
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .map(Number)
-        .filter((n) => Number.isFinite(n));
-
-      if (!platformsArr.length) {
-        throw new Error("Platforms must be a non-empty comma-separated list of IDs (numbers).");
-      }
-
-      if (!genresArr.length) {
-        throw new Error("Genres must be a non-empty comma-separated list of IDs (numbers).");
-      }
-
-      const releaseUnix = firstReleaseDate ? Math.floor(new Date(firstReleaseDate).getTime() / 1000) : undefined;
-
-      const body: any = {
-        name,
-        summary,
-        first_release_date: releaseUnix,
-        platforms: platformsArr,
-        genres: genresArr,
-        developersUsernames: developersUsernames
-          ? developersUsernames
-              .split(",")
-              .map((u) => u.trim().toLowerCase())
-              .filter(Boolean)
-          : [],
-        cover: coverUrl ? Number(coverUrl) : undefined,
-        status,
-      };
-
-      const res = await fetch(`${API_BASE}/api/dev/games`, {
+      const response = await fetch(`${API_BASE}/api/games/dev/add`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
 
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || data.error || "Failed to add game.");
+      if (!response.ok) throw new Error("Failed to add game");
 
-      setSuccess(true);
-      // small delay so user sees success, then close
-      setTimeout(() => onClose(), 900);
-    } catch (err: any) {
-      setError(err?.message || String(err));
-    } finally {
-      setSaving(false);
+      alert("Game added!");
+      onClose?.();
+    } catch (err) {
+      alert("Error adding game.");
+      console.error(err);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="adddev-container">
-      <span id="inner-title">Add New Developer Game</span>
+    <div className="adddev-container">
+      <h2 className="adddev-title">Add New Game</h2>
 
-      <div className="adddev-grid" style={{ alignItems: "start" }}>
-        <div className="adddev-left">
-          <div style={{ width: 240 }}>
-            <img
-              src={coverUrl || "/GamePlaceholder.png"}
-              alt="Cover Preview"
-              className="adddev-cover"
-              style={{ width: "100%", borderRadius: 12 }}
-            />
-          </div>
+      <form className="adddev-form" onSubmit={handleSubmit}>
+        <div className="adddev-grid">
 
-          <label className="adddev-upload-label" htmlFor="coverUpload">
-            <span>Upload Cover</span>
-            <input id="coverUpload" type="file" accept="image/*" onChange={handleCoverUpload} />
-          </label>
-        </div>
+          <div className="adddev-cover-section">
+            <div className="adddev-cover-wrapper">
+              {coverImage ? (
+                <img src={coverImage} className="adddev-cover" alt="Cover preview" />
+              ) : (
+                <div className="adddev-cover-placeholder"></div>
+              )}
+            </div>
 
-        <div className="adddev-fields">
-          <input
-            type="text"
-            placeholder="Game Title (name)"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-
-          <textarea
-            placeholder="Game Summary (summary)"
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-            required
-            rows={4}
-          />
-
-          <label htmlFor="firstRelease" style={{ fontSize: "0.9rem", marginTop: 6 }}>
-            First Release Date
-          </label>
-          <input
-            id="firstRelease"
-            type="date"
-            value={firstReleaseDate}
-            onChange={(e) => setFirstReleaseDate(e.target.value)}
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Platform IDs (comma-separated numbers, e.g. 6,48)"
-            value={platforms}
-            onChange={(e) => setPlatforms(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Genre IDs (comma-separated numbers, e.g. 4,12)"
-            value={genres}
-            onChange={(e) => setGenres(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Other Developer Usernames (comma-separated)"
-            value={developersUsernames}
-            onChange={(e) => setDevelopersUsernames(e.target.value)}
-          />
-
-          <div className="dropdown-themed" style={{ marginTop: 8 }}>
-            <label htmlFor="status" className="dropdown-label">
-              Progress
+            <label className="adddev-upload-button">
+              Upload Cover
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverUpload}
+                hidden
+              />
             </label>
-            <select id="status" className="theme-dropdown" value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="in-development">In Development</option>
-              <option value="released">Released</option>
-              <option value="paused">Paused</option>
+          </div>
+          <div className="adddev-inputs">
+            <input type="text" placeholder="Game Title" value={gameTitle} onChange={(e) => setGameTitle(e.target.value)}required/>
+            <input type="text" placeholder="Game Summary" value={gameSummary} onChange={(e) => setGameSummary(e.target.value)}/>
+            <input type="date" value={firstReleaseDate} onChange={(e) => setFirstReleaseDate(e.target.value)} required/>
+            <input type="text" placeholder="Platform IDs (comma separated)" value={platformIds.join(",")} onChange={(e) => setPlatformIds(e.target.value.split(",").map((id) => id.trim()))}/>
+            <input type="text" placeholder="Genre IDs (comma separated)" value={genreIds.join(",")} onChange={(e) => setGenreIds(e.target.value.split(",").map((id) => id.trim()))}/>
+            <input type="text" placeholder="Developer Usernames (comma separated)" value={developerUsernames.join(",")} onChange={(e) => setDeveloperUsernames(e.target.value.split(",").map((u) => u.trim()))}/>
+            <select value={gameStatus} onChange={(e) => setGameStatus(e.target.value)}>
+              <option>In Development</option>
+              <option>Released</option>
+              <option>Cancelled</option>
             </select>
+            <div className="adddev-description-box">
+              <p className="adddev-description-title">Description</p>
+              <textarea
+                placeholder="Describe your game..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
           </div>
         </div>
-      </div>
-
-      {error && <div style={{ color: "red", marginTop: 10 }}>{error}</div>}
-      {success && <div style={{ color: "limegreen", marginTop: 10 }}>Game added successfully!</div>}
-
-      <div className="adddev-buttons" style={{ marginTop: 12 }}>
-        <input type="submit" id="submitButton" className="buttons" value={saving ? "Saving..." : "Add Game"} disabled={saving} />
-        <input type="button" id="cancelButton" className="buttons" value="Cancel" onClick={onClose} />
-      </div>
-    </form>
+        <button type="submit" className="adddev-submit">Add Game</button>
+        <button type="button" className="adddev-cancel" onClick={() => onClose?.()}>Cancel</button>
+      </form>
+    </div>
   );
 }
