@@ -48,7 +48,7 @@ export default function AddDevGame({ onClose }: Props) {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/api/games/dev/add`, {
+      const response = await fetch(`${API_BASE}/api/dev/games/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
