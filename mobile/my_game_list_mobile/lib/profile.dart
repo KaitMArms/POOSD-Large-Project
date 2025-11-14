@@ -1,10 +1,9 @@
-import 'package:my_game_list_mobile/user_details.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_game_list_mobile/AddGames.dart';
-import 'package:my_game_list_mobile/info_page.dart';
+import 'package:my_game_list_mobile/user_details.dart';
 import 'package:my_game_list_mobile/log_out.dart';
 import 'package:my_game_list_mobile/notifications.dart';
 class Profile extends StatefulWidget {
@@ -44,7 +43,7 @@ class _ProfileState extends State<Profile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: ProfileAction,
+                onTap: profileAction,
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: AssetImage("assets/Mascot.png"),
@@ -183,7 +182,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Future<void> ProfileAction() async {
+  Future<void> profileAction() async {
     //1. Choose Image to Upload 
     //2. Upload Image to Storage Service
     //3. Show and Persist Image in the App (FUCK THIS IS APIs)
