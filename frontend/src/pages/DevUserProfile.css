@@ -35,9 +35,15 @@
 
 .dev-section-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2em;
+  flex-direction: column;   
+  align-items: center;      
+  gap: 1.5em;               
+}
+
+.add-button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .add-game-button {
