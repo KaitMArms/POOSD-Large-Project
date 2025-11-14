@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  pie_chart: ^5.4.0
   image_picker: ^1.2.1
   flutter:
     sdk: flutter

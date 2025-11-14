@@ -41,7 +41,7 @@ class SignUpUI extends State<SignUp>  {
     return Scaffold(
       body: Padding(
         //make non-arbitrary, looks good but appears different on everyphone due to it being an assigned value
-        padding: EdgeInsets.fromLTRB(24, 90, 24, 24),
+        padding: EdgeInsets.fromLTRB(24, 60, 24, 24),
         child: Center(
           //constraints: BoxConstraints(maxWidth: 400),
           child: ListView(
@@ -58,7 +58,7 @@ class SignUpUI extends State<SignUp>  {
                     color: Colors.deepPurpleAccent,
                   ),
                 ),
-                SizedBox(height: 50,),
+                SizedBox(height: 40,),
 
                 TextField(
                   controller: firstName,

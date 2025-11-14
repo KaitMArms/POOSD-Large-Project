@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_game_list_mobile/AddGames.dart';
+import 'package:my_game_list_mobile/info_page.dart';
 import 'package:my_game_list_mobile/log_out.dart';
 import 'package:my_game_list_mobile/notifications.dart';
 class Profile extends StatefulWidget {
@@ -121,6 +123,12 @@ class _ProfileState extends State<Profile> {
                               ),
                               Spacer(),
                               ElevatedButton(onPressed: () {
+                                if (card.page != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => card.page!),
+                                  );
+                                }
                               }, 
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
@@ -187,11 +195,13 @@ class ProfileCompletionCard {
   final String title;
   final String buttonText;
   final IconData icon;
+  final Widget? page;
 
   ProfileCompletionCard({
     required this.title,
     required this.buttonText,
     required this.icon,
+    this.page,
   });
 }
 
@@ -200,16 +210,19 @@ List<ProfileCompletionCard> profileCompletionCards = [
     title: "Set Your Profile Details",
     buttonText: "Continue",
     icon: CupertinoIcons.person_circle,
+    page: UserDetails(),
   ),
   ProfileCompletionCard(
     title: "Manage Your Lists",
     buttonText: "Continue",
     icon: CupertinoIcons.square_list,
+    //page: something
   ),
   ProfileCompletionCard(
     title: "Find More Games",
     buttonText: "Add",
     icon: CupertinoIcons.game_controller,
+    page: AddGames()
   ),
 ];
 

@@ -1,18 +1,26 @@
+import 'package:pie_chart/pie_chart.dart';
 import 'package:flutter/material.dart';
 
-class UserDetails extends StatefulWidget {
-  const UserDetails({super.key});
+class YourGamesList extends StatefulWidget {
+  const YourGamesList({super.key});
 
   @override
-  State<UserDetails> createState() => UserDetailsState();
+  State<YourGamesList> createState() => YourGamesListState();
 
 }
 
-class UserDetailsState extends State<UserDetails>  {
+class YourGamesListState extends State<YourGamesList>  {
+
+  Map<String, double> dataMap = {
+    "Completed": 5,
+    "In Progress": 3,
+    "Paused": 2,
+    "Dropped": 2,
+    "To Be Played": 5
+  };
   
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -26,7 +34,7 @@ class UserDetailsState extends State<UserDetails>  {
               Stack(
                 children: [
                   Text(
-                    "Edit User Details",
+                    "Your Games List",
                     style: TextStyle(
                       color: Colors.deepPurpleAccent,
                       fontSize: 32,
@@ -35,7 +43,7 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 
                   Text(
-                    "Edit User Details",
+                    "Your Games List",
                     style: TextStyle(
                       foreground: Paint() 
                       ..style = PaintingStyle.stroke
@@ -49,7 +57,7 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 
                   Text(
-                    "Edit User Details",
+                    "Your Games List",
                     style: TextStyle(
                       color: Colors.deepPurpleAccent,
                       shadows: 
@@ -66,7 +74,25 @@ class UserDetailsState extends State<UserDetails>  {
                 ],
               ),
 
+              SizedBox(height: 30),
 
+              PieChart(
+                dataMap: dataMap,
+                animationDuration: Duration(milliseconds: 800),
+                chartRadius: MediaQuery.of(context).size.width / 2.5,
+                //centerText: "Your Games",
+                legendOptions: LegendOptions(
+                  legendPosition: LegendPosition.right,
+                  legendTextStyle: TextStyle(
+                    fontSize: 14,
+                  )
+                ),
+
+                chartValuesOptions: ChartValuesOptions(
+                  showChartValues: true,
+                  decimalPlaces: 0,
+                ),
+              )
             ],
           ),
         ),

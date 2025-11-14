@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class UserDetails extends StatefulWidget {
-  const UserDetails({super.key});
+class AddGames extends StatefulWidget {
+  const AddGames({super.key});
 
   @override
-  State<UserDetails> createState() => UserDetailsState();
+  State<AddGames> createState() => AddGamesState();
 
 }
 
-class UserDetailsState extends State<UserDetails>  {
+class AddGamesState extends State<AddGames>  {
   
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class UserDetailsState extends State<UserDetails>  {
               Stack(
                 children: [
                   Text(
-                    "Edit User Details",
+                    "Add New Game",
                     style: TextStyle(
                       color: Colors.deepPurpleAccent,
                       fontSize: 32,
@@ -35,7 +35,7 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 
                   Text(
-                    "Edit User Details",
+                    "Add New Game",
                     style: TextStyle(
                       foreground: Paint() 
                       ..style = PaintingStyle.stroke
@@ -49,7 +49,7 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 
                   Text(
-                    "Edit User Details",
+                    "Add New Game",
                     style: TextStyle(
                       color: Colors.deepPurpleAccent,
                       shadows: 
@@ -65,8 +65,6 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 ],
               ),
-
-
             ],
           ),
         ),

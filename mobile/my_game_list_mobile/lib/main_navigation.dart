@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_game_list_mobile/yourLists.dart';
 import 'profile.dart'; // your current Profile page
 
 class MainNavigation extends StatefulWidget {
@@ -14,7 +15,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final screens = [
     Center(child: Text("Explore", style: TextStyle(fontSize: 30))),
-    Center(child: Text("Your Games List", style: TextStyle(fontSize: 30))),
+    YourGamesList(),
     Center(child: Text("For Later", style: TextStyle(fontSize: 30))),
     Profile(), // <- your full Profile screen here
   ];
@@ -36,7 +37,7 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(
             icon: Icon(MdiIcons.chartPieOutline),
             activeIcon: Icon(MdiIcons.chartPie),
-            label: "Your Info",
+            label: "Games",
           ),
           BottomNavigationBarItem(
             icon: Icon(MdiIcons.lockOutline),
