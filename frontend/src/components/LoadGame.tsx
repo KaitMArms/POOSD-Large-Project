@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function GamePage() {
+function LoadGame() {
   const { id } = useParams<{ id: string }>();
   const [game, setGame] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ function GamePage() {
 
       try {
         const response = await fetch(
-          `https://playedit.games/api/globalgames/browse`,
+          `https://playedit.games/api/globalgames/${id}`,
           {
             method: "GET",
             headers: {
@@ -29,18 +29,13 @@ function GamePage() {
         );
 
         if (!response.ok) {
-          setError("Failed to load games.");
+          setError("Failed to load game.");
           setLoading(false);
           return;
         }
 
         const data = await response.json();
-        const gameData = data.data.find((g: any) => g.id === parseInt(id || ""));
-        if (gameData) {
-          setGame(gameData);
-        } else {
-          setError("Game not found.");
-        }
+        setGame(data);
       } catch (err) {
         setError("Error fetching game details.");
       } finally {
@@ -72,4 +67,4 @@ function GamePage() {
   );
 }
 
-export default GamePage;
+export default LoadGame;
