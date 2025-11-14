@@ -11,6 +11,7 @@
 
 .page-title {
   margin-top: 1em;
+  display: inline-block;
   font-size: 3rem;
   font-weight: 700;
   color: #72139B;
@@ -32,7 +33,7 @@
 
 .recommend-games-container,
 .search-games {
-  width: 120%;                
+  width: 150%;                
   max-width: 1000px;   
   max-height: 1500px;       
   margin: 2rem auto;          
