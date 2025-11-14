@@ -211,7 +211,19 @@ exports.addUserGame = async (req, res) => {
       game: added
     });
   } catch (err) {
-    console.error('addUserGame error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+exports.getGameById = async (req, res) => {
+  try {
+    const game = await Game.findOne({ id: req.params.id }).lean();
+    if (!game) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+    return res.json(game);
+  } catch (err) {
+    console.error('getGameById error:', err);
     return res.status(500).json({ message: 'Server error.' });
   }
 };

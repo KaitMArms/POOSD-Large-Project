@@ -17,7 +17,7 @@ function LoadGame() {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/api/game/${id}`, {
+        const response = await fetch(`http://localhost:8080/api/globalgames/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -45,14 +45,17 @@ function LoadGame() {
 
   return (
     <div className="game-view-container">
-      <img src={game.coverImageUrl} alt={game.title} id="game-cover" />
+      {game.cover?.url && (
+        <img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover" />
+      )}
 
-      <h1 id="game-title">{game.title}</h1>
+      <h1 id="game-title">{game.name}</h1>
 
-      <p><strong>Genre:</strong> {game.genre}</p>
-      <p><strong>Release Date:</strong> {game.releaseDate}</p>
+      <p><strong>Genre:</strong> {game.genres?.join(", ") || "Unknown"}</p>
+      <p><strong>Release Date:</strong> {game.first_release_date || "Unknown"}</p>
 
-      <p id="game-description">{game.description}</p>
+      <p>{game.summary || "No description provided."}</p>
+
     </div>
   );
 }
