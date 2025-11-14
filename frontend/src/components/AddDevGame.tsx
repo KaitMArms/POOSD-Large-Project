@@ -123,35 +123,36 @@ export default function AddDevGame({ onClose }: { onClose: () => void }) {
   return (
     <form onSubmit={handleSubmit} className="edit-user-container">
         <span id="inner-title">Add New Developer Game</span>
-        <div className="edit-user-grid">
-            <div className="edit-user-left">
-                <div className="edit-user-avatar-wrapper">
-                    <img src={coverUrl || "/GamePlaceholder.png"} alt="Cover Preview" className="edit-user-avatar"/>
-                </div>
 
-                <label className="edit-user-avatar-upload">
+        <div className="edit-user-grid" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 20 }}>
+            <div className="edit-user-left" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div className="edit-user-avatar-wrapper">
+                    <img src={coverUrl || "/GamePlaceholder.png"} alt="Cover Preview" className="edit-user-avatar" style={{ width: 240, borderRadius: 12 }}/>
+                </div>
+                <label className="edit-user-avatar-upload" htmlFor="coverUpload">
                     <span>Upload Cover</span>
-                    <input type="file" accept="image/*" onChange={handleCoverUpload} />
+                    <input id="coverUpload" type="file" accept="image/*" onChange={handleCoverUpload} />
                 </label>
             </div>
+
+
             <div className="edit-user-right">
                 <div className="edit-user-fields">
-                    <input type="text" placeholder="Game Title (name)" value={name} onChange={(e) => setName(e.target.value)} required/>
-                    <textarea placeholder="Game Summary (summary)" value={summary} onChange={(e) => setSummary(e.target.value)} required rows={4}/>
-                    <label htmlFor="firstRelease" style={{ fontSize: "0.9rem", marginTop: "6px" }}> First Release Date</label>
-                    <input id="firstRelease" type="date" value={firstReleaseDate} onChange={(e) => setFirstReleaseDate(e.target.value)} required/>
-                    <input type="text" placeholder="Platform IDs (comma-separated numbers, e.g. 6,48)" value={platforms} onChange={(e) => setPlatforms(e.target.value)} required/>
-                    <input type="text" placeholder="Genre IDs (comma-separated numbers, e.g. 4,12)" value={genres} onChange={(e) => setGenres(e.target.value)} required/>
-                    <input type="text" placeholder="Other Developer Usernames (comma-separated)" value={developersUsernames} onChange={(e) => setDevelopersUsernames(e.target.value)}/>
-                    <div className="dropdown-themed" style={{ marginTop: 8 }}>
-                        <label htmlFor="status" className="dropdown-label">Progress</label>
-                        <select id="status"className="theme-dropdown" value={status} onChange={(e) => setStatus(e.target.value)}>
-                            <option value="in-development">In Development</option>
-                            <option value="released">Released</option>
-                            <option value="paused">Paused</option>
-                        </select>
+                    <input type="text" placeholder="Game Title (name)" value={name} onChange={(e) => setName(e.target.value)} required />
+                    <textarea placeholder="Game Summary (summary)" value={summary} onChange={(e) => setSummary(e.target.value)} required rows={4} />
+                    <label htmlFor="firstRelease" style={{ fontSize: "0.9rem", marginTop: 6 }}>First Release Date</label>
+                    <input id="firstRelease" type="date" value={firstReleaseDate} onChange={(e) => setFirstReleaseDate(e.target.value)} required />
+                    <input type="text" placeholder="Platform IDs (comma-separated numbers, e.g. 6,48)" value={platforms} onChange={(e) => setPlatforms(e.target.value)} required />
+                    <input type="text" placeholder="Genre IDs (comma-separated numbers, e.g. 4,12)" value={genres} onChange={(e) => setGenres(e.target.value)} required />
+                    <input type="text" placeholder="Other Developer Usernames (comma-separated)" value={developersUsernames} onChange={(e) => setDevelopersUsernames(e.target.value)} />
+                <div className="dropdown-themed" style={{ marginTop: 8 }}>
+                    <label htmlFor="status" className="dropdown-label">Progress</label>
+                    <select id="status" className="theme-dropdown" value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="in-development">In Development</option>
+                        <option value="released">Released</option>
+                        <option value="paused">Paused</option>
+                    </select>
                     </div>
-                    <span>test test is this updating</span>
                 </div>
             </div>
         </div>
@@ -160,9 +161,9 @@ export default function AddDevGame({ onClose }: { onClose: () => void }) {
         {success && <div style={{ color: "limegreen", marginTop: 10 }}>Game added successfully!</div>}
 
         <div id="signUpButtonsDiv" style={{ marginTop: 12 }}>
-        <input type="submit" id="submitButton" className="buttons" value={saving ? "Saving..." : "Add Game"} disabled={saving}/>
-        <input type="button" id="cancelButton" className="buttons" value="Cancel"onClick={onClose}/>
+            <input type="submit" id="submitButton" className="buttons" value={saving ? "Saving..." : "Add Game"} disabled={saving} />
+            <input type="button" id="cancelButton" className="buttons" value="Cancel" onClick={onClose} />
         </div>
     </form>
-  );
+);
 }
