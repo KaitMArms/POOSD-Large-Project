@@ -71,7 +71,7 @@ function LoadGlobalGame() {
       if (response.ok) {
         const data = await response.json();
 
-        const list = Array.isArray(data.data) ? data.data : [];
+        const list = Array.isArray(data.games) ? data.games : [];
 
         setSearchedGames(list);
       } else {
@@ -124,9 +124,7 @@ function LoadGlobalGame() {
           {searchedGames.length > 0 ? (
             searchedGames.map((game) => (
               <div key={game._id} className="user-game-row">
-                <Link to={`/game/${game._id}`} className="game-link">
-                  {game.name}
-                </Link>
+                <Link to={`/game/${game._id}`} className="game-link"> {game.name} </Link>
               </div>
             ))
           ) : (
