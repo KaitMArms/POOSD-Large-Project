@@ -17,17 +17,29 @@ function LoadGame() {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/api/globalgames/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const response = await fetch(
+          `https://playedit.games/api/globalgames/browse`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
           }
-        });
+        );
 
-        if (response.ok) {
-          const data = await response.json();
-          setGame(data);
+        if (!response.ok) {
+          setError("Failed to load games.");
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        const gameData = data.data.find((g: any) => g.id === parseInt(id || ""));
+        if (gameData) {
+          setGame(gameData);
         } else {
-          setError("Failed to load game.");
+          setError("Game not found.");
         }
       } catch (err) {
         setError("Error fetching game details.");
