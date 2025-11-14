@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_game_list_mobile/main_navigation.dart';
-import 'package:my_game_list_mobile/password_collect.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
 
 class LogInIdea extends StatefulWidget {
@@ -12,7 +11,7 @@ class LogInIdea extends StatefulWidget {
 }
 
 class _LogInTestState extends State<LogInIdea>{
-  final TextEditingController username = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool _obscure = true;
   bool isHoveringSignUp = false;
@@ -20,7 +19,7 @@ class _LogInTestState extends State<LogInIdea>{
   
   @override
   void dispose() {
-    username.dispose();
+    email.dispose();
     password.dispose();
     super.dispose();
   }
@@ -93,9 +92,9 @@ class _LogInTestState extends State<LogInIdea>{
               SizedBox(height: 30),
         
               TextField(
-                controller: username,
+                controller: email,
                 decoration: InputDecoration(
-                  labelText: "Username",
+                  labelText: "Email",
                 )
               ),
         
@@ -143,7 +142,7 @@ class _LogInTestState extends State<LogInIdea>{
                 ),
               ),
         
-              SizedBox(height: 14),
+              SizedBox(height: 25),
         
              /* Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -304,87 +303,7 @@ class _LogInTestState extends State<LogInIdea>{
               ),
             
               SizedBox(height: 10),
-
-              GestureDetector(
-                  onTapDown: (_) => setState(() => isHoveringPassword = true),
-                  onTapUp: (_) => setState(() => isHoveringPassword = false),
-                  onTapCancel: () => setState(() => isHoveringPassword = false),
-                  child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      "Forgot Password?",
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                    TextButton(
-                        style: TextButton.styleFrom(
-                          textStyle: TextStyle(
-                            fontSize: 18
-                          ),
-                          padding: EdgeInsets.zero, // removes the default vertical padding
-                          minimumSize: Size(0, 0), // avoids minimum touch size forcing space
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // ensures minimal layout space
-                        ),
-                        onPressed: () {
-                          Navigator.push(context, 
-                              MaterialPageRoute(builder: (context) => const PasswordCollect())
-                              );
-                        }, 
-                        child: Stack(
-                          children: [
-                            Text(
-                              "Get New One Here!",
-                              style: TextStyle(
-                                foreground: Paint() 
-                                ..style = PaintingStyle.stroke
-                                ..strokeWidth = 3
-                                ..color = isHoveringPassword ? Colors.purple : Colors.white,
-                                fontWeight: FontWeight.bold,
-                                decoration: isHoveringPassword ? TextDecoration.underline : TextDecoration.none,
-                                decorationColor: Colors.purple,
-                                decorationThickness: 2
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                      
-                            Text(
-                              "Get New One Here!",
-                              style: TextStyle(
-                                color: Colors.deepPurpleAccent,
-                                fontWeight: FontWeight.bold
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                      
-                            Text(
-                            "Get New One Here!",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.deepPurpleAccent,
-                              fontWeight: FontWeight.bold,
-                              shadows: 
-                              [
-                                if(!isHoveringPassword) 
-                                  Shadow(
-                                    blurRadius: 12, 
-                                    color: Colors.white, 
-                                    offset: Offset(0, 0))
-                                else
-                                  Shadow(blurRadius: 12, color: Colors.purple, offset: Offset(0, 0)),
-                                  Shadow(blurRadius: 16, color: Colors.white, offset: Offset(0, 0)),
-                              ]
-                            ),
-                          ),
-                        ]
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+             ],
           )
         ),
       )

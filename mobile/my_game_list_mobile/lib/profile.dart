@@ -15,7 +15,7 @@ class _ProfileState extends State<Profile> {
   int myIndex = 0;
   List<Widget> widgetList = const [
     Text("Explore", style: TextStyle(fontSize: 40)),
-    Text("Your Info", style: TextStyle(fontSize: 40)),
+    Text("Your Games List", style: TextStyle(fontSize: 40)),
     Text("For Later", style: TextStyle(fontSize: 40)),
   ];
   @override
@@ -174,7 +174,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Future<void> ProfileAction() async{
+  Future<void> ProfileAction() async {
     //1. Choose Image to Upload 
     //2. Upload Image to Storage Service
     //3. Show and Persist Image in the App (FUCK THIS IS APIs)

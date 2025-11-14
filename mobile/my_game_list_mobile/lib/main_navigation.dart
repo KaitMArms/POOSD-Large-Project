@@ -14,7 +14,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final screens = [
     Center(child: Text("Explore", style: TextStyle(fontSize: 30))),
-    Center(child: Text("Your Info", style: TextStyle(fontSize: 30))),
+    Center(child: Text("Your Games List", style: TextStyle(fontSize: 30))),
     Center(child: Text("For Later", style: TextStyle(fontSize: 30))),
     Profile(), // <- your full Profile screen here
   ];
