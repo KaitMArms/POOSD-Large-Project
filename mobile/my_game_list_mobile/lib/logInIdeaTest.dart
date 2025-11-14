@@ -246,6 +246,6 @@ class _LogInTestState extends State<LogInIdea> {
                   SizedBox(height: 10),
                 ],
               )),
-            ))));
+            )));
   }
 }
