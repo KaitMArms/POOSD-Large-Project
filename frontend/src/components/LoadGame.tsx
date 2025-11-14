@@ -18,7 +18,7 @@ function GamePage() {
 
       try {
         const response = await fetch(
-          `https://playedit.games/api/globalgames/${id}`,
+          `https://playedit.games/api/globalgames/browse`,
           {
             method: "GET",
             headers: {
@@ -29,13 +29,18 @@ function GamePage() {
         );
 
         if (!response.ok) {
-          setError("Failed to load game.");
+          setError("Failed to load games.");
           setLoading(false);
           return;
         }
 
         const data = await response.json();
-        setGame(data);
+        const gameData = data.data.find((g: any) => g.id === parseInt(id || ""));
+        if (gameData) {
+          setGame(gameData);
+        } else {
+          setError("Game not found.");
+        }
       } catch (err) {
         setError("Error fetching game details.");
       } finally {
@@ -52,20 +57,17 @@ function GamePage() {
 
   return (
     <div className="game-view-container">
-      {game.coverImageUrl && (
-        <img src={game.coverImageUrl} alt={game.title} id="game-cover" />
+      {game.cover?.url && (
+        <img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover" />
       )}
 
       <h1 id="game-title">{game.name}</h1>
 
       <p><strong>Genre:</strong> {game.genres?.join(", ") || "Unknown"}</p>
-      <p><strong>Release Date:</strong> {game.firstReleaseDate || "Unknown"}</p>
+      <p><strong>Release Date:</strong> {game.first_release_date || "Unknown"}</p>
 
       <p>{game.summary || "No description provided."}</p>
 
-      {game.cover?.url && (
-        <img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover" />
-      )}
     </div>
   );
 }

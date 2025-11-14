@@ -20,6 +20,7 @@ export default function AddDevGame({ onClose }: Props) {
   const [gameStatus, setGameStatus] = useState("In Development");
   const [description, setDescription] = useState("");
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [gameURL, setGameURL] = useState("");
 
   function handleCoverUpload(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -43,6 +44,7 @@ export default function AddDevGame({ onClose }: Props) {
       gameStatus,
       description,
       coverImage,
+      gameURL,
     };
 
     try {
@@ -68,8 +70,7 @@ export default function AddDevGame({ onClose }: Props) {
 
       <form className="adddev-form" onSubmit={handleSubmit}>
         <div className="adddev-grid">
-
-          <div className="adddev-cover-section">
+          <div className="adddev-left">
             <div className="adddev-cover-wrapper">
               {coverImage ? (
                 <img src={coverImage} className="adddev-cover" alt="Cover preview" />
@@ -78,8 +79,8 @@ export default function AddDevGame({ onClose }: Props) {
               )}
             </div>
 
-            <label className="adddev-upload-button">
-              Upload Cover
+            <label className="adddev-upload-label">
+              <span>Upload Cover</span>
               <input
                 type="file"
                 accept="image/*"
@@ -88,10 +89,11 @@ export default function AddDevGame({ onClose }: Props) {
               />
             </label>
           </div>
-          <div className="adddev-inputs">
+          <div className="adddev-fields">
             <input type="text" placeholder="Game Title" value={gameTitle} onChange={(e) => setGameTitle(e.target.value)}required/>
             <input type="text" placeholder="Game Summary" value={gameSummary} onChange={(e) => setGameSummary(e.target.value)}/>
             <input type="date" value={firstReleaseDate} onChange={(e) => setFirstReleaseDate(e.target.value)} required/>
+            <input type="text" placeholder="Game URL" value={gameURL} onChange={(e) => setGameURL(e.target.value)} />
             <input type="text" placeholder="Platform IDs (comma separated)" value={platformIds.join(",")} onChange={(e) => setPlatformIds(e.target.value.split(",").map((id) => id.trim()))}/>
             <input type="text" placeholder="Genre IDs (comma separated)" value={genreIds.join(",")} onChange={(e) => setGenreIds(e.target.value.split(",").map((id) => id.trim()))}/>
             <input type="text" placeholder="Developer Usernames (comma separated)" value={developerUsernames.join(",")} onChange={(e) => setDeveloperUsernames(e.target.value.split(",").map((u) => u.trim()))}/>
@@ -110,8 +112,10 @@ export default function AddDevGame({ onClose }: Props) {
             </div>
           </div>
         </div>
-        <button type="submit" className="adddev-submit">Add Game</button>
-        <button type="button" className="adddev-cancel" onClick={() => onClose?.()}>Cancel</button>
+        <div className="adddev-buttons">
+          <button type="submit" className="adddev-submit">Add Game</button>
+          <button type="button" className="adddev-cancel" onClick={() => onClose?.()}>Cancel</button>
+        </div>
       </form>
     </div>
   );
