@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function LoadGame() {
+function GamePage() {
   const { id } = useParams<{ id: string }>();
   const [game, setGame] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -17,18 +17,25 @@ function LoadGame() {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/api/game/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const response = await fetch(
+          `https://playedit.games/api/games/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
           }
-        });
+        );
 
-        if (response.ok) {
-          const data = await response.json();
-          setGame(data);
-        } else {
+        if (!response.ok) {
           setError("Failed to load game.");
+          setLoading(false);
+          return;
         }
+
+        const data = await response.json();
+        setGame(data);
       } catch (err) {
         setError("Error fetching game details.");
       } finally {
@@ -45,16 +52,20 @@ function LoadGame() {
 
   return (
     <div className="game-view-container">
-      <img src={game.coverImageUrl} alt={game.title} id="game-cover" />
+      {game.coverImageUrl && (
+        <img src={game.coverImageUrl} alt={game.title} id="game-cover" />
+      )}
 
       <h1 id="game-title">{game.title}</h1>
 
-      <p><strong>Genre:</strong> {game.genre}</p>
-      <p><strong>Release Date:</strong> {game.releaseDate}</p>
+      <p><strong>Genre:</strong> {game.genre || "Unknown"}</p>
+      <p><strong>Release Date:</strong> {game.releaseDate || "Unknown"}</p>
 
-      <p id="game-description">{game.description}</p>
+      <p id="game-description">
+        {game.description || "No description provided."}
+      </p>
     </div>
   );
 }
 
-export default LoadGame;
+export default GamePage;
