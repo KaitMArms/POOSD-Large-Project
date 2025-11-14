@@ -216,6 +216,7 @@ exports.addUserGame = async (req, res) => {
 };
 
 exports.getGameById = async (req, res) => {
+  console.log('getGameById called with id:', req.params.id);
   try {
     const game = await Game.findOne({ id: req.params.id }).lean();
     if (!game) {
