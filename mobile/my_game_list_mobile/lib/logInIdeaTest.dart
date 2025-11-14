@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_game_list_mobile/main_navigation.dart';
+import 'package:my_game_list_mobile/profile.dart';
 import 'package:my_game_list_mobile/services/api_service.dart';
 import 'package:my_game_list_mobile/sign_up.dart';
 import 'package:http/http.dart' as http;
@@ -240,6 +241,17 @@ class _LogInTestState extends State<LogInIdea> {
                             ),
                           ]),
                         ),
+
+                        //FUTURE ERKINS REMOVE BELOW SECTION ONCE I AM DONE
+
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+                          }, 
+                          child: Text("Dev Skip Button :D")
+                        ) 
+
+                        //FUTURE ERKINS REMOVE ABOVE SECTION ONCE I AM DONE
                       ],
                     ),
                   ),
