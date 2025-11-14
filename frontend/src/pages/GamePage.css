@@ -32,9 +32,9 @@
 
 .recommend-games-container,
 .search-games {
-  width: 70%;                
+  width: 90%;                
   max-width: 1000px;   
-  max-height: 7000px;       
+  max-height: 1500px;       
   margin: 2rem auto;          
   background-color: var(--div-color);
   padding: 2rem 3rem;
