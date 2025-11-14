@@ -66,7 +66,7 @@ class UserDetailsState extends State<UserDetails>  {
                 ],
               ),
 
-
+              
             ],
           ),
         ),

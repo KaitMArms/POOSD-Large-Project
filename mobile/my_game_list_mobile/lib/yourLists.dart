@@ -1,4 +1,4 @@
-import 'package:pie_chart/pie_chart.dart';
+//import 'package:pie_chart/pie_chart.dart';
 import 'package:flutter/material.dart';
 
 class YourGamesList extends StatefulWidget {
@@ -76,7 +76,7 @@ class YourGamesListState extends State<YourGamesList>  {
 
               SizedBox(height: 30),
 
-              PieChart(
+              /*PieChart(
                 dataMap: dataMap,
                 animationDuration: Duration(milliseconds: 800),
                 chartRadius: MediaQuery.of(context).size.width / 2.5,
@@ -92,7 +92,9 @@ class YourGamesListState extends State<YourGamesList>  {
                   showChartValues: true,
                   decimalPlaces: 0,
                 ),
-              )
+              )*/
+            
+
             ],
           ),
         ),
