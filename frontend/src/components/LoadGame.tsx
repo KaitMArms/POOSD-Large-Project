@@ -56,14 +56,16 @@ function GamePage() {
         <img src={game.coverImageUrl} alt={game.title} id="game-cover" />
       )}
 
-      <h1 id="game-title">{game.title}</h1>
+      <h1 id="game-title">{game.name}</h1>
 
-      <p><strong>Genre:</strong> {game.genre || "Unknown"}</p>
-      <p><strong>Release Date:</strong> {game.releaseDate || "Unknown"}</p>
+      <p><strong>Genre:</strong> {game.genres?.join(", ") || "Unknown"}</p>
+      <p><strong>Release Date:</strong> {game.firstReleaseDate || "Unknown"}</p>
 
-      <p id="game-description">
-        {game.description || "No description provided."}
-      </p>
+      <p>{game.summary || "No description provided."}</p>
+
+      {game.cover?.url && (
+        <img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover" />
+      )}
     </div>
   );
 }
