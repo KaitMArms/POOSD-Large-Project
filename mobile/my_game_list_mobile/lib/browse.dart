@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_game_list_mobile/services/api_service.dart';
+//import 'package:my_game_list_mobile/services/api_service.dart';
 
 class AllGames extends StatefulWidget {
   const AllGames({super.key});
@@ -21,13 +21,15 @@ class AllGamesState extends State<AllGames>{
 
             Container(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // bigger box
+              
               decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(16), 
                 boxShadow: [
                   BoxShadow(
                     color: Colors.purpleAccent.withValues(alpha: 0.2),
                     offset: Offset(0, 2),
-                    blurRadius: 4,
+                    blurRadius: 24,
                   ),
                 ],
               ),

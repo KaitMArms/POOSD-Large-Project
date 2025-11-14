@@ -6,7 +6,11 @@ import 'package:my_game_list_mobile/AddGames.dart';
 import 'package:my_game_list_mobile/user_details.dart';
 import 'package:my_game_list_mobile/log_out.dart';
 import 'package:my_game_list_mobile/notifications.dart';
+//import 'package:my_game_list_mobile/sign_up.dart';
+//import 'package:my_game_list_mobile/services/api_service.dart';
+
 class Profile extends StatefulWidget {
+
   const Profile({super.key});
 
   @override
@@ -51,7 +55,7 @@ class _ProfileState extends State<Profile> {
               ),
               SizedBox(height: 10),
               Text(
-                "Connect Name API from Log-In Here",
+                "Name API",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
