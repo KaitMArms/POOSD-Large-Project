@@ -2,8 +2,14 @@ name: Backend CI/CD
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
 
 jobs:
   deploy_backend:
@@ -50,5 +56,15 @@ jobs:
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
           cd /var/www/html/backend
           npm ci
-          pm2 restart server || pm2 start server.js --name server
+
+          if pm2 describe server > /dev/null; then
+            echo "PM2 Exists: Restarting"
+            pm2 restart server
+          else
+            echo "PM2 doesn't exist: Starting"
+            pm2 start server.js --name backend
+          fi
+
+          pm2 save
+
           EOF

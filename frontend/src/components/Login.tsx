@@ -24,7 +24,7 @@ function Login() {
     const email = ((document.getElementById("loginEmail") as HTMLInputElement) || { value: "" }).value.trim().toLowerCase();
     const password = ((document.getElementById("loginPassword") as HTMLInputElement) || { value: "" }).value;
 
-    // minimal client-side checks (no layout changes)
+    // minimal client-side checks
     if (!emailRe.test(email)) {
       setMessage("Please enter a valid email address.");
       return;

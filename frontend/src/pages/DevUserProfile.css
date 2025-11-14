@@ -12,18 +12,20 @@
   margin-top: 1em;
   margin-bottom: 1em;
   text-shadow:
-    -1px -1px 0 var(--text-color),
-    1px -1px 0 var(--text-color),
-    -1px  1px 0 var(--text-color),
-    1px  1px 0 var(--text-color),
-    0 0 4px rgba(162, 89, 255, 0.9),
-    0 0 10px rgba(162, 89, 255, 0.6),
-    0 0 16px rgba(162, 89, 255, 0.4);
+  -1px -1px 0 var(--text-color),
+  1px -1px 0 var(--text-color),
+  -1px 1px 0 var(--text-color),
+  1px 1px 0 var(--text-color),
+  0 0 4px rgba(162, 89, 255, 0.9),
+  0 0 10px rgba(162, 89, 255, 0.6),
+  0 0 16px rgba(162, 89, 255, 0.4);
 }
 
-.dev-games-container {
+.dev-games-container,
+.dev-search-games {
   width: auto;
-  height: 50vw;
+  height: auto;
+  min-height: 50vw;
   padding: 5em;
   background-color: var(--div-color);
   border-radius: 1em;
@@ -56,15 +58,6 @@
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
 }
 
-.dev-search-games {
-  width: auto;
-  height: 50vw;
-  padding: 5em;
-  background-color: var(--div-color);
-  border-radius: 1em;
-  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
-}
-
 .search-bar {
   display: flex;
   justify-content: center;
@@ -83,43 +76,87 @@
 
 #searchDevButton {
   background-color: var(--button-bg);
-  color: var(--button-text);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  padding: 0.6em 1.2em;
+}
+
+.adddev-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5em;
+}
+
+.adddev-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+.adddev-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.adddev-cover {
+  width: 240px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 0 12px var(--accent-color);
+}
+
+.adddev-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   cursor: pointer;
-  transition: 0.25s ease;
+  color: var(--accent-color);
+  font-size: 0.9rem;
+  margin-top: 6px;
 }
 
-#searchDevButton:hover {
-  transform: scale(1.04);
-  box-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+.adddev-upload-label input[type="file"] {
+  display: none;
 }
 
-.dev-game-row {
-  margin: 0.8em 0;
+.adddev-upload-label span {
+  padding: 6px 12px;
+  border: 2px solid var(--accent-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-.game-link {
-  color: #72139B;
-  font-weight: bold;
-  text-decoration: none;
-  transition: 0.25s ease;
-  text-shadow:
-    -1px -1px 0 var(--text-color),
-    1px -1px 0 var(--text-color),
-    -1px  1px 0 var(--text-color),
-    1px  1px 0 var(--text-color),
-    0 0 4px rgba(162, 89, 255, 0.9),
-    0 0 10px rgba(162, 89, 255, 0.6),
-    0 0 16px rgba(162, 89, 255, 0.4);
+.adddev-upload-label span:hover {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  box-shadow: 0 0 12px var(--accent-color);
 }
 
-.game-link:hover {
-  text-decoration: underline;
-  transform: scale(1.04);
-  text-shadow:
-    0 0 4px rgba(162, 89, 255, 0.9),
-    0 0 10px rgba(162, 89, 255, 0.6),
-    0 0 16px rgba(162, 89, 255, 0.4);
+.adddev-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.adddev-fields input,
+.adddev-fields textarea,
+.adddev-fields select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--accent-color);
+  background-color: var(--input-bg, rgba(15, 15, 40, 0.85));
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-family: var(--font-main, "Poppins", sans-serif);
+}
+
+.adddev-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
 }

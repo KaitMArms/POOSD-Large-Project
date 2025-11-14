@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
+import { Link } from "react-router-dom";
 import "../pages/DevUserProfile.css";
 
 type LoadDevUserProps = {
@@ -11,14 +11,162 @@ const API_BASE =
     ? "http://localhost:8080"
     : "https://playedit.games";
 
+// 🔹 Inline AddDevGame form (mirrors EditUser)
+function AddDevGame({ onClose }: { onClose: () => void }) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [genre, setGenre] = useState("");
+  const [status, setStatus] = useState("in-development");
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  async function handleCoverUpload(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setSaving(true);
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("cover", file);
+
+      const res = await fetch(`${API_BASE}/api/dev/games/cover`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to upload cover.");
+
+      setCoverUrl(data.coverUrl);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setSuccess(false);
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${API_BASE}/api/dev/games`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          genre,
+          status,
+          coverUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to add game.");
+
+      setSuccess(true);
+      setTimeout(() => onClose(), 1000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="edit-user-container">
+      <span id="inner-title">Add New Game</span>
+
+      <div className="edit-user-grid">
+        <div className="edit-user-left">
+          <div className="edit-user-avatar-wrapper">
+            <img
+              src={coverUrl || "/GamePlaceholder.png"}
+              alt="Cover Preview"
+              className="edit-user-avatar"
+            />
+          </div>
+          <label className="edit-user-avatar-upload">
+            <span>Upload Cover</span>
+            <input type="file" accept="image/*" onChange={handleCoverUpload} />
+          </label>
+        </div>
+
+        <div className="edit-user-right">
+          <div className="edit-user-fields">
+            <input
+              type="text"
+              placeholder="Game Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Genre (e.g. Action, Puzzle)"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+            />
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="in-development">In Development</option>
+              <option value="released">Released</option>
+              <option value="paused">Paused</option>
+            </select>
+          </div>
+
+          <div className="edit-user-bio">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              placeholder="Describe your game..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={6}
+            />
+          </div>
+        </div>
+      </div>
+
+      {error && <div style={{ color: "red" }}>{error}</div>}
+      {success && <div style={{ color: "limegreen" }}>Game added successfully!</div>}
+
+      <div id="signUpButtonsDiv">
+        <input
+          type="submit"
+          id="submitButton"
+          className="buttons"
+          value={saving ? "Saving..." : "Add Game"}
+          disabled={saving}
+        />
+        <input
+          type="button"
+          id="cancelButton"
+          className="buttons"
+          value="Cancel"
+          onClick={onClose}
+        />
+      </div>
+    </form>
+  );
+}
+
 const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
   const [devGames, setDevGames] = useState<any[]>([]);
   const [searchedGames, setSearchedGames] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const navigate = useNavigate();
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (!event) return;
@@ -72,7 +220,6 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
     }
 
     try {
-      // 🔹 match controller signature: /dev/games/search?name=foo
       const response = await fetch(
         `${API_BASE}/api/dev/games/search?name=${encodeURIComponent(
           searchQuery
@@ -105,10 +252,21 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
   };
 
   const handleAddGame = () => {
-    navigate("/add-game"); // your existing route
+    setAdding(true);
   };
 
   if (!event) return null;
+
+  if (adding)
+    return (
+      <AddDevGame
+        onClose={() => {
+          setAdding(false);
+          window.location.reload();
+        }}
+      />
+    );
+
   if (loading) return <div>Loading your games...</div>;
   if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
@@ -119,21 +277,14 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
       <div className="dev-games-container">
         <div className="dev-section-header">
           <h2 className="section-title">My Development Games</h2>
-          <button className="add-game-button" onClick={handleAddGame}>
-            + Add New Game
-          </button>
+          <button className="add-game-button" onClick={handleAddGame}> + Add New Game</button>
         </div>
 
         <div className="columns-wrapper">
           {devGames.length > 0 ? (
             devGames.map((game) => (
               <div key={game.id || game.gameId} className="dev-game-row">
-                <Link
-                  to={`/game/${game.id || game.gameId}`}
-                  className="game-link"
-                >
-                  {game.name || game.title}
-                </Link>
+                <Link to={`/game/${game.id || game.gameId}`} className="game-link">{game.name || game.title}</Link>
               </div>
             ))
           ) : (
@@ -165,12 +316,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
           {searchedGames.length > 0 ? (
             searchedGames.map((game) => (
               <div key={game.id || game.gameId} className="dev-game-row">
-                <Link
-                  to={`/game/${game.id || game.gameId}`}
-                  className="game-link"
-                >
-                  {game.name || game.title}
-                </Link>
+                <Link to={`/game/${game.id || game.gameId}`} className="game-link"> {game.name || game.title}</Link>
               </div>
             ))
           ) : (
