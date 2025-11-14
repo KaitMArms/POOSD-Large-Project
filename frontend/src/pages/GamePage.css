@@ -1,12 +1,16 @@
 .global-games-page,
 .game-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   background-color: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
   padding-top: 4rem;
+}
+
+.components-container{
+  flex-direction: row;
 }
 
 .page-title {
