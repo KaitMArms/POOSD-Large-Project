@@ -152,7 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //imports Flutter's material design library (has Flutter's pre-built widgets): Scaffold, AppBar, Text, FloatingActionButton, etc.
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_game_list_mobile/log_in.dart';
+//import 'package:my_game_list_mobile/log_in.dart';
+import 'package:my_game_list_mobile/logInIdeaTest.dart';
 
 void main() {
   runApp(const PlayedIt());
@@ -179,6 +180,15 @@ class PlayedIt extends StatelessWidget {
               ),
             fillColor: Color(0xFFbecbf4),
             filled: true,
+
+            border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+        enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
         ),
         
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -206,6 +216,15 @@ class PlayedIt extends StatelessWidget {
             ),
           fillColor: Color(0xFF2047C0),
           filled: true,
+
+        border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+        enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
         ),
         //text color -> light
         //text font -> orbitron
@@ -217,7 +236,8 @@ class PlayedIt extends StatelessWidget {
             ),
         ),
       ),
-      home: const LogIn(), //home is a property that means that home is the first screen shown on start-up
+      //home: const LogIn(), //home is a property that means that home is the first screen shown on start-up
+      home: const LogInIdea(), //home is a property that means that home is the first screen shown on start-up
     );
   }
 }

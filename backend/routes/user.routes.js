@@ -6,10 +6,10 @@ const {
   profileUpd,
   settingsUpd,
   deleteAccount,
-  uploadAvatar,   
+  uploadAvatar, 
 } = require('../controllers/user.controller');
 const requireAuth = require('../middleware/requireAuth');
-const avatarUpload = require('../middleware/avatarUpload'); // 🔹 multer config
+const avatarUpload = require('../middleware/avatarUpload');
 
 router.use(requireAuth);
 

@@ -48,9 +48,13 @@ export default function AddDevGame({ onClose }: Props) {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/api/games/dev/add`, {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE}/api/dev/games/add`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(body),
       });
 
