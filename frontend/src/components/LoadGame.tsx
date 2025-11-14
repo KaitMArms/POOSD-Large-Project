@@ -1,24 +1,51 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+const API_BASE =
+
+  window.location.hostname === "localhost"
+
+    ? "http://localhost:8080"
+
+    : "https://playedit.games";
+
+
+
 function LoadGame() {
+
   const { id } = useParams<{ id: string }>();
+
   const [game, setGame] = useState<any>(null);
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
+
+
   useEffect(() => {
+
     const fetchGame = async () => {
+
       const token = localStorage.getItem("token");
+
       if (!token) {
+
         setError("No token found. Please log in.");
+
         setLoading(false);
+
         return;
+
       }
 
+
+
       try {
+
         const response = await fetch(
-          `https://playedit.games/api/globalgames/${id}`,
+
+          `${API_BASE}/api/globalgames/${id}`,
           {
             method: "GET",
             headers: {
