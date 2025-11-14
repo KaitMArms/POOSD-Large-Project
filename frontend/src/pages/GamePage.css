@@ -33,16 +33,12 @@
 
 .recommend-games-container,
 .search-games {
-  width: 100%;                
-  max-width: 1000px;   
-  max-height: 1500px;       
-  margin: 2rem auto;          
+  width: 80%;              
+  max-width: 900px;        
+  padding: 2em;           
+  margin: 0 auto;         
   background-color: var(--div-color);
-  padding: 2rem 3rem;
-  height: auto;               
-  min-height: 250px;          
-  border-radius: 18px;        
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  border-radius: 1.2em;  
 }
 
 .section-title {
