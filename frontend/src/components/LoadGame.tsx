@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function LoadGame() {
+function GamePage() {
   const { id } = useParams<{ id: string }>();
   const [game, setGame] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -72,4 +72,4 @@ function LoadGame() {
   );
 }
 
-export default LoadGame;
+export default GamePage;

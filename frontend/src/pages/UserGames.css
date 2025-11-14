@@ -99,15 +99,27 @@
 }
 
 .game-link {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 500;
-    transition: 0.3s ease;
+  color: #72139B;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.25s ease;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }
 
 .game-link:hover {
-    color: #b26cff;
-    text-shadow: 0 0 10px rgba(162, 89, 255, 0.6);
+  text-decoration: underline;
+  transform: scale(1.04);
+  text-shadow:
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }
 
 @media (max-width: 900px) {
