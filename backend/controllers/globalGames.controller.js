@@ -41,24 +41,46 @@ exports.browseGames = async (req, res) => {
 exports.browseRecommended = async (req,res) => {
 
   try{
+      const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
+      const limit = Math.min (limitReq, 50);
 
-    //const page = Math.max(parseInt(req.query.page || '1', 10), 1);
-    //const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
-    //const limit = Math.min(limitReq, 50); // cap at 50 per page
+      const userId = req.user?.sub || req.user?.uid ||null;
 
-    //Function to get array of recommended games IDs.
-    const gamesIDs = recommend.recommendedGames;
-    
-    // Get games by IDs
-    const games = await Game.find({ _id: { $in: gamesIDs}});
-    return res.json({games});
+      if (userId){
+        const userDoc = await User.findById(userId).select('userGames').lean().exec();
+        const likedIds = (userDoc?.userGames || [])
+        .filter(g=>g.isLiked === true)
+        .map(g => g.id);
 
-  }catch(error) {
-    console.error('browseRecommended error:', err);
-    return res.status(500).json({ message: 'Server error.' });
+        const userProfileVector = await user_profile.buildUserProfileVector(userId, { UserModel: User, GameModel: Game});
+
+        const recs = await recommend.getRecommendations(userProfileVector, likedIds, {GameModel: Game});
+
+        const recIds = recs.map(r =>r.id);
+        const games = await Game.find({id: {$in: recIds } }).lean().exec();
+
+        const gamesById = new Map (games.map(g => [g.id, g]));
+        const results  = recs.map (r=> ({ ...r,game: gamesById.get(r.id) || null}))
+        .slice(0,limit);
+
+        return res.json ({recommendations: results});
+
+      }
+      else {
+        const items = await Game.find({}, 'id name rating_count summary first_release_date')
+        .sort({rating_count: -1, rating: -1, first_release_date: -1})
+        .limit(limit).lean().exec();
+
+        return res.json ({recommendations: items });
+      }
+  }
+  catch (err)
+  {
+    console.error('browseRecommended error: ', err);
+    return res.status(500).json({message: 'Server error browse.'});
   }
 
-}
+};
 
 exports.searchGames = async (req, res) => {
   try {
@@ -132,10 +154,24 @@ exports.searchGames = async (req, res) => {
 
 exports.recommendedGames = async (req, res) => {
   // Get usergames IDs
-    let curUser = req.user.userID;
-    let GamesIDs = curUser.userGames;
+  try{
+    const curUser = req.user?.sub || req.user?.uid || req.user?.userID;
+    if (!curUser) return res.status(401).json({message: 'Unauthorized'});
+
+    const userDoc = await User.findById(curUser).select('userGames').lean().exec();
+    const likedIds = (userDoc?.userGames || []).map(g=> g.id);
+
+    const userProfileVector = await user_profile.buildUserProfileVector(curUser, {UserModel: User, GameModel: Game});
     // Call functions for recommending games
-    return recommend.getRecommendations(user_profile.buildUserProfileVector, GamesIDs).json;
+    const recommendations = await recommend.getRecommendations(userProfileVector, likedIds, {GameModel: Game});
+
+    return res.json({recommendations});
+  }
+  catch(err)
+  {
+    console.error('recommendedGames error',err);
+    return res.status(500).json({message: 'Server error recommended.'});
+  } 
 };
 
 exports.addUserGame = async (req, res) => {
