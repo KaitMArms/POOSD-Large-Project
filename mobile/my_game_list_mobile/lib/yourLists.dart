@@ -26,12 +26,6 @@ class YourGamesListState extends State<YourGamesList>  {
       body: SingleChildScrollView(
         child: Padding( // <-- instead of Center (fixes infinite height)
           padding: const EdgeInsets.all(16.0),
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                touchedIndex = null;
-              });
-            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -83,27 +77,37 @@ class YourGamesListState extends State<YourGamesList>  {
                 const SizedBox(height: 10),
             
                 // ----- PIE CHART -----
-                SizedBox(
-                  height: 300,
-                    child: PieChart(
-                      PieChartData(
-                        pieTouchData: PieTouchData(
-                          touchCallback: (event, response) {
-                            setState(() {
-                              if (response == null || response.touchedSection == null) 
-                              {
-                                return;
-                              }
-                              touchedIndex = response.touchedSection!.touchedSectionIndex;
-                            });
-                          }
+                Center(
+                  
+                  child: SizedBox(
+                    height: 200,
+                      child: PieChart(
+                        PieChartData(
+                          pieTouchData: PieTouchData(
+                            touchCallback: (event, response) {
+                              setState(() {
+                                if (response == null || response.touchedSection == null) {
+                                  touchedIndex = null;  // ← This deselects when tapping empty space
+                                  return;
+                                }
+                                
+                                // If tapping the same section again, deselect it
+                                final tappedIndex = response.touchedSection!.touchedSectionIndex;
+                                if (touchedIndex == tappedIndex) {
+                                  touchedIndex = null;  // ← Toggle off
+                                } else {
+                                  touchedIndex = tappedIndex;  // ← Select new section
+                                }
+                              });
+                            }
+                          ),
+                          sectionsSpace: 3,
+                          centerSpaceRadius: 40,
+                          sections: _buildSections(),
                         ),
-                        sectionsSpace: 3,
-                        centerSpaceRadius: 40,
-                        sections: _buildSections(),
                       ),
                     ),
-                  ),
+                ),
                 const SizedBox(height: 10),
             
                 // ----- LEGEND -----
@@ -130,7 +134,6 @@ class YourGamesListState extends State<YourGamesList>  {
                     )
               ],
             ),
-          ),
         ),
       ),
     );
