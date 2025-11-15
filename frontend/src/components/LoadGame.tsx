@@ -153,16 +153,6 @@ function LoadGame(){
 
   return (
     <div className="game-view-container">
-      {game.cover?.url && (
-        <img src={coverUrl} id="game-cover" alt={game.name ?? "game cover"} style={{ maxWidth: "100%", height: "auto" }}/>
-      )}
-      <h1 id="game-title">{game.name}</h1>
-      <p>
-        <strong>Genre:</strong>{" "}{Array.isArray(game.genres)? game.genres.join(", "): String(game.genres ?? "Unknown")}
-      </p>
-      <p>
-        <strong>Release Date:</strong> {releaseDate}
-      </p>
       <p>{game.summary || "No description provided."}</p>
       <div className="game-feature-wrapper">
         <button type="button" className="back-button" onClick={() => window.history.back()}> Go Back to All Games</button>
@@ -180,10 +170,9 @@ function LoadGame(){
             <div className="added-description">
               {game.summary || "No description available."}
             </div>
-            <div className="rating-box">
-              <label className="rating-label"> Rating: {rating.toFixed(1)} / 10</label>
-              <input type="range" min={0} max={10} step={0.1} value={rating} onChange={(e) => setRating(parseFloat(e.target.value))} className="rating-slider"/>
-            </div>
+            <p>
+              <strong>Release Date:</strong> {releaseDate}
+            </p>
             <button type="button" className="add-button" onClick={() => setShowModal(true)}> Add to My Games</button>
           </div>
         </div>
