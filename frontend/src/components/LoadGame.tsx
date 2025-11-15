@@ -6,6 +6,27 @@ const API_BASE =
     ? "http://localhost:8080"
     : "https://playedit.games";
 
+const formatUnixTimestamp = (unixTimestamp: number | undefined): string => {
+  // 1. Guard against null, undefined, or zero timestamps.
+  if (!unixTimestamp) {
+    return "Unknown";
+  }
+
+  // 2. The JavaScript Date object requires milliseconds, so multiply by 1000.
+  const date = new Date(unixTimestamp * 1000);
+
+  // 3. Use Intl.DateTimeFormat for robust, locale-aware formatting.
+  //    This will automatically format the date correctly for users in different countries.
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC' // Specify UTC to avoid timezone conversion issues
+  });
+
+  return formatter.format(date);
+};
+
 function LoadGame() {
   const { id } = useParams<{ id: string }>();
   const [game, setGame] = useState<any>(null);
@@ -87,13 +108,14 @@ function LoadGame() {
   if (loading) return <div>Loading game...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!game) return <div>Game not found.</div>;
-
+  const formattedDate = formatUnixTimestamp(game.first_release_date);
   return (
     <div className="game-view-container">
       {game.cover?.url && (<img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover"/>)}
       <h1 id="game-title">{game.name}</h1>
       <p><strong>Genre:</strong> {game.genres?.join(", ") || "Unknown"}</p>
-      <p><strong>Release Date:</strong> {game.first_release_date || "Unknown"}</p>
+      <p><strong>Release Date:</strong> {formattedDate || "Unknown"}</p>
+
       <p>{game.summary || "No description provided."}</p>
       <div className="added-feature-container">
         <div className="added-image-wrapper">
