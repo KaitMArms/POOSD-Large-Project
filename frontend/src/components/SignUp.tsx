@@ -70,9 +70,13 @@ function SignUp() {
             </button>
           </div>
 
-          <button type="submit" id="signupButton" className="buttons" disabled={loading}>
-            {loading ? "Signing up..." : "Sign Up"}
-          </button>
+          <input
+          type="submit"
+          id="signUpButton"
+          className="buttons"
+          value="Log In"
+          onClick={doSignUp}
+        />
         </form>
 
         <span id="sign-up-result"></span>
