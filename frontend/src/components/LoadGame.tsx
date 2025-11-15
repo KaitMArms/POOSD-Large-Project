@@ -163,7 +163,6 @@ function LoadGame(){
     <div className="game-view-container">
       <p>{game.summary || "No description provided."}</p>
       <div className="game-feature-wrapper">
-        <button type="button" className="back-button" onClick={() => window.history.back()}> Go Back to All Games</button>
         <div className="added-feature-container">
           <div className="added-image-wrapper">
             <img src={coverUrl} className="added-image" alt={game.name ?? "cover"}/>
