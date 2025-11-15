@@ -231,8 +231,8 @@
 .add-button {
   margin-top: 1rem;
   padding: 0.8rem 1.4rem;
-  background: #72139B;
-  color: white;
+  background: var(--button-bg);
+  color: var(--button-text);
   font-weight: bold;
   border-radius: 0.8rem;
   border: none;
@@ -278,8 +278,8 @@
   margin-top: 1.5rem;
   padding: 0.8rem 1.2rem;
   width: 100%;
-  background: #72139B;
-  color: white;
+  background: var(--button-bg);
+  color: var(--button-text);
   border: none;
   border-radius: 1rem;
   cursor: pointer;
