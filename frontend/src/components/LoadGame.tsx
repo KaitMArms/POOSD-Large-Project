@@ -142,10 +142,8 @@ function LoadGame() {
     return <div>Game not found.</div>;
   }
 
-  const coverUrl =
-    game.cover?.url && typeof game.cover.url === "string"
-      ? game.cover.url.replace("t_thumb", "t_720p")
-      : "/default-game.png";
+  const coverUrl = game.coverUrl || "/default-game.png";
+
 
   const releaseDate = formatUnixDate(
     typeof game.first_release_date === "number"
