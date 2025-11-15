@@ -9,7 +9,6 @@ function PageTitle() {
             className="mascot"
             src="/Mascot.png"
             alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"
-            loading="lazy"
           />
           <h1 className="title">PlayedIt</h1>
         </div>

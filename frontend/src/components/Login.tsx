@@ -119,22 +119,21 @@ function Login() {
     }
   }
 
+  // clear inline message as user types (no layout changes)
   function clearMsgOnInput() {
     if (message) setMessage("");
   }
 
   return (
-    <main id="page-container">
+    <div id="page-container">
       <div>
-        <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller" loading="lazy" />
+        <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller" />
       </div>
       <br />
-      <form id="login-container" onSubmit={doLogin}>
+      <div id="login-container">
         <span id="inner-title">Welcome Back to PlayedIt!</span><br />
-        <label htmlFor="loginEmail" style={{display: 'none'}}>Email</label>
         <input type="email" id="loginEmail" placeholder="Email" onInput={clearMsgOnInput} /><br />
         <div className="password-field">
-          <label htmlFor="loginPassword" style={{display: 'none'}}>Password</label>
           <input
             type={showPassword ? "text" : "password"}
             id="loginPassword"
@@ -155,6 +154,7 @@ function Login() {
           id="loginButton"
           className="buttons"
           value="Log In"
+          onClick={doLogin}
         />
         {/* Inline login error (non-OTP) below the button */}
         {!verifyOpen && message && (
@@ -163,7 +163,7 @@ function Login() {
 
         <span id="login-result"></span>
         <p className="signup-link">New to PlayedIt? <br /><Link to="/signup">Sign Up</Link></p>
-      </form>
+      </div>
 
       {/* Centered OTP modal (unchanged layout) */}
       {verifyOpen && (
@@ -199,7 +199,7 @@ function Login() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 

@@ -93,7 +93,7 @@
 
 .adddev-grid {
   display: grid;
-  grid-template-columns: 30% 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 30px;
   width: 100%;
 }
@@ -106,9 +106,8 @@
 }
 
 .adddev-cover {
-  width: 80%;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  width: 240px;
+  height: 240px;
   border-radius: 12px;
   object-fit: cover;
   box-shadow: 0 0 12px var(--accent-color);
