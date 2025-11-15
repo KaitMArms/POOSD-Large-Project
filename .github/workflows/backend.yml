@@ -44,7 +44,7 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          rsync -avz --delete --exclude-from='.github/workflows/backend-rysnc-exclude.txt' -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+          rsync -avz --delete --exclude-from='.github/workflows/backend-rsync-exclude.txt' -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
             backend/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/backend/
 
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
