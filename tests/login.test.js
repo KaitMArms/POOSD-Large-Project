@@ -26,12 +26,14 @@ describe("POST ../backend/auth/login", () => {
         // Verify
         bcrypt.localeCompare.mockResolvedValue(true);
 
+        // Send data to login API call
         const response = await request(app).post("auth/login").send({
             email: "juela575@gmail.com",
             password: "COP4331"
         });
 
-        expect(response.status).toBe();
+        // Expected results: res.status, fields in the body, and _id of user
+        expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("token", "user");
         expect(response.body._id).toBe("6915fab55fa7852213445b7c");
 
