@@ -42,6 +42,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout repo (for exclude file)
+        uses: actions/checkout@v4
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -75,5 +79,5 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          rsync -avz --delete --exclude-from='.github/workflows/frontend-rsync-exclude.txt'  -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" dist/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/frontend
+          rsync -avz --delete --exclude-from='.github/workflows/frontend-rsync-exclude.txt' -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" dist/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/frontend/
           ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} "sudo systemctl restart nginx"
