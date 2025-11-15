@@ -101,7 +101,7 @@ export default function AddDevGame({ onClose }: Props) {
             <input type="text" placeholder="Platform IDs (comma separated)" value={platformIds.join(",")} onChange={(e) => setPlatformIds(e.target.value.split(",").map((id) => id.trim()))}/>
             <input type="text" placeholder="Genre IDs (comma separated)" value={genreIds.join(",")} onChange={(e) => setGenreIds(e.target.value.split(",").map((id) => id.trim()))}/>
             <input type="text" placeholder="Developer Usernames (comma separated)" value={developerUsernames.join(",")} onChange={(e) => setDeveloperUsernames(e.target.value.split(",").map((u) => u.trim()))}/>
-            <select id="adddev-fields" value={gameStatus} onChange={(e) => setGameStatus(e.target.value)}>
+            <select id="addDev-select" value={gameStatus} onChange={(e) => setGameStatus(e.target.value)}>
               <option>In Development</option>
               <option>Released</option>
               <option>Cancelled</option>

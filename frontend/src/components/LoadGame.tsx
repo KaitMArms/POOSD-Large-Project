@@ -186,7 +186,7 @@ function LoadGame(){
           <div className="modal-box" onClick={(e) => {e.stopPropagation();}}>
             <h3>User's Game Settings</h3>
             <label className="modal-label" htmlFor="status-select">Status</label>
-            <select id="added-field" value={status} onChange={(e) => setStatus(e.target.value)} className="modal-select">
+            <select id="added-select" value={status} onChange={(e) => setStatus(e.target.value)} className="modal-select">
               <option>Completed</option>
               <option>In Progress</option>
               <option>Paused</option>
