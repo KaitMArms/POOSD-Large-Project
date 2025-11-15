@@ -93,29 +93,28 @@ export default function AddDevGame({ onClose }: Props) {
               />
             </label>
           </div>
+
           <div className="adddev-fields">
-            <input type="text" placeholder="Game Title" value={gameTitle} onChange={(e) => setGameTitle(e.target.value)}required/>
-            <input type="text" placeholder="Game Summary" value={gameSummary} onChange={(e) => setGameSummary(e.target.value)}/>
-            <input type="date" value={firstReleaseDate} onChange={(e) => setFirstReleaseDate(e.target.value)} required/>
+            <input type="text" placeholder="Game Title" value={gameTitle} onChange={(e) => setGameTitle(e.target.value)} required />
+            <input type="text" placeholder="Game Summary" value={gameSummary} onChange={(e) => setGameSummary(e.target.value)} />
+            <input type="date" value={firstReleaseDate} onChange={(e) => setFirstReleaseDate(e.target.value)} required />
             <input type="text" placeholder="Game URL" value={gameURL} onChange={(e) => setGameURL(e.target.value)} />
-            <input type="text" placeholder="Platform IDs (comma separated)" value={platformIds.join(",")} onChange={(e) => setPlatformIds(e.target.value.split(",").map((id) => id.trim()))}/>
-            <input type="text" placeholder="Genre IDs (comma separated)" value={genreIds.join(",")} onChange={(e) => setGenreIds(e.target.value.split(",").map((id) => id.trim()))}/>
-            <input type="text" placeholder="Developer Usernames (comma separated)" value={developerUsernames.join(",")} onChange={(e) => setDeveloperUsernames(e.target.value.split(",").map((u) => u.trim()))}/>
-            <select id="addDev-select" value={gameStatus} onChange={(e) => setGameStatus(e.target.value)}>
+            <input type="text" placeholder="Platform IDs (comma separated)" value={platformIds.join(",")} onChange={(e) => setPlatformIds(e.target.value.split(",").map((id) => id.trim()))} />
+            <input type="text" placeholder="Genre IDs (comma separated)" value={genreIds.join(",")} onChange={(e) => setGenreIds(e.target.value.split(",").map((id) => id.trim()))} />
+            <input type="text" placeholder="Developer Usernames (comma separated)" value={developerUsernames.join(",")} onChange={(e) => setDeveloperUsernames(e.target.value.split(",").map((u) => u.trim()))} />
+            <select className="addDev-select" value={gameStatus} onChange={(e) => setGameStatus(e.target.value)}>
               <option>In Development</option>
               <option>Released</option>
               <option>Cancelled</option>
             </select>
+
             <div className="adddev-description-box">
               <p className="adddev-description-title">Description</p>
-              <textarea
-                placeholder="Describe your game..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <textarea placeholder="Describe your game..." value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
           </div>
         </div>
+
         <div className="adddev-buttons">
           <button type="submit" className="adddev-submit">Add Game</button>
           <button type="button" className="adddev-cancel" onClick={() => onClose?.()}>Cancel</button>
