@@ -19,12 +19,6 @@ router.get('/settings', settings);
 router.patch('/profile', profileUpd);
 router.patch('/settings', settingsUpd);
 router.delete('/delete', deleteAccount);
-
-// 🔹 NEW: avatar upload
-router.post(
-  '/avatar',
-  avatarUpload.single('avatar'),
-  uploadAvatar
-);
+router.post('/avatar', avatarUpload.single('avatar'), uploadAvatar);
 
 module.exports = router;
