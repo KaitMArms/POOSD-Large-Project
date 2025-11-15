@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const API_BASE =
+
   window.location.hostname === "localhost"
+
     ? "http://localhost:8080"
+
     : "https://playedit.games";
 
 const formatUnixTimestamp = (unixTimestamp: number | undefined): string => {
@@ -28,32 +31,48 @@ const formatUnixTimestamp = (unixTimestamp: number | undefined): string => {
 };
 
 function LoadGame() {
+
   const { id } = useParams<{ id: string }>();
+
   const [game, setGame] = useState<any>(null);
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
-  const [rating, setRating] = useState(5);
-  const [status, setStatus] = useState("To Be Played");
-  const [showModal, setShowModal] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
+
+
 
   useEffect(() => {
+
     const fetchGame = async () => {
+
       const token = localStorage.getItem("token");
+
       if (!token) {
+
         setError("No token found. Please log in.");
+
         setLoading(false);
+
         return;
+
       }
 
+
+
       try {
-        const response = await fetch(`${API_BASE}/api/globalgames/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+
+        const response = await fetch(
+
+          `${API_BASE}/api/globalgames/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
           }
-        });
+        );
 
         if (!response.ok) {
           setError("Failed to load game.");
@@ -73,88 +92,22 @@ function LoadGame() {
     fetchGame();
   }, [id]);
 
-  const addToUserGames = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setSubmitMessage("You must be logged in.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE}/api/user/games/add`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          gameId: id,
-          status: status,
-          rating: rating
-        })
-      });
-
-      if (response.ok) {
-        setSubmitMessage("Game added to your list!");
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        setSubmitMessage(errorData.message || "Could not add game.");
-      }
-    } catch {
-      setSubmitMessage("Network error.");
-    }
-  };
-
   if (loading) return <div>Loading game...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!game) return <div>Game not found.</div>;
   const formattedDate = formatUnixTimestamp(game.first_release_date);
   return (
     <div className="game-view-container">
-      {game.cover?.url && (<img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover"/>)}
+      {game.cover?.url && (
+        <img src={game.cover.url.replace("t_thumb", "t_720p")} id="game-cover" />
+      )}
+
       <h1 id="game-title">{game.name}</h1>
+
       <p><strong>Genre:</strong> {game.genres?.join(", ") || "Unknown"}</p>
       <p><strong>Release Date:</strong> {formattedDate || "Unknown"}</p>
 
       <p>{game.summary || "No description provided."}</p>
-      <div className="added-feature-container">
-        <div className="added-image-wrapper">
-          <img src={ game.cover?.url ? game.cover.url.replace("t_thumb", "t_720p"): "/default-game.png"} className="added-image" alt={game.name}/>
-        </div>
-        <div className="added-info">
-          <h2 className="added-title">{game.name}</h2>
-          <div className="added-field">
-            <strong>Genres:</strong> {game.genres?.join(", ") || "Unknown"}
-          </div>
-          <div className="added-description">
-            {game.summary || "No description available."}
-          </div>
-          <div className="rating-box">
-            <label className="rating-label">Rating: {rating.toFixed(1)} / 10</label>
-            <input type="range" min="1" max="10" step="0.1" value={rating} onChange={(e) => setRating(parseFloat(e.target.value))} className="rating-slider"/>
-          </div>
-          <button className="add-button" onClick={() => setShowModal(true)}> Add to My Games</button>
-        </div>
-      </div>
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>User's Game Settings</h3>
-            <label className="modal-label">Status</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="modal-select">
-              <option>Completed</option>
-              <option>In Progress</option>
-              <option>Paused</option>
-              <option>Dropped</option>
-              <option>To Be Played</option>
-            </select>
-            <label className="modal-label">Rating: {rating.toFixed(1)}</label>
-            <input type="range" min="0" max="10" step="0.1" value={rating} onChange={(e) => setRating(parseFloat(e.target.value))} className="modal-slider"/>
-            <button className="modal-submit" onClick={addToUserGames}> Submit </button>
-            <p className="submit-message">{submitMessage}</p>
-          </div>
-        </div>
-      )}
 
     </div>
   );
