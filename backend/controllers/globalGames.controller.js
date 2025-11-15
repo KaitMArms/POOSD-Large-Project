@@ -100,6 +100,14 @@ exports.searchGames = async (req, res) => {
     const pipeline = [
       { $match: { name: { $regex: anywhereRegex } } },
       {
+        $lookup: {
+          from: 'genres',
+          localField: 'genres',
+          foreignField: 'id',
+          as: 'genreObjects'
+        }
+      },
+      {
         $addFields: {
           _lowerName: { $toLower: "$name" },
           _startsWith: {
@@ -108,7 +116,8 @@ exports.searchGames = async (req, res) => {
               1,
               0
             ]
-          }
+          },
+          genres: "$genreObjects.name"
         }
       },
       // Sort priority:

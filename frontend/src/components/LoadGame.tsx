@@ -2,8 +2,11 @@ import{ useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const API_BASE =
+
   window.location.hostname === "localhost"
+
     ? "http://localhost:8080"
+
     : "https://playedit.games";
 
 function formatUnixDate(unixSeconds: number | null | undefined): string {
@@ -48,10 +51,15 @@ function LoadGame(){
       setError(null);
 
       const token = localStorage.getItem("token");
+
       if (!token) {
+
         setError("No token found. Please log in.");
+
         setLoading(false);
+
         return;
+
       }
 
       if (!id) {
