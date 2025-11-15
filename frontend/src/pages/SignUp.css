@@ -120,22 +120,26 @@ input{
   height: 44px;
 }
 
-.signupButton {
-  width: 100%;
-  padding: 0.9em;
-  margin-top: 1em;
-  border-radius: 10px;
+#signupButton {
+  width: 90%;
+  max-width: 500px;
+  padding: 1em;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 18px;
+  border: none;
   background-color: var(--button-bg);
   color: var(--button-text);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-top: 1.2em;
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
+  transition: all 0.3s ease;
 }
 
-.signupButton:hover {
+#signupButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+  background-color: hsl(225, 95%, 58%);
+  box-shadow: 0 0 25px rgba(221, 152, 230, 0.9);
 }
 
 .login-link a {
