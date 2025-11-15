@@ -24,7 +24,7 @@ type GlobalGame = {
   id?: number | string;
   name?: string;
   summary?: string;
-  cover?: { url?: string } | null;
+  coverUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
 };
