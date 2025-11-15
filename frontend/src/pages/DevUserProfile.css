@@ -160,6 +160,17 @@
   font-family: var(--font-main, "Poppins", sans-serif);
 }
 
+.addDev-select{
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--accent-color);
+  background-color: var(--input-bg, rgba(15, 15, 40, 0.85));
+  color: var(--text-color);
+  font-size: 0.95rem;
+  appearance: none;
+}
+
 .adddev-buttons {
   display: flex;
   justify-content: flex-end;
