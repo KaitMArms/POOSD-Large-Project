@@ -356,4 +356,26 @@
     width: 100%;
   }
 }
+.edit-user-fields select {
+  width: 100%;
+  padding: 0.7em 1em;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+}
+
+.edit-user-fields input[type="date"] {
+  color: var(--text-color);
+}
+
+.edit-user-fields input[type="date"]::-webkit-datetime-edit {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.edit-user-fields input[type="date"]::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 
