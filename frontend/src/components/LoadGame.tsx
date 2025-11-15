@@ -171,16 +171,15 @@ function LoadGame(){
 
           <div className="added-info">
             <h2 className="added-title">{game.name}</h2>
-
+            <p>
+              <strong>Release Date:</strong> {releaseDate}
+            </p>
             <div className="added-field">
               <strong>Genres:</strong>{" "}{Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
             </div>
             <div className="added-description">
               {game.summary || "No description available."}
             </div>
-            <p>
-              <strong>Release Date:</strong> {releaseDate}
-            </p>
             <button type="button" className="add-button" onClick={() => setShowModal(true)}> Add to My Games</button>
           </div>
         </div>
