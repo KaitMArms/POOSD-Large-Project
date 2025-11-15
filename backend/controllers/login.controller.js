@@ -83,7 +83,7 @@ exports.login = async (req, res) => {
     const ok = await user.checkPassword(password);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials.' });
 
-    // 🔒 Hard gate on unverified accounts
+    // 🔒 Hard gate on unverified account
     if (!user.emailVerified) {
       const now = Date.now();
       const cooldown = 30 * 1000; // 30s between sends
