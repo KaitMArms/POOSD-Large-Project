@@ -12,16 +12,15 @@
 }
 
 .pfp-container {
-  width: 23%;
+  flex: 0 0 250px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .pfp-container img {
-  width: 88%;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid var(--button-bg);
@@ -250,7 +249,7 @@
 }
 
 .edit-user-left {
-  width: 23%;
+  flex: 0 0 250px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -258,9 +257,8 @@
 }
 
 .edit-user-avatar-wrapper {
-  width: 88%;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   border: 4px solid var(--button-bg);
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.6);

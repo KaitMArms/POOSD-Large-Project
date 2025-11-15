@@ -164,7 +164,7 @@ function LoadGame(){
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
           <div className="added-image-wrapper">
-            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} loading="lazy"/>
+            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"}/>
           </div>
 
           <div className="added-info">
