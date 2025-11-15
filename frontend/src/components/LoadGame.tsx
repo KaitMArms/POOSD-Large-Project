@@ -161,19 +161,8 @@ function LoadGame(){
 
   return (
     <div className="game-view-container">
-      {game.cover?.url && (
-        <img src={coverUrl} id="game-cover" alt={game.name ?? "game cover"} style={{ maxWidth: "100%", height: "auto" }}/>
-      )}
-      <h1 id="game-title">{game.name}</h1>
-      <p>
-        <strong>Genre:</strong>{" "}{Array.isArray(game.genres)? game.genres.join(", "): String(game.genres ?? "Unknown")}
-      </p>
-      <p>
-        <strong>Release Date:</strong> {releaseDate}
-      </p>
       <p>{game.summary || "No description provided."}</p>
       <div className="game-feature-wrapper">
-        <button type="button" className="back-button" onClick={() => window.history.back()}> Go Back to All Games</button>
         <div className="added-feature-container">
           <div className="added-image-wrapper">
             <img src={coverUrl} className="added-image" alt={game.name ?? "cover"}/>
@@ -181,16 +170,14 @@ function LoadGame(){
 
           <div className="added-info">
             <h2 className="added-title">{game.name}</h2>
-
+            <p>
+              <strong>Release Date:</strong> {releaseDate}
+            </p>
             <div className="added-field">
               <strong>Genres:</strong>{" "}{Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
             </div>
             <div className="added-description">
               {game.summary || "No description available."}
-            </div>
-            <div className="rating-box">
-              <label className="rating-label"> Rating: {rating.toFixed(1)} / 10</label>
-              <input type="range" min={0} max={10} step={0.1} value={rating} onChange={(e) => setRating(parseFloat(e.target.value))} className="rating-slider"/>
             </div>
             <button type="button" className="add-button" onClick={() => setShowModal(true)}> Add to My Games</button>
           </div>
