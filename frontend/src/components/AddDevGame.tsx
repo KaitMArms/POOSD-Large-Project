@@ -77,7 +77,7 @@ export default function AddDevGame({ onClose }: Props) {
           <div className="adddev-left">
             <div className="adddev-cover-wrapper">
               {coverImage ? (
-                <img src={coverImage} className="adddev-cover" alt="Cover preview" />
+                <img src={coverImage} className="adddev-cover" alt="Cover preview" loading="lazy" />
               ) : (
                 <div className="adddev-cover-placeholder"></div>
               )}

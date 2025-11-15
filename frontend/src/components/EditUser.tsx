@@ -172,6 +172,7 @@ export default function EditUser({ initial, onClose }: EditUserProps) {
               src={resolveAvatarUrl(avatarUrl)}
               alt="Avatar preview"
               className="edit-user-avatar"
+              loading="lazy"
             />
           </div>
 

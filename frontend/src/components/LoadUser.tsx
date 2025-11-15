@@ -129,6 +129,7 @@ function LoadUser() {
           <img
             alt={`${user.username || "User"}'s avatar`}
             src={resolveAvatarUrl(user.avatarUrl)}
+            loading="lazy"
           />
         </div>
         <div className="info-bio-wrapper">

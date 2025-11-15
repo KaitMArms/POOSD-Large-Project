@@ -94,6 +94,7 @@ function AddDevGame({ onClose }: { onClose: () => void }) {
               src={coverUrl || "/GamePlaceholder.png"}
               alt="Cover Preview"
               className="edit-user-avatar"
+              loading="lazy"
             />
           </div>
           <label className="edit-user-avatar-upload">
