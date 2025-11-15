@@ -172,3 +172,131 @@
     width: 90%;
   }
 }
+
+.added-feature-container {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: var(--div-color);
+  border-radius: 1.5rem;
+  box-shadow: 0 0 25px rgba(162, 89, 255, 0.5);
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.added-image-wrapper {
+  width: 300px;
+  height: 300px;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.4);
+}
+
+.added-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.added-info {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.added-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #b26cff;
+  text-shadow: 0 0 12px rgba(162, 89, 255, 0.7);
+}
+
+.added-field {
+  font-size: 1.1rem;
+}
+
+.added-select{
+  width: 100% !important; 
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  border: 2px solid var(--accent-color) !important;
+  background-color: var(--input-bg, rgba(15, 15, 40, 0.85)) !important;
+  color: var(--text-color) !important;
+  font-size: 0.95rem !important;
+  font-family: var(--font-main, "Poppins", sans-serif) !important;
+}
+
+.added-description {
+  padding: 1rem;
+  background: rgba(0,0,0,0.15);
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
+}
+
+.rating-slider {
+  width: 100%;
+}
+
+.add-button {
+  margin-top: 1rem;
+  padding: 0.8rem 1.4rem;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: bold;
+  border-radius: 0.8rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.6);
+  transition: 0.3s;
+}
+
+.add-button:hover {
+  transform: scale(1.05);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: var(--div-color);
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 400px;
+  width: 92%;
+  box-shadow: 0 0 25px rgba(162, 89, 255, 0.8);
+}
+
+.modal-label {
+  margin-top: 1rem;
+  display: block;
+}
+
+.modal-select,
+.modal-slider {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.modal-submit {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.2rem;
+  width: 100%;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.submit-message {
+  margin-top: 1rem;
+  text-align: center;
+}

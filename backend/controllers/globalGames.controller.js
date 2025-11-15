@@ -100,14 +100,6 @@ exports.searchGames = async (req, res) => {
     const pipeline = [
       { $match: { name: { $regex: anywhereRegex } } },
       {
-        $lookup: {
-          from: 'genres',
-          localField: 'genres',
-          foreignField: 'id',
-          as: 'genreObjects'
-        }
-      },
-      {
         $addFields: {
           _lowerName: { $toLower: "$name" },
           _startsWith: {
@@ -116,8 +108,7 @@ exports.searchGames = async (req, res) => {
               1,
               0
             ]
-          },
-          genres: "$genreObjects.name"
+          }
         }
       },
       // Sort priority:
@@ -228,11 +219,67 @@ exports.getGameById = async (req, res) => {
   console.log('getGameById called with id:', req.params.id);
   try {
     const gameId = parseInt(req.params.id, 10);
-    const game = await Game.findOne({ id: gameId }).lean();
-    if (!game) {
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: 'Invalid Game ID format.' });
+    }
+
+    const pipeline = [
+      { $match: { id: gameId } },
+
+      {
+        $lookup: {
+          from: 'genres', 
+          localField: 'genres',
+          foreignField: 'id',
+          as: 'genreObjects'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'covers', 
+          localField: 'cover',
+          foreignField: 'id',
+          as: 'coverObject' 
+        }
+      },
+
+      {
+        $addFields: {
+          genres: '$genreObjects.name',
+          
+          coverUrl: {
+            $let: {
+              vars: {
+                coverDoc: { $arrayElemAt: ['$coverObject', 0] }
+              },
+              in: {
+                $concat: [
+                  "https://images.igdb.com/igdb/image/upload/t_1080p/",
+                  "$$coverDoc.image_id",
+                  ".jpg"
+                ]
+              }
+            }
+          }
+        }
+      },
+
+      {
+        $project: {
+          genreObjects: 0,
+          coverObject: 0,
+          cover: 0 
+        }
+      }
+    ];
+
+    const gameArr = await Game.aggregate(pipeline);
+    if (!gameArr || gameArr.length === 0) {
       return res.status(404).json({ message: 'Game not found' });
     }
-    return res.json(game);
+
+    return res.json(gameArr[0]);
   } catch (err) {
     console.error('getGameById error:', err);
     return res.status(500).json({ message: 'Server error.' });

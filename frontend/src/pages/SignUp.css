@@ -120,22 +120,9 @@ input{
   height: 44px;
 }
 
-.signupButton {
-  width: 100%;
-  padding: 0.9em;
-  margin-top: 1em;
-  border-radius: 10px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.signupButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+#signupButton:hover {
+  box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
+  transform: scale(1.03);
 }
 
 .login-link a {
