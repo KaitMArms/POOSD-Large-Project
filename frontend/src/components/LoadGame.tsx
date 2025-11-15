@@ -30,7 +30,6 @@ type GlobalGame = {
   cover?: { url?: string } | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
-  // ... add any other fields you expect from the API if needed
 };
 
 function LoadGame(){
@@ -187,7 +186,7 @@ function LoadGame(){
           <div className="modal-box" onClick={(e) => {e.stopPropagation();}}>
             <h3>User's Game Settings</h3>
             <label className="modal-label" htmlFor="status-select">Status</label>
-            <select id="status-select" value={status} onChange={(e) => setStatus(e.target.value)} className="modal-select">
+            <select id="added-field" value={status} onChange={(e) => setStatus(e.target.value)} className="modal-select">
               <option>Completed</option>
               <option>In Progress</option>
               <option>Paused</option>
