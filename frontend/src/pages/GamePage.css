@@ -186,8 +186,9 @@
 }
 
 .added-image-wrapper {
-  width: 300px;
-  height: 300px;
+  width: 30%;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 1.2rem;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(162, 89, 255, 0.4);
