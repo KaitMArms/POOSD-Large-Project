@@ -230,7 +230,7 @@ exports.getGameById = async (req, res) => {
         $lookup: {
           from: 'genres',
           localField: 'genres',
-          foreignField: 'genres',
+          foreignField: 'id',
           as: 'genreObjects'
         }
       },
