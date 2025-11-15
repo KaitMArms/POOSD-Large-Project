@@ -80,7 +80,7 @@ class YourGamesListState extends State<YourGamesList>  {
                 Center(
                   
                   child: SizedBox(
-                    height: 200,
+                    height: 300,
                       child: PieChart(
                         PieChartData(
                           pieTouchData: PieTouchData(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_game_list_mobile/AddGames.dart';
+import 'package:my_game_list_mobile/listCreator.dart';
 import 'package:my_game_list_mobile/user_details.dart';
 import 'package:my_game_list_mobile/log_out.dart';
 import 'package:my_game_list_mobile/notifications.dart';
@@ -217,10 +218,10 @@ List<ProfileCompletionCard> profileCompletionCards = [
     page: UserDetails(),
   ),
   ProfileCompletionCard(
-    title: "Manage Your Lists",
+    title: "Manage Your Games",
     buttonText: "Continue",
     icon: CupertinoIcons.square_list,
-    //page: something
+    page: ListCreator()
   ),
   ProfileCompletionCard(
     title: "Find More Games",
