@@ -161,7 +161,6 @@ function LoadGame(){
 
   return (
     <div className="game-view-container">
-      <p>{game.summary || "No description provided."}</p>
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
           <div className="added-image-wrapper">
