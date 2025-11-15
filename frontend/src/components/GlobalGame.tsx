@@ -132,7 +132,7 @@ function LoadGlobalGame() {
             {recommendedGames.length > 0 ? (
               recommendedGames.map((game) => (
                 <div key={game._id} className="user-game-row">
-                  <Link to={`/game/${game._id}`} className="game-link">
+                  <Link to={`/game/${game.id}`} className="game-link">
                     {game.name}
                   </Link>
                 </div>
@@ -154,7 +154,7 @@ function LoadGlobalGame() {
             {searchedGames.length > 0 ? (
               searchedGames.map((game) => (
                 <div key={game._id} className="user-game-row">
-                  <Link to={`/game/${game._id}`} className="game-link"> {game.name}</Link>
+                  <Link to={`/game/${game.id}`} className="game-link"> {game.name}</Link>
                 </div>
               ))
             ) : (
