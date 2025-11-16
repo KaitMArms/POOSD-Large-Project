@@ -217,6 +217,17 @@
   font-size: 1.1rem;
 }
 
+.added-select{
+  width: 100% !important; 
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  border: 2px solid var(--accent-color) !important;
+  background-color: var(--input-bg, rgba(15, 15, 40, 0.85)) !important;
+  color: var(--text-color) !important;
+  font-size: 0.95rem !important;
+  font-family: var(--font-main, "Poppins", sans-serif) !important;
+}
+
 .added-description {
   padding: 1rem;
   background: rgba(0,0,0,0.15);

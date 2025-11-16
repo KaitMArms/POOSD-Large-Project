@@ -1,12 +1,9 @@
-import{ useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const API_BASE =
-
   window.location.hostname === "localhost"
-
     ? "http://localhost:8080"
-
     : "https://playedit.games";
 
 function formatUnixDate(unixSeconds: number | null | undefined): string {
@@ -27,13 +24,12 @@ type GlobalGame = {
   id?: number | string;
   name?: string;
   summary?: string;
-  cover?: { url?: string } | null;
+  coverUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
-  // ... add any other fields you expect from the API if needed
 };
 
-function LoadGame(){
+function LoadGame() {
   const { id } = useParams<{ id?: string }>();
   const [game, setGame] = useState<GlobalGame | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,13 +49,9 @@ function LoadGame(){
       const token = localStorage.getItem("token");
 
       if (!token) {
-
         setError("No token found. Please log in.");
-
         setLoading(false);
-
         return;
-
       }
 
       if (!id) {
@@ -150,13 +142,13 @@ function LoadGame(){
     return <div>Game not found.</div>;
   }
 
-  const coverUrl =
-    game.cover?.url && typeof game.cover.url === "string"
-      ? game.cover.url.replace("t_thumb", "t_720p")
-      : "/default-game.png";
+  const coverUrl = game.coverUrl || "/default-game.png";
+
 
   const releaseDate = formatUnixDate(
-    typeof game.first_release_date === "number" ? game.first_release_date : null
+    typeof game.first_release_date === "number"
+      ? game.first_release_date
+      : null
   );
 
   return (
@@ -164,7 +156,11 @@ function LoadGame(){
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
           <div className="added-image-wrapper">
-            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"}/>
+            <img
+              src={coverUrl}
+              className="added-image"
+              alt={game.name ?? "cover"}
+            />
           </div>
 
           <div className="added-info">
@@ -173,30 +169,80 @@ function LoadGame(){
               <strong>Release Date:</strong> {releaseDate}
             </p>
             <div className="added-field">
-              <strong>Genres:</strong>{" "}{Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
+              <strong>Genres:</strong>{" "}
+              {Array.isArray(game.genres)
+                ? game.genres.join(", ")
+                : String(game.genres ?? "Unknown")}
             </div>
+
             <div className="added-description">
               {game.summary || "No description available."}
             </div>
-            <button type="button" className="add-button" onClick={() => setShowModal(true)}> Add to My Games</button>
+
+            <button
+              type="button"
+              className="add-button"
+              onClick={() => setShowModal(true)}
+            >
+              Add to My Games
+            </button>
           </div>
         </div>
       </div>
+
       {showModal && (
-        <div className="modal-overlay"onClick={() => {setShowModal(false);}}>
-          <div className="modal-box" onClick={(e) => {e.stopPropagation();}}>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setShowModal(false);
+          }}
+        >
+          <div
+            className="modal-box"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <h3>User's Game Settings</h3>
-            <label className="modal-label" htmlFor="status-select">Status</label>
-            <select id="status-select" value={status} onChange={(e) => setStatus(e.target.value)} className="modal-select">
+
+            <label className="modal-label" htmlFor="status-select">
+              Status
+            </label>
+
+            {/* FIX HERE: changed id to className */}
+            <select
+              className="added-select"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               <option>Completed</option>
               <option>In Progress</option>
               <option>Paused</option>
               <option>Dropped</option>
               <option>To Be Played</option>
             </select>
-            <label className="modal-label">Rating: {rating.toFixed(1)}</label>
-            <input type="range" min={0} max={10} step={0.1} value={rating} onChange={(e) => setRating(parseFloat(e.target.value))}className="modal-slider"/>
-            <button type="button" className="modal-submit" onClick={addToUserGames}>Submit</button>
+
+            <label className="modal-label">
+              Rating: {rating.toFixed(1)}
+            </label>
+            <input
+              type="range"
+              min={0}
+              max={10}
+              step={0.1}
+              value={rating}
+              onChange={(e) => setRating(parseFloat(e.target.value))}
+              className="modal-slider"
+            />
+
+            <button
+              type="button"
+              className="modal-submit"
+              onClick={addToUserGames}
+            >
+              Submit
+            </button>
+
             <p className="submit-message" role="status" aria-live="polite">
               {submitMessage}
             </p>

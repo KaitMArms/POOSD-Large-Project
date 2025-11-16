@@ -8,17 +8,17 @@
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #72139B;
+  color: #72139b;
   margin-top: 1em;
   margin-bottom: 1em;
   text-shadow:
-  -1px -1px 0 var(--text-color),
-  1px -1px 0 var(--text-color),
-  -1px 1px 0 var(--text-color),
-  1px 1px 0 var(--text-color),
-  0 0 4px rgba(162, 89, 255, 0.9),
-  0 0 10px rgba(162, 89, 255, 0.6),
-  0 0 16px rgba(162, 89, 255, 0.4);
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px 1px 0 var(--text-color),
+    1px 1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
 }
 
 .dev-games-container,
@@ -35,9 +35,9 @@
 
 .dev-section-header {
   display: flex;
-  flex-direction: column;   
-  align-items: center;      
-  gap: 1.5em;               
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5em;
 }
 
 .add-button-wrapper {
@@ -75,7 +75,7 @@
   background-color: var(--button-bg);
   color: var(--button-text);
   border-width: 2px;
-  border-color: #72139B;
+  border-color: #72139b;
   border-radius: 8px;
   padding: 0.6em 1em;
 }
@@ -83,6 +83,8 @@
 #searchDevButton {
   background-color: var(--button-bg);
 }
+
+/* === Add Dev Game layout (shared with modal edit) === */
 
 .adddev-container {
   width: 100%;
@@ -160,6 +162,17 @@
   font-family: var(--font-main, "Poppins", sans-serif);
 }
 
+.addDev-select{
+  width: 100% !important;
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  border: 2px solid var(--accent-color)!important;
+  background-color: var(--input-bg, rgba(15, 15, 40, 0.85)) !important;
+  color: var(--text-color) !important;
+  font-size: 0.95rem !important;
+  appearance: none !important;
+}
+
 .adddev-buttons {
   display: flex;
   justify-content: flex-end;
@@ -171,4 +184,176 @@
   .adddev-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* === Dev game list links – reuse Global Games pill style === */
+
+.dev-game-row .game-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+/* The actual neon text + pill come from .user-game-row and .game-link
+   (defined in your existing CSS for user/global games). */
+
+/* === Dev game modal & buttons === */
+
+/* backdrop: no blackout, just used for centering & pointer capture */
+.dev-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  background: transparent;
+}
+
+/* modal panel – centered card */
+.dev-modal {
+  position: relative;
+  max-width: 900px;
+  width: 80%;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background-color: var(--div-color);
+  border-radius: 1.2em;
+  padding: 2.2em 2.4em;
+  box-shadow: 0 0 24px rgba(162, 89, 255, 0.65);
+  color: var(--text-color);
+}
+
+.dev-modal-close {
+  position: absolute;
+  top: 0.6em;
+  right: 0.9em;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.dev-modal-title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1em;
+  color: #b26cff;
+  text-shadow: 0 0 10px rgba(162, 89, 255, 0.8);
+}
+
+.dev-modal-meta {
+  text-align: center;
+  margin-bottom: 0.8em;
+}
+
+.dev-modal-description {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.8em;
+  padding: 0.8em 1em;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.1em;
+}
+
+.dev-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.8em;
+  margin-top: 0.4em;
+  flex-wrap: wrap;
+}
+
+.dev-modal-primary,
+.dev-modal-secondary,
+.dev-modal-danger {
+  min-width: 130px;
+  padding: 0.5em 1em;
+  border-radius: 0.6em;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(162, 89, 255, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.dev-modal-primary {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.dev-modal-secondary {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--text-color);
+}
+
+.dev-modal-danger {
+  background-color: #c0392b;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(192, 57, 43, 0.7);
+}
+
+.dev-modal-primary:hover,
+.dev-modal-secondary:hover,
+.dev-modal-danger:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 18px rgba(162, 89, 255, 0.8);
+}
+
+/* form inside modal (for Edit Game) */
+.dev-modal-form {
+  width: 100%;
+}
+
+.dev-modal-label {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 0.7em;
+  text-align: left;
+}
+
+.dev-modal-form input,
+.dev-modal-form textarea,
+.dev-modal-form select {
+  width: 100%;
+  margin-top: 0.3em;
+  padding: 0.6em 0.8em;
+  border-radius: 0.7em;
+  border: 2px solid var(--accent-color);
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.dev-modal-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.dev-modal-confirm {
+  font-size: 0.95rem;
+}
+
+.dev-modal-warning-text {
+  margin-bottom: 0.4em;
+}
+
+.dev-modal-warning-list {
+  margin: 0 0 0.6em 1.1em;
+  padding: 0;
+}
+
+.dev-modal-error {
+  margin-top: 0.8em;
+  color: #ff4b4b;
+  font-size: 0.9rem;
+  text-align: center;
 }
