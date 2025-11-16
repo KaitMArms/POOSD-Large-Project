@@ -91,7 +91,6 @@ exports.searchGames = async (req, res) => {
     const hasGameTypes = req.query.game_types && req.query.game_types.length > 0;
     const hasRatedOnly = req.query.ratedOnly === 'true';
 
-    // Only run a search if there is a query string or at least one filter is active
     if (!qRaw && !hasGameTypes && !hasRatedOnly) {
       return res.json({
         data: [],
@@ -103,16 +102,13 @@ exports.searchGames = async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit || '24', 10), 50);
     const skip = (page - 1) * limit;
 
-    // ---------- 1. BUILD DYNAMIC MATCH CONDITIONS ----------
     const matchConditions = {};
 
-    // Add search-by-name condition if a query exists
     if (qRaw) {
       const anywhereRegex = new RegExp(escapeRegex(qRaw), 'i');
       matchConditions.name = { $regex: anywhereRegex };
     }
 
-    // Add filter for game types if they were selected
     if (hasGameTypes) {
       const gameTypes = Array.isArray(req.query.game_types)
         ? req.query.game_types.map(id => parseInt(id, 10))
@@ -124,44 +120,56 @@ exports.searchGames = async (req, res) => {
       }
     }
 
-    // Add filter for age ratings if the checkbox was checked
     if (hasRatedOnly) {
       matchConditions['age_ratings.0'] = { $exists: true };
     }
 
-    // ---------- 2. DEFINE THE AGGREGATION PIPELINE ----------
+    if (qRaw) {
+      const anywhereRegex = new RegExp(escapeRegex(qRaw), 'i');
+      matchConditions.name = { $regex: anywhereRegex };
+    }
+
+    if (hasGameTypes) {
+      const gameTypes = Array.isArray(req.query.game_types)
+        ? req.query.game_types.map(id => parseInt(id, 10))
+        : [parseInt(req.query.game_types, 10)];
+
+      const validGameTypes = gameTypes.filter(id => !isNaN(id));
+      if (validGameTypes.length > 0) {
+        matchConditions.game_type = { $in: validGameTypes };
+      }
+    }
+
+    if (hasRatedOnly) {
+      matchConditions['age_ratings.0'] = { $exists: true };
+    }
+
     const pipeline = [
-      // Stage 1: The combined match for name and all active filters
       { $match: matchConditions },
 
-      // Stage 2: Sort the results
       { $sort: { name: 1 } },
 
-      // Stage 3: Apply pagination
       { $skip: skip },
       { $limit: limit },
 
-      // Stage 4: Populate the cover URL
       {
         $lookup: {
-          from: 'covers', // <-- Ensure 'covers' is your exact collection name
+          from: 'covers', 
           localField: 'cover',
           foreignField: 'id',
           as: 'coverObject'
         }
       },
 
-      // Stage 5: Populate the genre names
       {
         $lookup: {
-          from: 'genres', // <-- Ensure 'genres' is your exact collection name
+          from: 'genres', 
           localField: 'genres',
           foreignField: 'id',
           as: 'genreObjects'
         }
       },
 
-      // Stage 6: Build the final fields for the response
       {
         $addFields: {
           coverUrl: {
@@ -174,27 +182,22 @@ exports.searchGames = async (req, res) => {
                   ".jpg"
                 ]
               },
-              null // Return null if no cover was found
+              null 
             ]
           },
           genres: '$genreObjects.name'
         }
       },
 
-      // Stage 7: Clean up temporary fields from the final output
       { $project: { coverObject: 0, genreObjects: 0 } }
     ];
 
-    // ---------- 3. EXECUTE THE QUERIES ----------
-    // Run the main pipeline to get the data for the current page
     const results = await Game.aggregate(pipeline);
 
-    // Run a separate, fast query to get the total count for pagination
     const total = await Game.countDocuments(matchConditions);
 
     const totalPages = Math.max(1, Math.ceil(total / limit));
 
-    // ---------- 4. RETURN THE RESPONSE ----------
     return res.json({
       data: results,
       paging: {

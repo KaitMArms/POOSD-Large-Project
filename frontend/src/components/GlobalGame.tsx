@@ -26,7 +26,7 @@ const defaultGameTypeFilters = [
 ].filter(Boolean);
 
 const BASE_URL =
-  import.meta.env.MODE === "development"
+  window.location.hostname === "localhost"
     ? "http://localhost:8080"
     : "https://playedit.games";
 
