@@ -9,14 +9,14 @@ const jwt = require('jsonwebtoken');
 // npm test
 
 // Simulate user model and bycrypts
-jest.mock("/models/Users");
-jest.mock("bcryptjs");
+//jest.mock("/models/Users");
+//jest.mock("bcryptjs");
 
 // Test for login with standard account
 describe("POST /auth/register => login", () => {
 
     // Test login
-    Test("Test registers a user with the same process as register and then logs in", async() => {
+    test("Test registers a user with the same process as register and then logs in", async() => {
         
         const firstName = "Rick";
         const lastName = "Leinecker";
@@ -25,7 +25,7 @@ describe("POST /auth/register => login", () => {
         const username = "RickL";
 
         const registerResponse = await request(app)
-        .post('/auth/register')
+        .post('/api/auth/register')
         .send({ firstName, lastName, email, username, password })
         .expect(201);
 
@@ -35,7 +35,7 @@ describe("POST /auth/register => login", () => {
 
         // Test login
         const loginResponse = await request(app)
-        .post('/auth/login')
+        .post('/api/auth/login')
         .send({ email, password })
         .expect(200);
 
