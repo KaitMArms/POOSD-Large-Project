@@ -559,7 +559,7 @@ exports.editGame = async (req, res) => {
       update.developers = devIds;
     }
 
-    // 🟣 DEV STATUS
+    //DEV STATUS
     const allowedStatuses = ['In Development', 'Released', 'Cancelled'];
     if (typeof devStatus === 'string' && allowedStatuses.includes(devStatus)) {
       update.devStatus = devStatus;
