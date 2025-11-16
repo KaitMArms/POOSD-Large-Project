@@ -2,6 +2,8 @@ const request = require("supertest");
 const app = require("/app");
 const User = require("/models/Users");
 const bcrypt = ('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 // ^ Dependencies
 // To run
 // npm test
@@ -27,6 +29,21 @@ describe("POST /auth/register => login", () => {
         .send({ firstName, lastName, email, username, password })
         .expect(201);
 
+        // Expected json return
+        expect(registerResponse.body).toHaveProperty('message');
+        expect(registerResponse.body.message).toBe('Account created. Please log in to verify your email.');
+
+        // Test login
+        const loginResponse = await request(app)
+        .post('/auth/login')
+        .send({ email, password })
+        .expect(200);
+
+        expect(loginResponse.body).toHaveProperty('token');
+
+        const token = loginResponse.body.token;
+
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
         /*
         //Get user
         User.findOne.mockResolvedValue({
