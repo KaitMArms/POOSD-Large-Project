@@ -10,6 +10,7 @@ import 'package:my_game_list_mobile/notifications.dart';
 import 'package:my_game_list_mobile/services/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart'; // ADD THIS
 
 // User Profile Model Class
 class UserProfile {
@@ -84,9 +85,18 @@ class _ProfileState extends State<Profile> {
   // Fetch user profile from API
   Future<void> loadProfile() async {
     try {
-      // TODO: Replace with your actual JWT token
-      // Get it from SharedPreferences, SecureStorage, or wherever you store it
-      String token = 'YOUR_JWT_TOKEN_HERE';
+      // Get the saved JWT token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('jwt_token');
+      
+      // Check if token exists
+      if (token == null || token.isEmpty) {
+        setState(() {
+          errorMessage = 'Please log in';
+          isLoading = false;
+        });
+        return;
+      }
       
       final profile = await fetchUserProfile(token);
       

@@ -29,7 +29,10 @@ class YourGamesListState extends State<YourGamesList>  {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.045),
+                AppBar(
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Colors.transparent,
+                ),
             
                 Stack(
                   children: [

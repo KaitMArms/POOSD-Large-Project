@@ -15,9 +15,10 @@ class AllGamesState extends State<AllGames>{
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 50),
-
-            Padding(padding: EdgeInsets.all(8)),
+            AppBar(
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Colors.transparent,
+                ),
 
             Container(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // bigger box
