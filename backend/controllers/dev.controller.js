@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
-const { UserModel: User } = require('../db');
-const { GameModel: Game } = require('../db');
+const {
+  UserModel: User,
+  GameModel: Game,
+  PlatformModel,
+  GenreModel,
+} = require('../db');
 const GameCounter = require('../models/GameCounter');
 
 async function getNextDevGameId() {
@@ -32,53 +36,198 @@ function parseRequiredNumArray(fieldName, value) {
   if (!Array.isArray(value)) {
     throw new Error(`${fieldName} must be a non-empty array of numbers`);
   }
-  const arr = value.map(Number).filter(n => Number.isFinite(n));
+  const arr = value.map(Number).filter((n) => Number.isFinite(n));
   if (arr.length === 0) {
     throw new Error(`${fieldName} must be a non-empty array of numbers`);
   }
   return arr;
 }
 
-// Accepts either unix seconds as a number OR an ISO date string and convert.
+// Accepts either unix seconds as a number OR an ISO/date string and converts.
+// Allows undefined/null/empty (meaning: no release date).
 function parseFirstReleaseDate(val) {
+  if (val === undefined || val === null || val === '') {
+    return undefined;
+  }
+
   if (typeof val === 'number') {
-    if (!Number.isFinite(val) || val < 0) throw new Error('first_release_date must be a non-negative number (unix seconds)');
+    if (!Number.isFinite(val) || val < 0) {
+      throw new Error(
+        'first_release_date must be a non-negative number (unix seconds)'
+      );
+    }
     return Math.floor(val);
   }
+
   if (typeof val === 'string') {
     const t = Date.parse(val);
-    if (!Number.isFinite(t)) throw new Error('first_release_date string must be a valid ISO date');
+    if (!Number.isFinite(t)) {
+      throw new Error(
+        'first_release_date string must be a valid ISO / date string'
+      );
+    }
     return Math.floor(t / 1000); // to unix seconds
   }
-  throw new Error('first_release_date is required (number unix seconds or ISO date string)');
+
+  throw new Error(
+    'first_release_date must be a number (unix seconds) or ISO date string'
+  );
+}
+
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Looser mapping: try to map as many names as possible,
+// but DON'T throw if some names are unknown.
+async function resolveIdsFromNames(Model, names, fieldLabel) {
+  // If nothing supplied, just return empty array.
+  if (!Array.isArray(names) || !names.length) {
+    return [];
+  }
+
+  const cleaned = names
+    .map((n) => String(n).trim())
+    .filter((n) => n.length > 0);
+
+  if (!cleaned.length) {
+    return [];
+  }
+
+  const result = [];
+  const missing = [];
+
+  for (const rawName of cleaned) {
+    const name = rawName.trim();
+
+    // 1) Try exact case-insensitive match
+    const exactRegex = new RegExp('^' + escapeRegex(name) + '$', 'i');
+    let doc = await Model.findOne({ name: exactRegex }, { id: 1, name: 1 }).lean();
+
+    // 2) Fallback: partial match (name contained anywhere)
+    if (!doc) {
+      const partialRegex = new RegExp(escapeRegex(name), 'i');
+      const candidates = await Model.find(
+        { name: partialRegex },
+        { id: 1, name: 1 }
+      ).lean();
+
+      if (candidates.length === 1) {
+        doc = candidates[0];
+      } else if (candidates.length > 1) {
+        // Pick the "closest" candidate by shortest name
+        candidates.sort(
+          (a, b) => String(a.name).length - String(b.name).length
+        );
+        doc = candidates[0];
+      }
+    }
+
+    if (!doc) {
+      // absolutely nothing matched this name; just remember it
+      missing.push(name);
+    } else {
+      result.push(doc.id);
+    }
+  }
+
+  // Don't block the request – just log what we couldn't map.
+  if (missing.length) {
+    console.warn(
+      `Dev game add/edit: unknown ${fieldLabel} (ignored): ${missing.join(', ')}`
+    );
+  }
+
+  return result;
 }
 
 /**
  * GET /dev/games/view
  * Returns ONLY the caller's dev games (isDev: true, developers includes caller).
  * Optional name filter; supports limit/skip.
+ *
+ * Response game objects include:
+ *   - platformNames:       string[]
+ *   - genreNames:          string[]
+ *   - developersUsernames: string[]
+ *   - devStatus:           string
  */
 exports.viewGames = async (req, res) => {
   try {
     const callerSub = req.user?.sub;
     if (!callerSub) return res.status(401).json({ error: 'Unauthorized' });
 
+    const callerObjId = new mongoose.Types.ObjectId(callerSub);
     const { name, limit = 20, skip = 0 } = req.query;
+
     const q = {
       isDev: true,
-      developers: new mongoose.Types.ObjectId(callerSub),
-      ...(name ? { name: new RegExp(String(name), 'i') } : {})
+      developers: callerObjId,
     };
+
+    if (name && String(name).trim()) {
+      q.name = new RegExp(String(name).trim(), 'i');
+    }
 
     const lim = Math.min(Number(limit) || 20, 100);
     const skp = Number(skip) || 0;
 
     const [games, total] = await Promise.all([
-      Game.find(q).sort({ updatedAt: -1 }).skip(skp).limit(lim),
+      Game.find(q)
+        .sort({ updatedAt: -1 })
+        .skip(skp)
+        .limit(lim)
+        .populate({ path: 'developers', select: 'username role', model: User }),
       Game.countDocuments(q),
     ]);
 
-    return res.status(200).json({ total, count: games.length, skip: skp, limit: lim, games });
+    const mapped = games.map((g) => {
+      const doc = g.toObject();
+
+      const devNamesFromField = Array.isArray(doc.devDeveloperUsernames)
+        ? doc.devDeveloperUsernames
+        : [];
+
+      const devNamesFromPopulate = Array.isArray(doc.developers)
+        ? doc.developers
+            .filter((u) => u && u.role === 'dev' && u.username)
+            .map((u) => u.username)
+        : [];
+
+      const devUsernames =
+        devNamesFromField.length > 0 ? devNamesFromField : devNamesFromPopulate;
+
+      const devPlatformNames = Array.isArray(doc.devPlatformNames)
+        ? doc.devPlatformNames
+        : [];
+      const devGenreNames = Array.isArray(doc.devGenreNames)
+        ? doc.devGenreNames
+        : [];
+
+      return {
+        _id: doc._id,
+        id: doc.id,
+        name: doc.name,
+        summary: doc.summary,
+        first_release_date: doc.first_release_date,
+        isDev: doc.isDev,
+        devStatus: doc.devStatus || 'In Development',
+        devPlatformNames,
+        devGenreNames,
+        devDeveloperUsernames: devUsernames,
+        // aliases used by frontend
+        platformNames: devPlatformNames,
+        genreNames: devGenreNames,
+        developersUsernames: devUsernames,
+        dev_cover_url: doc.dev_cover_url,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      };
+    });
+
+    return res
+      .status(200)
+      .json({ total, count: mapped.length, skip: skp, limit: lim, games: mapped });
   } catch (e) {
     console.error('Database Search Error:', e);
     return res.status(500).json({ error: e.toString() });
@@ -89,18 +238,23 @@ exports.addGame = async (req, res) => {
   try {
     const callerId = req.user?.sub;
     if (!callerId) return res.status(401).json({ error: 'Unauthorized' });
-    if (req.user.role !== 'dev') return res.status(403).json({ error: 'Only devs can add games' });
+    if (req.user.role !== 'dev') {
+      return res.status(403).json({ error: 'Only devs can add games' });
+    }
 
     let {
-      id,                       // optional; must be >= 1_000_000_000 if provided
-      name,                     // REQUIRED (string)
-      summary,                  // REQUIRED (string)
-      first_release_date,       // REQUIRED (number unix seconds OR ISO string)
-      platforms,                // REQUIRED (non-empty array of numbers)
-      genres,                   // REQUIRED (non-empty array of numbers)
-      slug,                     // optional (auto from name if omitted)
-      cover,                    // optional (number)
-      developersUsernames = []  // optional extra devs
+      id, // optional; must be >= 1_000_000_000 if provided
+      name, // REQUIRED (string)
+      summary, // REQUIRED (string from description)
+      first_release_date, // OPTIONAL (number unix seconds OR ISO string)
+      platforms, // OPTIONAL numeric path
+      genres, // OPTIONAL numeric path
+      platformNames, // OPTIONAL names path (string[])
+      genreNames, // OPTIONAL names path (string[])
+      slug, // optional (auto from name if omitted)
+      cover, // optional numeric cover id (IGDB)
+      devCoverUrl, // optional string for local dev cover
+      developersUsernames = [], // optional extra devs (string[])
     } = req.body;
 
     // --- Required fields ---
@@ -110,13 +264,18 @@ exports.addGame = async (req, res) => {
     name = String(name).trim();
 
     if (!summary || !String(summary).trim()) {
-      return res.status(400).json({ error: 'summary is required' });
+      return res
+        .status(400)
+        .json({ error: 'summary (description) is required' });
     }
     summary = String(summary).trim();
     if (summary.length > 2000) {
-      return res.status(400).json({ error: 'summary must be ≤ 2000 characters' });
+      return res
+        .status(400)
+        .json({ error: 'summary must be ≤ 2000 characters' });
     }
 
+    // --- Release date ---
     let firstRelease;
     try {
       firstRelease = parseFirstReleaseDate(first_release_date);
@@ -124,10 +283,43 @@ exports.addGame = async (req, res) => {
       return res.status(400).json({ error: e.message });
     }
 
-    let platformsArr, genresArr;
+    // --- Dev-friendly text arrays (exactly what UI typed) ---
+    const devPlatformNames = Array.isArray(platformNames)
+      ? platformNames.map((s) => String(s).trim()).filter(Boolean)
+      : [];
+
+    const devGenreNames = Array.isArray(genreNames)
+      ? genreNames.map((s) => String(s).trim()).filter(Boolean)
+      : [];
+
+    const devDeveloperUsernames = Array.isArray(developersUsernames)
+      ? developersUsernames.map((u) => String(u).trim().toLowerCase()).filter(Boolean)
+      : [];
+
+    // --- IGDB numeric ids (best-effort; UI does not depend on them) ---
+    let platformsArr;
+    let genresArr;
+
     try {
-      platformsArr = parseRequiredNumArray('platforms', platforms);
-      genresArr    = parseRequiredNumArray('genres', genres);
+      if (Array.isArray(platforms) && platforms.length) {
+        platformsArr = parseRequiredNumArray('platforms', platforms);
+      } else {
+        platformsArr = await resolveIdsFromNames(
+          PlatformModel,
+          devPlatformNames,
+          'platforms'
+        );
+      }
+
+      if (Array.isArray(genres) && genres.length) {
+        genresArr = parseRequiredNumArray('genres', genres);
+      } else {
+        genresArr = await resolveIdsFromNames(
+          GenreModel,
+          devGenreNames,
+          'genres'
+        );
+      }
     } catch (e) {
       return res.status(400).json({ error: e.message });
     }
@@ -135,12 +327,14 @@ exports.addGame = async (req, res) => {
     // slug: auto-generate if absent
     slug = slug && String(slug).trim() ? String(slug).trim() : slugify(name);
 
-    // optional: cover
+    // optional: cover (numeric, IGDB style)
     let coverId = undefined;
     if (cover !== undefined) {
       const c = Number(cover);
       if (!Number.isFinite(c) || c < 0) {
-        return res.status(400).json({ error: 'cover must be a non-negative number' });
+        return res
+          .status(400)
+          .json({ error: 'cover must be a non-negative number' });
       }
       coverId = c;
     }
@@ -149,7 +343,9 @@ exports.addGame = async (req, res) => {
     let numericId;
     if (typeof id === 'number') {
       if (id < 1000000000) {
-        return res.status(400).json({ error: 'Dev game id must be >= 1000000000' });
+        return res
+          .status(400)
+          .json({ error: 'Dev game id must be >= 1000000000' });
       }
       numericId = id;
     } else {
@@ -160,31 +356,48 @@ exports.addGame = async (req, res) => {
     const callerObjId = new mongoose.Types.ObjectId(callerId);
     let devIds = [callerObjId];
 
-    if (Array.isArray(developersUsernames) && developersUsernames.length) {
-      const usernames = developersUsernames.map(u => String(u).toLowerCase());
+    if (devDeveloperUsernames.length) {
       const devs = await User.find(
-        { username: { $in: usernames }, role: 'dev' },
+        { username: { $in: devDeveloperUsernames }, role: 'dev' },
         '_id username'
       );
-      if (devs.length !== usernames.length) {
-        const found = new Set(devs.map(d => d.username));
-        const missing = usernames.filter(u => !found.has(u));
-        return res.status(400).json({ error: `Unknown or non-developer usernames: ${missing.join(', ')}` });
+
+      if (devs.length !== devDeveloperUsernames.length) {
+        const found = new Set(
+          devs.map((d) => String(d.username).toLowerCase())
+        );
+        const missing = devDeveloperUsernames.filter((u) => !found.has(u));
+        return res.status(400).json({
+          error: `Unknown or non-developer usernames: ${missing.join(', ')}`,
+        });
       }
-      devIds.push(...devs.map(d => d._id));
+      devIds.push(...devs.map((d) => d._id));
     }
-    devIds = Array.from(new Set(devIds.map(id => String(id)))).map(id => new mongoose.Types.ObjectId(id));
+
+    devIds = Array.from(new Set(devIds.map((id) => String(id)))).map(
+      (id) => new mongoose.Types.ObjectId(id)
+    );
 
     // --- Upsert into global GamesDB ---
     const setPayload = {
       name,
       slug,
       summary,
-      first_release_date: firstRelease,
       platforms: platformsArr,
-      genres: genresArr
+      genres: genresArr,
+
+      // dev-friendly copies
+      devPlatformNames,
+      devGenreNames,
+      devDeveloperUsernames,
+      devStatus: 'In Development',
     };
+
+    if (firstRelease !== undefined) {
+      setPayload.first_release_date = firstRelease;
+    }
     if (coverId !== undefined) setPayload.cover = coverId;
+    if (devCoverUrl) setPayload.dev_cover_url = String(devCoverUrl);
 
     const game = await Game.findOneAndUpdate(
       { id: numericId },
@@ -207,60 +420,165 @@ exports.addGame = async (req, res) => {
             status: 'to-play',
             isLiked: false,
             isDeveloperGame: true,
-          }
-        }
+          },
+        },
       },
       { new: false }
     );
 
     return res.status(201).json({ message: 'Game upserted', game });
   } catch (e) {
-    if (e?.code === 11000) return res.status(409).json({ error: 'Game with that id already exists' });
+    if (e?.code === 11000)
+      return res
+        .status(409)
+        .json({ error: 'Game with that id already exists' });
     console.error('addGame error:', e);
     return res.status(500).json({ error: 'Server error' });
   }
 };
 
-// PATCH /dev/games/:id   body: { name?, addDevelopersUsernames?:[], removeDevelopersUsernames?:[] }
 exports.editGame = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (!Number.isFinite(id)) return res.status(400).json({ error: 'Bad id' });
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ error: 'Invalid game ID' });
+    }
 
     const game = await Game.findOne({ id });
     if (!game) return res.status(404).json({ error: 'Game not found' });
 
-    // Only listed developers can edit
+    // 🔐 Authorization — must be among game.developers
     const callerObjId = new mongoose.Types.ObjectId(req.user.sub);
-    if (!game.developers.some(d => d.equals(callerObjId))) {
-      return res.status(403).json({ error: 'Not a developer of this game' });
+    if (!game.developers.some((d) => d.equals(callerObjId))) {
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to edit this game' });
     }
 
-    const { name, addDevelopersUsernames = [], removeDevelopersUsernames = [] } = req.body;
+    const {
+      name,
+      summary,
+      first_release_date,
+      platformNames,
+      genreNames,
+      developersUsernames,
+      devCoverUrl,
+      devStatus,
+    } = req.body;
+
     const update = {};
-    if (name && name.trim() !== game.name.trim()) {
+
+    // 🟣 NAME
+    if (typeof name === 'string' && name.trim() !== '' && name !== game.name) {
       update.name = name.trim();
-      update.slug = slugify(name);
+      update.slug = slugify(update.name);
     }
 
-    // Add/remove developers (role=dev enforced)
-    if (addDevelopersUsernames.length || removeDevelopersUsernames.length) {
-      const toAdd = addDevelopersUsernames.length
-        ? await User.find({ username: { $in: addDevelopersUsernames.map(s => s.toLowerCase()) }, role: 'dev' }, '_id')
-        : [];
-      const toRemove = removeDevelopersUsernames.length
-        ? await User.find({ username: { $in: removeDevelopersUsernames.map(s => s.toLowerCase()) }, role: 'dev' }, '_id')
-        : [];
-
-      if (toAdd.length)   update.$addToSet = { developers: { $each: toAdd.map(u => u._id) } };
-      if (toRemove.length) update.$pull    = { developers: { $in: toRemove.map(u => u._id) } };
+    // 🟣 DESCRIPTION / SUMMARY
+    if (typeof summary === 'string') {
+      update.summary = summary.trim();
     }
 
-    const updated = await Game.findOneAndUpdate({ id }, update, { new: true });
-    return res.status(200).json({ message: 'Game updated', game: updated });
-  } catch (e) {
-    console.error('Edit Game Error:', e);
-    return res.status(500).json({ error: e.toString() });
+    // 🟣 RELEASE DATE (reuse helper so we handle unix or ISO correctly)
+    if (first_release_date !== undefined) {
+      try {
+        const unix = parseFirstReleaseDate(first_release_date);
+        if (unix !== undefined) {
+          update.first_release_date = unix;
+        } else {
+          update.first_release_date = undefined;
+        }
+      } catch (e) {
+        return res.status(400).json({ error: e.message });
+      }
+    }
+
+    // 🟣 PLATFORMS / GENRES – dev strings + optional IGDB ids
+    if (Array.isArray(platformNames)) {
+      const devPlatformNames = platformNames
+        .map((s) => String(s).trim())
+        .filter(Boolean);
+      update.devPlatformNames = devPlatformNames;
+
+      // best-effort numeric mapping
+      const platformIds = await resolveIdsFromNames(
+        PlatformModel,
+        devPlatformNames,
+        'platforms'
+      );
+      update.platforms = platformIds;
+    }
+
+    if (Array.isArray(genreNames)) {
+      const devGenreNames = genreNames
+        .map((s) => String(s).trim())
+        .filter(Boolean);
+      update.devGenreNames = devGenreNames;
+
+      const genreIds = await resolveIdsFromNames(
+        GenreModel,
+        devGenreNames,
+        'genres'
+      );
+      update.genres = genreIds;
+    }
+
+    // 🟣 DEVELOPERS (replace list with the usernames they provided + caller)
+    if (Array.isArray(developersUsernames)) {
+      const usernames = developersUsernames
+        .map((u) => String(u).toLowerCase().trim())
+        .filter(Boolean);
+
+      update.devDeveloperUsernames = usernames;
+
+      let devIds = [callerObjId];
+
+      if (usernames.length) {
+        const devs = await User.find(
+          { username: { $in: usernames }, role: 'dev' },
+          '_id username'
+        ).lean();
+
+        const foundSet = new Set(
+          devs.map((d) => String(d.username).toLowerCase())
+        );
+        const missing = usernames.filter((u) => !foundSet.has(u));
+        if (missing.length) {
+          return res.status(400).json({
+            error: `Unknown or non-developer usernames: ${missing.join(', ')}`,
+          });
+        }
+
+        devIds.push(...devs.map((d) => d._id));
+      }
+
+      // ensure uniqueness
+      devIds = Array.from(new Set(devIds.map((x) => String(x)))).map(
+        (x) => new mongoose.Types.ObjectId(x)
+      );
+      update.developers = devIds;
+    }
+
+    //DEV STATUS
+    const allowedStatuses = ['In Development', 'Released', 'Cancelled'];
+    if (typeof devStatus === 'string' && allowedStatuses.includes(devStatus)) {
+      update.devStatus = devStatus;
+    }
+
+    if (typeof devCoverUrl === 'string' && devCoverUrl.trim() !== '') {
+      update.dev_cover_url = devCoverUrl.trim();
+    }
+
+    const updated = await Game.findOneAndUpdate(
+      { id },
+      { $set: update },
+      { new: true }
+    );
+
+    return res.status(200).json({ success: true, game: updated });
+  } catch (err) {
+    console.error('Edit Game Error:', err);
+    return res.status(500).json({ error: err.toString() });
   }
 };
 
@@ -268,14 +586,17 @@ exports.editGame = async (req, res) => {
 exports.deleteGame = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (!Number.isFinite(id)) return res.status(400).json({ error: 'Bad id' });
+    if (!Number.isFinite(id))
+      return res.status(400).json({ error: 'Bad id' });
 
     const game = await Game.findOne({ id });
     if (!game) return res.status(404).json({ error: 'Game not found' });
 
     const callerObjId = new mongoose.Types.ObjectId(req.user.sub);
-    if (!game.developers.some(d => d.equals(callerObjId))) {
-      return res.status(403).json({ error: 'Not a developer of this game' });
+    if (!game.developers.some((d) => d.equals(callerObjId))) {
+      return res
+        .status(403)
+        .json({ error: 'Not a developer of this game' });
     }
 
     await game.deleteOne();
@@ -311,7 +632,7 @@ exports.search = async (req, res) => {
     const q = {
       isDev: true,
       developers: new mongoose.Types.ObjectId(callerSub),
-      name: regex
+      name: regex,
     };
 
     const lim = Math.min(Number(limit) || 20, 100);
@@ -322,9 +643,30 @@ exports.search = async (req, res) => {
       Game.countDocuments(q),
     ]);
 
-    return res.status(200).json({ total, count: games.length, skip: skp, limit: lim, games });
+    return res
+      .status(200)
+      .json({ total, count: games.length, skip: skp, limit: lim, games });
   } catch (e) {
     console.error('Dev search error:', e);
     return res.status(500).json({ error: e.toString() });
+  }
+};
+
+// POST /dev/games/cover
+exports.uploadCover = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    const relPath = `/uploads/gamecovers/${req.file.filename}`;
+
+    return res.status(200).json({
+      success: true,
+      coverUrl: relPath,
+    });
+  } catch (err) {
+    console.error('uploadCover error:', err);
+    return res.status(500).json({ message: 'Server error' });
   }
 };
