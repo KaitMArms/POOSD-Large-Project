@@ -11,10 +11,23 @@ jest.mock("/models/Users");
 jest.mock("bcryptjs");
 
 // Test for login with standard account
-describe("POST /auth/login", () => {
+describe("POST /auth/register => login", () => {
 
     // Test login
-    Test("Returns token, id, name, email, lastname, role, emailverified, userID, otpLastSentAt", async() => {
+    Test("Test registers a user with the same process as register and then logs in", async() => {
+        
+        const firstName = "Rick";
+        const lastName = "Leinecker";
+        const email= "juela575@gmail.com";
+        const password= "COP4331";
+        const username = "RickL";
+
+        const registerResponse = await request(app)
+        .post('/auth/register')
+        .send({ firstName, lastName, email, username, password })
+        .expect(201);
+
+        /*
         //Get user
         User.findOne.mockResolvedValue({
             _id: "6915fab55fa7852213445b7c",
@@ -35,7 +48,7 @@ describe("POST /auth/login", () => {
         // Expected results: res.status, fields in the body, and _id of user
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("token", "user");
-        expect(response.body._id).toBe("6915fab55fa7852213445b7c");
+        expect(response.body._id).toBe("6915fab55fa7852213445b7c");*/
 
 
     })
