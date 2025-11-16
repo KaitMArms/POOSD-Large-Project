@@ -10,7 +10,7 @@ import 'package:my_game_list_mobile/notifications.dart';
 import 'package:my_game_list_mobile/services/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart'; // ADD THIS
+import 'package:shared_preferences/shared_preferences.dart'; // ADD THIS // ADD THIS
 
 // User Profile Model Class
 class UserProfile {
@@ -87,7 +87,7 @@ class _ProfileState extends State<Profile> {
     try {
       // Get the saved JWT token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('jwt_token');
+      String? token = prefs.getString('token');
       
       // Check if token exists
       if (token == null || token.isEmpty) {
@@ -115,7 +115,7 @@ class _ProfileState extends State<Profile> {
 
   // API call function
   Future<UserProfile> fetchUserProfile(String token) async {
-    final uri = Uri.parse('https://playedIt.games/api/user/profile');
+    final uri = Uri.parse('https://playedit.games/api/user/profile');
     
     final response = await http.get(
       uri,
@@ -210,7 +210,7 @@ class _ProfileState extends State<Profile> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: userProfile?.avatarUrl != null
-                      ? NetworkImage('https://playedIt.games${userProfile!.avatarUrl}')
+                      ? NetworkImage('https://playedit.games${userProfile!.avatarUrl}')
                       : AssetImage("assets/Mascot.png") as ImageProvider,
                 ),
               ),
