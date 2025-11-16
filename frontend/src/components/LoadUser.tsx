@@ -1,56 +1,199 @@
-import { useState } from "react";
-import EditUser from '../components/EditUser.tsx';
+import { useState, useEffect } from "react";
+import EditUser from "../components/EditUser";
+import LoadDevUser from "../components/LoadDevUser";
+import { useColorMode } from "../components/ColorMode";
 
-// Light & Dark Mode Controller
-// This component page will load the users profile after login
-function LoadUser()
-{
+// same base + resolver as in EditUser
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080"
+    : "https://playedit.games";
 
-    const[editing, setEditing] = useState(false);
+function resolveAvatarUrl(url?: string | null): string {
+  if (!url || url.trim() === "") return "/Mascot.png";
+  if (url.startsWith("/uploads")) return `${API_BASE}${url}`;
+  return url;
+}
 
-    // Get user data from local storage
-    // todo: verify that this is actually how it's serialized
-    let _ud : any = localStorage.getItem('user_data');
-    let ud = JSON.parse(_ud);
+function LoadUser() {
+  const [editing, setEditing] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isDevUser, setIsDevUser] = useState(false);
 
-    // If we're editing the user, then use a EditUser component instead of this one. 
-    if (editing) {
-        return <EditUser initial={ud} onClose={() => setEditing(false)} />;
+  const { mode, toggleMode } = useColorMode();
+
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      setLoading(false);
+      return;
     }
 
-    // Button controller
-    const modeButton = document.getElementById('mode-toggle');
-    modeButton?.addEventListener('click', () => {
-        
+    try {
+      const response = await fetch(`${API_BASE}/api/user/profile`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    });
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Fetched user data:", data);
+        // profile endpoint returns { success, user }
+        const u = data.user || data;
+        setUser(u);
+        // 🔹 derive dev status from role
+        setIsDevUser(u.role === "dev");
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setError(errorData.message || "Failed to fetch user profile.");
+      }
+    } catch {
+      setError("An error occurred while fetching the user profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return(
-        // HTML code goes inside container. container = html for general page layout and info
-        <div id="page-container">
-            <div id="user-container">
-                <div id="pfp-container">
-                    <img></img>
-                </div>
-                <div id="info-container">
-                    <span id="profile-name-span">{ud.name}'s Profile</span>
-                    <span id="user-info-span">{ud.username}</span>
-                    <span id="user-info-span">{ud.email}</span>
-                </div>
-            </div>
-            <div id="settings-container">
-                <button id="mode-toggle">Toggle Page's Color Mode</button>
-                <label id='dev-check-container'>
-                    <input type="checkbox">
-                        <span id="checkmark"></span>
-                        <span id="label-checkbox">Toggle Dev User</span>
-                    </input>
-                </label>
+  // 🔹 call /api/user/settings to update role
+  const updateDevSetting = async (nextIsDev: boolean) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
 
-            </div>
-        </div>
-        //Maybe put an if statement here for if a flag is positive user is developer and another section for dev realted stuff pops up
+    try {
+      const res = await fetch(`${API_BASE}/api/user/settings`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isDev: nextIsDev }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = data.message || data.error || "Failed to update settings.";
+        throw new Error(msg);
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      // backend echoes current dev status + theme
+      const serverIsDev = !!data.settings?.isDev;
+      setIsDevUser(serverIsDev);
+      setUser((prev: any) =>
+        prev ? { ...prev, role: serverIsDev ? "dev" : "user" } : prev
+      );
+    } catch (err: any) {
+      setError(err?.message || "Error updating dev setting.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  if (editing && user) {
+    return (
+      <EditUser
+        initial={user}
+        onClose={() => {
+          setEditing(false);
+          // ⬅️ re-fetch to refresh main profile view
+          fetchUserProfile();
+        }}
+      />
     );
-};
+  }
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
+  if (!user) return <div>No user data found.</div>;
+
+  const userEmail = user.eMail || user.email || "N/A";
+
+  return (
+    <div>
+      <div className="user-container">
+        <div className="pfp-container">
+          <img
+            alt={`${user.username || "User"}'s avatar`}
+            src={resolveAvatarUrl(user.avatarUrl)}
+          />
+        </div>
+        <div className="info-bio-wrapper">
+          <div className="info-container">
+            <span className="profile-name-span">
+              {user.firstName && user.lastName
+                ? `${user.firstName} ${user.lastName}'s Profile`
+                : `${user.username || "User"}'s Profile`}
+            </span>
+
+            <div className="info-item">
+              <strong>Username:</strong> <span>{user.username || "N/A"}</span>
+            </div>
+
+            <div className="info-item">
+              <strong>Email:</strong> <span>{userEmail}</span>
+            </div>
+
+            <div className="info-item">
+              <strong>Account Type:</strong>{" "}
+              <span>{isDevUser ? "Developer" : "Player"}</span>
+            </div>
+          </div>
+
+          <div className="bio-side">
+            <strong>Bio:</strong>
+            <p>{user.bio || "This user hasn’t written a bio yet."}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-container">
+        <span className="settings-title">Settings</span>
+
+        <button id="mode-toggle" onClick={toggleMode}>
+          Toggle to {mode === "light" ? "Dark" : "Light"} Mode
+        </button>
+
+        <div className="edit-profile-container">
+          <button
+            className="edit-profile-btn"
+            onClick={() => setEditing(true)}
+          >
+            Edit Profile
+          </button>
+        </div>
+
+        <label className="dev-check-container">
+          <input
+            type="checkbox"
+            checked={isDevUser}
+            onChange={(e) => {
+              const next = e.target.checked;
+              updateDevSetting(next);   // sync with backend
+            }}
+          />
+          <span className="checkmark"></span>
+          <span className="label-checkbox">Toggle Dev User</span>
+        </label>
+      </div>
+
+      {/* 🔹 Dev view only renders when backend says you're dev */}
+      <LoadDevUser event={isDevUser} />
+    </div>
+  );
+}
 
 export default LoadUser;

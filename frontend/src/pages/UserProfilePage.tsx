@@ -2,14 +2,15 @@
 import PageTitle from '../components/PageTitle.tsx';
 import LoadUser from '../components/LoadUser.tsx';
 import LoadDevUser from '../components/LoadDevUser.tsx';
-import "../pages/DevUserProfile.css"
-import "../pages/UserProfile.css"
+import "../pages/UserProfile.css";
+import "../index.css";
+
 const UserProfilePage = () =>
 {
     const devFlag = false; // figure out dynamic solution temp placeholder
     
     return(
-        <div>
+        <div className='page-container'>
             <PageTitle />
             <LoadUser />
             <LoadDevUser event={devFlag}/>

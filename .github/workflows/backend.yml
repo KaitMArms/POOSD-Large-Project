@@ -44,11 +44,21 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          rsync -avz --delete --exclude='.env' -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+          rsync -avz --delete --exclude-from='.github/workflows/backend-rsync-exclude.txt' -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
             backend/ ${SSH_USERNAME}@${SSH_HOST}:/var/www/html/backend/
 
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
           cd /var/www/html/backend
-          npm ci --omit=dev
-          pm2 restart server || pm2 start server.js --name server
+          npm ci
+
+          if pm2 describe server > /dev/null; then
+            echo "PM2 Exists: Restarting"
+            pm2 restart server
+          else
+            echo "PM2 doesn't exist: Starting"
+            pm2 start server.js --name backend
+          fi
+
+          pm2 save
+
           EOF

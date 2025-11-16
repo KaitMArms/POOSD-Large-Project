@@ -1,18 +1,27 @@
-//Title of the website plus global nav
-function PageTitle()
-{
-    // Add links when actual domain and website is set up
-    return(
-        <div id='title-container'>
-            <h1 id="title">PlayedIt</h1>
-            <nav>
-                <a href="frontend\src\pages\UserProfilePage.tsx">Profile</a>
-                <a href="frontend\src\pages\UserGamesPage.tsx">My Games</a>
-                <a href="frontend\src\pages\GlobalGamesPage.tsx">All Games</a>
-                <a href="frontend\src\pages\LoginPage.tsx">Sign Out</a>
-            </nav>
+import { Link } from "react-router-dom";
+
+function PageTitle() {
+  return (
+    <header className="title-container">
+      <nav className="nav-bar">
+        <div className="logo-section">
+          <img
+            className="mascot"
+            src="/Mascot.png"
+            alt="Controllie - PlayedIt's Mascot, he's a living breathing controller"
+          />
+          <h1 className="title">PlayedIt</h1>
         </div>
-    );
-};
+
+        <div className="nav-links">
+          <Link to="/profile">Profile</Link>
+          <Link to="/my-games">My Games</Link>
+          <Link to="/all-games">All Games</Link>
+          <Link to="/">Log Out</Link>
+        </div>
+      </nav>
+    </header>
+  );
+}
 
 export default PageTitle;

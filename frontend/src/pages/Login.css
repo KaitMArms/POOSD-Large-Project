@@ -1,50 +1,223 @@
+.login-mascot {
+  width: 60vw;
+  max-width: 460px;
+  height: auto;
+  margin-bottom: 2vh;
+}
+
 .page-container {
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: 100vw;
-  padding: 2em;
-}
-
-.login-container{
-  position: relative;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2em;
+  justify-content: flex-start;
+  padding-top: 4vh;
+}
+
+.login-container {
   background-color: var(--div-color);
+  padding: 2rem;
+  border-radius: 20px;
+  width: 80vw;
+  max-width: 350px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  text-align: center;
 }
 
-.login-result{
-  font-size: 10vw;
-  font-weight: bold;
-  font-style: italic;
-  color: #72139B;
+#login-container input[type="text"],
+#login-container input[type="password"],
+#login-container input[type="email"] {
+  width: 100%;
+  padding: 0.8em;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  border: 2px solid #72139B;
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  box-sizing: border-box;
+  text-align: center;
 }
 
-.inner-title{
-  font-size: 20vw;
-  font-weight: bold;
-  font-style: italic;
-  color: #72139B;
-}
-
-input{
+#login-container input[type="submit"] {
   background-color: var(--button-bg);
   color: var(--button-text);
-  border-width: 2px;
-  border-color: #72139B;
+  cursor: pointer;
+  transition: 0.25s;
+  width: 60%;        
+  margin-top: 8px;
+  padding: 8px 0;    
+  border-radius: 10px;
 }
 
-.loginButton{
+#inner-title {
+  font-size: 5.3rem;
+  font-weight: 600;
+  color: #72139B;
+  margin-bottom: 12px;
+  text-align: center;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
+}
+
+#loginButton:hover {
+  box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
+  transform: scale(1.03);
+}
+
+.password-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.password-field input {
+  flex: 1;
+  padding-right: 42px; 
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  width: 44px;
+  height: 44px;
+}
+
+.page-container img {
+  filter: drop-shadow(0 0 12px rgba(162, 119, 255, 0.45));
+  transition: 0.25s;
+}
+
+.page-container img:hover {
+  transform: scale(1.03);
+  filter: drop-shadow(0 0 20px rgba(162, 119, 255, 0.65));
+}
+
+.signup-link a {
+  color: #72139B;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.25s ease;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+  transform: scale(1.04);
+  text-shadow:
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
+}
+
+/* ======== OTP Modal Styling ======== */
+
+/* Overlay centered, covers whole viewport */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+/* Modal box */
+.modal-card {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--div-color);
+  color: var(--text-color);
+  border-radius: 16px;
+  padding: 1.8rem;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(162, 89, 255, 0.3);
+}
+
+/* Modal input */
+.modal-card input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 2px solid #72139B;
   background-color: var(--button-bg);
   color: var(--button-text);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  text-align: center;
+  outline: none;
+  transition: 0.25s;
 }
 
-img{
-  width: 30vw;
-  height: 30vw;
+.modal-card input:focus {
+  box-shadow: 0 0 8px rgba(162, 89, 255, 0.5);
+}
+
+/* Buttons grid inside modal */
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.modal-actions .outline {
+  grid-column: 1 / -1;
+}
+
+/* Message / alert box inside modal */
+.alert {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #5b2b6d;
+  background: rgba(114, 19, 155, 0.15);
+  color: #e8d9ff;
+  font-size: 0.95rem;
+  word-wrap: break-word;
+}
+
+/* Make sure modal is above everything */
+#page-container,
+#login-container {
+  position: relative;
+  z-index: 1;
+}
+
+.inline-error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #b24bcf;   /* fits your purple theme */
+  background: rgba(178, 75, 207, 0.12);
+  color: #ffdfff;
+  font-size: 0.95rem;
+  text-align: center;
 }

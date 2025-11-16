@@ -1,125 +1,130 @@
-const fs = require('fs');
-const path = require('path');
+const { centroids, feature_names, FEATURE_TO_INDEX, FEATURE_TO_INDEX_SIZE, EPSILON } = require('./recommend_model_loader');
 
-const CENTER_PATH = path.join(__dirname, '.', 'final_prediction_artifact.json');
-const EPSILON = 1e-10;
-
-let k_clusters, feature_names, centroids, FEATURE_TO_INDEX;
-
-try {
-    // Load the entire model from a JSON file
-    const model = JSON.parse(fs.readFileSync(CENTER_PATH, 'utf8'));
-    k_clusters = model.k_clusters;
-    feature_names = model.feature_names;
-    centroids = model.centroids;
-
-    FEATURE_TO_INDEX = Object.fromEntries(feature_names.map((name, i) => [name, i]));
-} catch (error) {
-    console.error("ERROR: Could not load ML model.", error);
+function tokenizeText(text) {
+    if (typeof text !== 'string' || !text.trim()) return [];
+    const tokens = text.toLowerCase().match(/\b[a-z]{3,}\b/g);
+    return tokens || [];
 }
 
-// Calculates the magnitude of a vector
+function transformToFeatureVector(rawGameDocument) {
+    const featureVector = new Array(FEATURE_TO_INDEX_SIZE).fill(0);
+
+    const setFeature = (featureName) => {
+        if (FEATURE_TO_INDEX.hasOwnProperty(featureName)) {
+            featureVector[FEATURE_TO_INDEX[featureName]] = 1;
+        }
+    };
+
+    try {
+        const categoricalFields = ['genres', 'platforms', 'keywords', 'themes', 'game_modes', 'player_perspectives', 'franchise', 'game_type', 'game_engines', 'collections'];
+        for (const category of categoricalFields) {
+            const rawValue = rawGameDocument[category];
+            const values = Array.isArray(rawValue) ? rawValue : (rawValue != null ? [rawValue] : []);
+            for (const id of values) setFeature(`${category}_${String(id)}`);
+        }
+
+        if (rawGameDocument.first_release_date != null) {
+            const releaseDate = new Date(rawGameDocument.first_release_date * 1000);
+            const year = releaseDate.getUTCFullYear();
+            const decade = Math.floor(year / 10) * 10;
+            setFeature(`release_year_${year}`);
+            setFeature(`release_decade_${decade}s`);
+        }
+
+        const summaryTokens = tokenizeText(rawGameDocument.summary);
+        for (const token of summaryTokens) setFeature(`summary_tokens_${token}`);
+
+        const storylineTokens = tokenizeText(rawGameDocument.storyline);
+        for (const token of storylineTokens) setFeature(`storyline_tokens_${token}`);
+        
+        if (rawGameDocument.rating != null) {
+            let label;
+            const rating = rawGameDocument.rating;
+            if (rating > 84) label = 'acclaimed';
+            else if (rating > 74) label = 'great';
+            else if (rating > 64) label = 'good';
+            else if (rating > 0) label = 'average';
+            if (label) setFeature(`rating_tier_${label}`);
+        }
+
+        if (rawGameDocument.rating_count != null) {
+            let label;
+            const count = rawGameDocument.rating_count;
+            if (count > 500) label = 'popular';
+            else if (count > 50) label = 'known';
+            else if (count > 0) label = 'niche';
+            else label = 'unrated';
+            if (label) setFeature(`rating_count_tier_${label}`);
+        }
+    } catch (e) {
+        console.error(`[ERROR] Transformation failed for game ID ${rawGameDocument.id}:`, e.message);
+        return new Array(FEATURE_TO_INDEX_SIZE).fill(0);
+    }
+
+    return featureVector;
+}
+
 function getMagnitude(vector) {
     return Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
 }
 
-// Calculates the dot product of two vectors
 function getDotProduct(vecA, vecB) {
     return vecA.reduce((sum, _, i) => sum + vecA[i] * vecB[i], 0);
 }
 
-// Transforms a game document into a one-hot encoded feature vector
-function transformToFeatureVector(rawGameDocument) {
-    const featureVector = new Array(feature_names.length).fill(0);
-
-    const featureCategories = {
-        genres: rawGameDocument.genres,
-        platforms: rawGameDocument.platforms,
-        keywords: rawGameDocument.keywords,
-        themes: rawGameDocument.themes,
-        game_modes: rawGameDocument.game_modes,
-        player_perspectives: rawGameDocument.player_perspectives,
-        franchise: rawGameDocument.franchise,
-        game_type: rawGameDocument.game_type,
-    };
-
-    for (const category in featureCategories) {
-        const rawValue = featureCategories[category];
-        const values = Array.isArray(rawValue) ? rawValue : (rawValue != null ? [rawValue] : []);
-
-        for (const id of values) {
-            const featureName = `${category}_${id}`;
-            if (FEATURE_TO_INDEX.hasOwnProperty(featureName)) {
-                const columnIndex = FEATURE_TO_INDEX[featureName];
-                featureVector[columnIndex] = 1;
-            }
-        }
-    }
-    return featureVector;
-}
-
-// Finds the best matching cluster for a given User Profile Vector
 function findBestCluster(userProfileVector) {
+    if (!centroids || centroids.length === 0) return -1;
+
     let maxSimilarity = -Infinity;
     let bestClusterId = -1;
     const magnitudeUPV = getMagnitude(userProfileVector);
+    if (magnitudeUPV === 0) return -1;
 
-    for (let i = 0; i < k_clusters; i++) {
+    for (let i = 0; i < centroids.length; i++) {
         const centroidVector = centroids[i];
         const dotProduct = getDotProduct(userProfileVector, centroidVector);
         const magnitudeCentroid = getMagnitude(centroidVector);
         const similarity = dotProduct / (magnitudeUPV * magnitudeCentroid + EPSILON);
-
         if (similarity > maxSimilarity) {
             maxSimilarity = similarity;
             bestClusterId = i;
         }
     }
+    console.log(`[DEBUG] findBestCluster: Max similarity was ${maxSimilarity} for Cluster ID ${bestClusterId}`);
     return bestClusterId;
 }
 
-// Finds the best cluster, queries the DB for games in that cluster, ranks them by similarity to the user's profile, and returns the top 100 IDs.
 async function getRecommendations(userProfileVector, userLikedGameIds, models) {
-    const { GameModel } = models
-    // Find the most relevant cluster for this user
+    const { GameModel } = models;
+
     const bestClusterId = findBestCluster(userProfileVector);
-    if (bestClusterId === -1) return []; // No clusters found, return empty
+    if (bestClusterId === -1) return [];
 
     console.log(`[ML Service] User profile best matches Cluster ID: ${bestClusterId}`);
 
-    // Query the database to get all games in that cluster
     const gamesInCluster = await GameModel.find(
         { clusterId: bestClusterId },
-        'id genres platforms keywords themes franchise game_modes player_perspectives game_type -_id'
+        'id name genres platforms keywords themes franchise game_modes player_perspectives game_type rating rating_count summary storyline first_release_date game_engines collections'
     ).lean().exec();
 
-    // Filter out games the user has already liked
-    const gamesToRank = gamesInCluster.filter(
-        game => !userLikedGameIds.includes(game.id)
-    );
-    if (gamesToRank.length === 0) return []; // No new games to recommend in this cluster
+    const gamesToRank = gamesInCluster.filter(game => !userLikedGameIds.includes(game.id));
+    if (gamesToRank.length === 0) return [];
 
-    const userProfileMagnitude = getMagnitude(userProfileVector);
     const results = [];
-
-    // Loop through the candidate games, encode them, and calculate similarity
     for (const gameDoc of gamesToRank) {
         const gameVector = transformToFeatureVector(gameDoc);
-        const dotProduct = getDotProduct(userProfileVector, gameVector);
-        const magnitudeGame = getMagnitude(gameVector);
-        const similarity = dotProduct / (userProfileMagnitude * magnitudeGame + EPSILON);
-        results.push({ id: gameDoc.id, score: similarity });
+        const score = getDotProduct(userProfileVector, gameVector);
+
+        if (score > 0) {
+            results.push({ id: gameDoc.id, name: gameDoc.name, score: score });
+        }
     }
 
-    // Sort the results and return the top 100 IDs
     results.sort((a, b) => b.score - a.score);
-    const topRankedRes = results.slice(0, 100);
-
-    return topRankedRes;
+    return results.slice(0, 100);
 }
 
 module.exports = {
     getRecommendations,
-    transformToFeatureVector,
-    FEATURE_TO_INDEX_SIZE: feature_names ? feature_names.length : 0
+    transformToFeatureVector
 };

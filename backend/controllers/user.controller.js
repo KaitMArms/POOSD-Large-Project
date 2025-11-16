@@ -1,7 +1,22 @@
-const User = require('../models/Users');
-const Game = require('../models/Games'); 
+const { UserModel: User } = require('../db');
+const { GameModel: Game } = require('../db');
 const mongoose = require('mongoose');
 const BIO_MAX = 300; // schema maxlength
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const JWT_EXPIRES = '1d';
+
+function signToken(user) {
+  const payload = {
+    sub: user._id.toString(),
+    uid: user.userID,
+    email: user.email,
+    username: user.username,
+    role: user.role,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
+}
+
 
 exports.profile = async (req, res) => {
   try {
@@ -150,12 +165,15 @@ exports.settingsUpd = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' });
 
+    const token = signToken(user);
+
     return res.status(200).json({
       success: true,
       settings: {
         isDev: user.role === 'dev',
         theme: user.settings?.theme ?? 'system'
-      }
+      },
+      token,
     });
   } catch (e) {
     console.error('settingsUpd error:', e);
@@ -202,6 +220,39 @@ exports.deleteAccount = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Account deleted and references cleaned up.' });
   } catch (err) {
     console.error('deleteAccount error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+exports.uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded.' });
+    }
+
+    const userId = req.user.sub;
+    const relPath = `/uploads/avatars/${req.file.filename}`;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: { avatarUrl: relPath } },
+      { new: true, runValidators: true }
+    ).select('firstName lastName username email avatarUrl bio role');
+
+    if (!user) {
+      // clean up the file if user not found
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch {}
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    console.error('uploadAvatar error:', err);
     return res.status(500).json({ message: 'Server error.' });
   }
 };
