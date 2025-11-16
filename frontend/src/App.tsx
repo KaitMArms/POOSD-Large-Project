@@ -12,14 +12,16 @@ function App()
   return (
     <ModeProvider>
       <Router >
-        <Routes>
-          <Route path="/" element={<LoginPage />}/>
-          <Route path="/signup" element={<SignUpPage />}/>
-          <Route path="/profile" element={<UserProfilePage />}/>
-          <Route path="/all-games" element={<GlobalGamesPage />}/>
-          <Route path="/my-games" element={<UserGamesPage />}/>
-          <Route path="/game/:id" element={<GamePage />} />
-        </Routes>
+        <main>
+          <Routes>
+            <Route path="/" element={<LoginPage />}/>
+            <Route path="/signup" element={<SignUpPage />}/>
+            <Route path="/profile" element={<UserProfilePage />}/>
+            <Route path="/all-games" element={<GlobalGamesPage />}/>
+            <Route path="/my-games" element={<UserGamesPage />}/>
+            <Route path="/game/:id" element={<GamePage />} />
+          </Routes>
+        </main>
       </Router>
     </ModeProvider>
   );
