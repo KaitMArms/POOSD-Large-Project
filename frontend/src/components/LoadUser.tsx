@@ -21,6 +21,12 @@ function LoadUser() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDevUser, setIsDevUser] = useState(false);
+  const [passwordChange, setPasswordChange] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
 
   const { mode, toggleMode } = useColorMode();
 
@@ -57,6 +63,56 @@ function LoadUser() {
       setError("An error occurred while fetching the user profile.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: any) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setPasswordError("Please fill in all fields.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setPasswordError("You must be logged in.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/user/change-password`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          oldPassword: oldPassword,
+          newPassword: newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPasswordError(data.message || "Password update failed.");
+        return;
+      }
+
+      setPasswordSuccess("Password updated successfully!");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      setPasswordError("An error occurred while updating password.");
     }
   };
 
@@ -176,6 +232,72 @@ function LoadUser() {
           </button>
         </div>
 
+        <div className="password-change-container">
+          <button
+            className="password-change-btn"
+            onClick={() => setPasswordChange(true)}
+          >
+            Change / Reset Password
+          </button>
+        </div>
+
+        {passwordChange && (
+        <div className="password-form-container">
+          <span className="password-title">Change Your Password</span>
+
+          {passwordError && (
+            <div className="password-error">{passwordError}</div>
+          )}
+
+          {passwordSuccess && (
+            <div className="password-success">{passwordSuccess}</div>
+          )}
+
+          <form className="password-form" onSubmit={handlePasswordChange}>
+            <label className="password-label">Current Password</label>
+            <input
+              type="password"
+              className="password-input"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              placeholder="Enter current password"
+            />
+
+            <label className="password-label">New Password</label>
+            <input
+              type="password"
+              className="password-input"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+            />
+
+            <label className="password-label">Confirm New Password</label>
+            <input
+              type="password"
+              className="password-input"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+            />
+
+            <div className="password-btn-row">
+              <button className="password-submit-btn" type="submit">
+                Update Password
+              </button>
+
+              <button
+                type="button"
+                className="password-cancel-btn"
+                onClick={() => setPasswordChange(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
         <label className="dev-check-container">
           <input
             type="checkbox"
@@ -193,6 +315,7 @@ function LoadUser() {
       {/* 🔹 Dev view only renders when backend says you're dev */}
       <LoadDevUser event={isDevUser} />
     </div>
+    
   );
 }
 

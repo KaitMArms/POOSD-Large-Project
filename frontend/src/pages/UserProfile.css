@@ -140,7 +140,8 @@
   font-size: 1.1rem;
 }
 
-.edit-profile-container {
+.edit-profile-container,
+.password-change-container {
   margin-top: 1.5em;
 }
 
@@ -201,7 +202,8 @@
   text-shadow: 0 0 6px rgba(162, 89, 255, 0.5);
 }
 
-.edit-profile-btn {
+.edit-profile-btn,
+.password-change-btn{
   background-color: var(--button-bg);
   border: none;
   color: var(--text-color);
@@ -213,7 +215,8 @@
   font-size: 1.1rem;
 }
 
-.edit-profile-btn:hover {
+.edit-profile-btn,
+.password-change-btn :hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
 }
@@ -234,7 +237,8 @@
     max-width: 90%;
   }
 }
-.edit-user-container {
+.edit-user-container,
+.password-change-container {
   margin: 4em auto;
   max-width: 1100px;
   padding: 2em;
@@ -380,6 +384,134 @@
 
 .edit-user-fields input[type="date"]::-moz-placeholder {
   color: rgba(255, 255, 255, 0.7);
+}
+
+.password-form-container {
+  margin-top: 2em;
+  padding: 2em;
+  background-color: var(--div-color);
+  border-radius: 1.5em;
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.password-title {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #b26cff;
+  text-shadow: 0 0 10px rgba(162, 89, 255, 0.8);
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.password-error {
+  background-color: rgba(255, 0, 0, 0.15);
+  color: #ff6a6a;
+  padding: 0.9em 1.2em;
+  border-radius: 1em;
+  border-left: 4px solid #ff6a6a;
+  margin-bottom: 1em;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(255, 80, 80, 0.3);
+}
+
+.password-success {
+  background-color: rgba(0, 255, 0, 0.15);
+  color: #6aff83;
+  padding: 0.9em 1.2em;
+  border-radius: 1em;
+  border-left: 4px solid #6aff83;
+  margin-bottom: 1em;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(80, 255, 120, 0.3);
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+
+.password-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #b26cff;
+  text-shadow: 0 0 8px rgba(162, 89, 255, 0.6);
+}
+
+.password-input {
+  width: 100%;
+  padding: 0.8em 1em;
+  border-radius: 10px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.password-input:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+}
+
+.password-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.password-submit-btn {
+  background-color: var(--button-bg);
+  border: none;
+  color: var(--text-color);
+  padding: 0.8em 1.6em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.4);
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.password-submit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
+}
+
+.password-cancel-btn {
+  background-color: rgba(0, 0, 0, 0.25);
+  border: none;
+  color: var(--text-color);
+  padding: 0.8em 1.4em;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+  transition: 0.3s ease;
+}
+
+.password-cancel-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
+}
+
+@media (max-width: 600px) {
+  .password-btn-row {
+    flex-direction: column;
+    gap: 0.8em;
+  }
+
+  .password-submit-btn,
+  .password-cancel-btn {
+    width: 100%;
+  }
 }
 
 
