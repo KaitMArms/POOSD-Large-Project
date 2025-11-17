@@ -66,7 +66,6 @@ function LoadGame() {
         return;
       }
 
-      // choose path param depending on numericId presence
       const pathId = numericId ?? id;
 
       try {
@@ -133,7 +132,6 @@ function LoadGame() {
         setSubmitMessage("Game added to your list!");
         setShowModal(false);
       } else {
-        // prefer JSON message, but fall back to text
         const contentType = resp.headers.get("content-type") || "";
         if (contentType.includes("application/json")) {
           const json = await resp.json().catch(() => ({}));
@@ -172,7 +170,6 @@ function LoadGame() {
       });
 
       if (resp.ok) {
-        // toggle local state immediately for snappy UI
         setGame((prev) => {
           if (!prev) return prev;
           return { ...prev, isLiked: !prev.isLiked };
