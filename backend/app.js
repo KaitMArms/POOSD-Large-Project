@@ -1,8 +1,11 @@
 // app.js for use with Jest
 
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// Clause for testing
+if (process.env.NODE_ENV !== "test") {
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+}
 require('./db');
 
 const express = require('express');

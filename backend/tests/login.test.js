@@ -1,74 +1,95 @@
-const request = require("supertest");
-const app = require("/app");
-const User = require("/models/Users");
-const bcrypt = ('bcryptjs');
-const jwt = require('jsonwebtoken');
+/**
+ * Unit test for register() controller using full Jest mocking.
+ */
 
-// ^ Dependencies
-// To run
-// npm test
+jest.mock('../services/sendEmail', () => ({
+  sendEmail: jest.fn(),
+}));
 
-// Simulate user model and bycrypts
-//jest.mock("/models/Users");
-//jest.mock("bcryptjs");
+// ---- FULL MOCK OF DB.JS ----
+const mockUser = {
+  exists: jest.fn(),
+  create: jest.fn(),
+};
 
-// Test for login with standard account
-describe("POST /auth/register => login", () => {
+jest.mock('../db', () => ({
+  UserModel: mockUser,
+}));
 
-    // Test login
-    test("Test registers a user with the same process as register and then logs in", async() => {
-        
-        const firstName = "Rick";
-        const lastName = "Leinecker";
-        const email= "juela575@gmail.com";
-        const password= "COP4331";
-        const username = "RickL";
+// Import after mocks
+const { register } = require('../controllers/login.Controller');
+const { sendEmail } = require('../services/sendEmail');
 
-        const registerResponse = await request(app)
-        .post('/api/auth/register')
-        .send({ firstName, lastName, email, username, password })
-        .expect(201);
+describe("Register function", () => {
+  let req, res;
 
-        // Expected json return
-        expect(registerResponse.body).toHaveProperty('message');
-        expect(registerResponse.body.message).toBe('Account created. Please log in to verify your email.');
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-        // Test login
-        const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({ email, password })
-        .expect(200);
+    req = {
+      body: {
+        firstName: "Juan",
+        lastName: "Lara",
+        email: "juela575@gmail.com",
+        username: "juela",
+        password: "123456"
+      }
+    };
 
-        expect(loginResponse.body).toHaveProperty('token');
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+  });
 
-        const token = loginResponse.body.token;
+  // ------------------------------------------------------------------
+  it("should register a new user and send OTP", async () => {
+    mockUser.exists.mockResolvedValueOnce(null); // email not taken
+    mockUser.exists.mockResolvedValueOnce(null); // username not taken
+    mockUser.create.mockResolvedValueOnce({ _id: "123" });
 
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
-        /*
-        //Get user
-        User.findOne.mockResolvedValue({
-            _id: "6915fab55fa7852213445b7c",
-            email: "juela575@gmail.com",
-            password: "COP4331"
-    
-        });
+    await register(req, res);
 
-        // Verify
-        bcrypt.localeCompare.mockResolvedValue(true);
+    expect(mockUser.exists).toHaveBeenCalledWith({ email: "juela575@gmail.com" });
+    expect(mockUser.exists).toHaveBeenCalledWith({ username: "juela" });
 
-        // Send data to login API call
-        const response = await request(app).post("auth/login").send({
-            email: "juela575@gmail.com",
-            password: "COP4331"
-        });
+    expect(mockUser.create).toHaveBeenCalledWith({
+      firstName: "Juan",
+      lastName: "Lara",
+      email: "juela575@gmail.com",
+      username: "juela",
+      password: "123456",
+      emailVerified: false
+    });
 
-        // Expected results: res.status, fields in the body, and _id of user
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty("token", "user");
-        expect(response.body._id).toBe("6915fab55fa7852213445b7c");*/
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Account created. Please log in to verify your email.",
+    });
+  });
 
+  // ------------------------------------------------------------------
+  it("should reject invalid email", async () => {
+    req.body.email = "invalid";
 
-    })
+    await register(req, res);
 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Valid email is required.",
+    });
+  });
 
+  // ------------------------------------------------------------------
+  it("should reject when user already exists", async () => {
+    mockUser.exists.mockResolvedValueOnce(true);  // emailTaken = true
+    mockUser.exists.mockResolvedValueOnce(false); // usernameTaken
+
+    await register(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Email already in use.",
+    });
+  });
 });

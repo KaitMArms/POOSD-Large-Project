@@ -134,5 +134,5 @@ userSchema.pre('updateOne', async function(next) {
 
 userSchema.index({ _id: 1, 'userGames.id': 1 }, { unique: true });
 
-module.exports = userSchema;
-//module.exports = mongoose.models.User || mongoose.model('User', UserSchema);
+//module.exports = userSchema;
+module.exports = mongoose.model('User', userSchema);

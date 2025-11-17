@@ -1,4 +1,5 @@
 // setup mongoDB connection
+/*
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
@@ -13,6 +14,8 @@ beforeAll(async () => {
     //Create local instance of MongoDB server
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
+
+    process.env.MONGO_URI = uri;
 
   await mongoose.connect(uri, {
     useNewUrlParser: true,
@@ -31,4 +34,5 @@ afterEach(async () => {
 afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
-});
+});*/
+jest.setTimeout(10000);

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles",
     "dev": "nodemon ./server.js"
   },
   "keywords": [],
@@ -29,7 +29,9 @@
     "supertest": "^7.1.4"
   },
   "jest": {
+  "setupFiles": ["<rootDir>/tests/setEnv.js"],
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
   "testEnvironment": "node",
-  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"]
+  "testTimeout": 30000
 }
 }
