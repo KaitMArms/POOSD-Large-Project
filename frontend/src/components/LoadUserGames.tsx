@@ -66,28 +66,33 @@ function LoadUserGames() {
 
             <div className="columns-wrapper">
                 <div className="column">
-                <div className="column-title">Completed</div>
-                <div className="column-content">{gamesByStatus("Completed")}</div>
+                    <div className="column-title">Completed</div>
+                    <div className="column-content">{gamesByStatus("Completed")}</div>
                 </div>
 
                 <div className="column">
-                <div className="column-title">In Progress</div>
-                <div className="column-content">{gamesByStatus("In Progress")}</div>
+                    <div className="column-title">In Progress</div>
+                    <div className="column-content">{gamesByStatus("In Progress")}</div>
                 </div>
 
                 <div className="column">
-                <div className="column-title">Paused</div>
-                <div className="column-content">{gamesByStatus("Paused")}</div>
+                    <div className="column-title">Paused</div>
+                    <div className="column-content">{gamesByStatus("Paused")}</div>
                 </div>
 
                 <div className="column">
-                <div className="column-title">Dropped</div>
-                <div className="column-content">{gamesByStatus("Dropped")}</div>
+                    <div className="column-title">Dropped</div>
+                    <div className="column-content">{gamesByStatus("Dropped")}</div>
                 </div>
 
                 <div className="column">
-                <div className="column-title">To Be Played</div>
-                <div className="column-content">{gamesByStatus("To Be Played")}</div>
+                    <div className="column-title">To Be Played</div>
+                    <div className="column-content">{gamesByStatus("To Be Played")}</div>
+                </div>
+
+                <div className="column">
+                    <div className="column-title">Liked Games</div>
+                    <div className="column-content">{}</div> {/*Adding in proper link to liked games*/}
                 </div>
             </div>
         </div>
