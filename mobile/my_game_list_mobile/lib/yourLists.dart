@@ -10,6 +10,7 @@ class UserGame {
   final String? cover;
   final String status;
   final double? userRating;
+  bool isLiked;
 
   UserGame({
     required this.id,
@@ -17,6 +18,7 @@ class UserGame {
     this.cover,
     required this.status,
     this.userRating,
+    this.isLiked = false,
   });
 
   factory UserGame.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class UserGame {
       cover: json['cover'],
       status: json['status'],
       userRating: (json['userRating'] as num?)?.toDouble(),
+      isLiked: json['isLiked'] ?? false,
     );
   }
 }
@@ -122,7 +125,7 @@ class YourGamesListState extends State<YourGamesList> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Padding( // <-- instead of Center (fixes infinite height)
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -179,7 +182,6 @@ class YourGamesListState extends State<YourGamesList> {
               else
                 Column(
                   children: [
-                    // ----- PIE CHART -----
                     Center(
                       child: SizedBox(
                         height: 300,
@@ -189,15 +191,14 @@ class YourGamesListState extends State<YourGamesList> {
                               touchCallback: (event, response) {
                                 setState(() {
                                   if (response == null || response.touchedSection == null) {
-                                    touchedIndex = null;  // ← This deselects when tapping empty space
+                                    touchedIndex = null;
                                     return;
                                   }
-                                  // If tapping the same section again, deselect it
                                   final tappedIndex = response.touchedSection!.touchedSectionIndex;
                                   if (touchedIndex == tappedIndex) {
-                                    touchedIndex = null;  // ← Toggle off
+                                    touchedIndex = null;
                                   } else {
-                                    touchedIndex = tappedIndex;  // ← Select new section
+                                    touchedIndex = tappedIndex;
                                   }
                                 });
                               },
@@ -210,7 +211,6 @@ class YourGamesListState extends State<YourGamesList> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // ----- LEGEND -----
                     touchedIndex != null
                         ? _buildDetailView(touchedIndex!)
                         : Column(
@@ -241,7 +241,6 @@ class YourGamesListState extends State<YourGamesList> {
     );
   }
 
-  // Build the pie slices
   List<PieChartSectionData> _buildSections() {
     final colors = [
       Colors.deepPurple,
@@ -261,7 +260,6 @@ class YourGamesListState extends State<YourGamesList> {
       final double baseRadius = 70;
       final double touchedRadius = 90;
       final double baseOpacity = 1.0;
-      //final double dimOpacity = 0.3;
 
       final radius = isTouched ? touchedRadius : baseRadius;
       final opacity = baseOpacity;
@@ -281,7 +279,6 @@ class YourGamesListState extends State<YourGamesList> {
     }).toList();
   }
 
-  // Simple deterministic color lookup
   Color _colorFor(String key) {
     final colorMap = {
       "Completed": Colors.deepPurple,
@@ -294,9 +291,7 @@ class YourGamesListState extends State<YourGamesList> {
   }
 
   Widget _buildDetailView(int index) {
-    // Filter non-zero entries safely
     final nonZeroEntries = dataMap.entries.where((e) => e.value > 0).toList();
-    // Clamp index to prevent out-of-range
     if (index < 0 || index >= nonZeroEntries.length) return const SizedBox.shrink();
 
     final entry = nonZeroEntries[index];
@@ -320,10 +315,54 @@ class YourGamesListState extends State<YourGamesList> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(game.name),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(game.name),
+                IconButton(
+                  icon: Icon(
+                    game.isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: game.isLiked ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: () => _likeGame(game.id),
+                ),
+              ],
+            ),
           );
         }).toList(),
       ],
     );
+  }
+
+  Future<void> _likeGame(int gameId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      // Handle not logged in
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://playedit.games/api/user/games/$gameId/like'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final gameIndex = _userGames.indexWhere((g) => g.id == gameId);
+          if (gameIndex != -1) {
+            _userGames[gameIndex].isLiked = !_userGames[gameIndex].isLiked;
+          }
+        });
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle error
+    }
   }
 }

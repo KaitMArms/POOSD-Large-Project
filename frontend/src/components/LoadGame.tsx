@@ -27,6 +27,7 @@ type GlobalGame = {
   coverUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
+  isLiked?: boolean;
 };
 
 function LoadGame() {
@@ -115,6 +116,7 @@ function LoadGame() {
           gameId: id,
           status,
           rating,
+          isLiked: game?.isLiked,
         }),
       });
 
@@ -124,6 +126,41 @@ function LoadGame() {
       } else {
         const json = await resp.json().catch(() => ({}));
         setSubmitMessage(json?.message || "Could not add game.");
+      }
+    } catch {
+      setSubmitMessage("Network error.");
+    }
+  };
+
+  const likeGame = async (): Promise<void> => {
+    setSubmitMessage("");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitMessage("You must be logged in.");
+      return;
+    }
+    if (!id) {
+      setSubmitMessage("No game id.");
+      return;
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/user/games/${id}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        setGame(prevGame => {
+          if (!prevGame) return null;
+          return { ...prevGame, isLiked: !prevGame.isLiked };
+        });
+      } else {
+        const json = await resp.json().catch(() => ({}));
+        setSubmitMessage(json?.message || "Could not like game.");
       }
     } catch {
       setSubmitMessage("Network error.");
@@ -234,6 +271,19 @@ function LoadGame() {
               onChange={(e) => setRating(parseFloat(e.target.value))}
               className="modal-slider"
             />
+
+            <div className="modal-checkbox">
+              <input
+                type="checkbox"
+                id="like-checkbox"
+                checked={game?.isLiked}
+                onChange={() => setGame(prevGame => {
+                  if (!prevGame) return null;
+                  return { ...prevGame, isLiked: !prevGame.isLiked };
+                })}
+              />
+              <label htmlFor="like-checkbox">Like this game?</label>
+            </div>
 
             <button
               type="button"
