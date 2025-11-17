@@ -40,3 +40,60 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Custom Checkbox Styling */
+.modal-checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: 1em;
+  justify-content: center; /* Center the checkbox and label */
+}
+
+.modal-checkbox input[type="checkbox"] {
+  /* Hide default checkbox */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #72139B; /* Border color from your inputs */
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  margin-right: 8px; /* Space between checkbox and label */
+  background-color: var(--button-bg); /* Background from your inputs */
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.modal-checkbox input[type="checkbox"]:checked {
+  background-color: #72139B; /* Checked background color */
+  border-color: #72139B; /* Checked border color */
+}
+
+.modal-checkbox input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(114, 19, 155, 0.5); /* Focus ring */
+}
+
+.modal-checkbox input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  display: none; /* Hidden by default */
+}
+
+.modal-checkbox input[type="checkbox"]:checked::after {
+  display: block; /* Show checkmark when checked */
+}
+
+.modal-checkbox label {
+  color: var(--text-color); /* Label color */
+  cursor: pointer;
+  font-size: 1rem;
+}

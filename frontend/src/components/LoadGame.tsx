@@ -116,6 +116,7 @@ function LoadGame() {
           gameId: id,
           status,
           rating,
+          isLiked: game?.isLiked,
         }),
       });
 
@@ -218,14 +219,6 @@ function LoadGame() {
             <button
               type="button"
               className="add-button"
-              onClick={likeGame}
-            >
-              {game.isLiked ? 'Unlike' : 'Like'}
-            </button>
-
-            <button
-              type="button"
-              className="add-button"
               onClick={() => setShowModal(true)}
             >
               Add to My Games
@@ -278,6 +271,19 @@ function LoadGame() {
               onChange={(e) => setRating(parseFloat(e.target.value))}
               className="modal-slider"
             />
+
+            <div className="modal-checkbox">
+              <input
+                type="checkbox"
+                id="like-checkbox"
+                checked={game?.isLiked}
+                onChange={() => setGame(prevGame => {
+                  if (!prevGame) return null;
+                  return { ...prevGame, isLiked: !prevGame.isLiked };
+                })}
+              />
+              <label htmlFor="like-checkbox">Like this game?</label>
+            </div>
 
             <button
               type="button"
