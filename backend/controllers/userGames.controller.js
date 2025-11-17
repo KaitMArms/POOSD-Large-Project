@@ -152,6 +152,38 @@ exports.deleteUserGame = async (req, res) => {
 };
 
 
+exports.likeGame = async (req, res) => {
+  try {
+    const userId = req.user?.sub;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const gameId = Number(req.params.gameId);
+    if (!Number.isInteger(gameId)) {
+      return res.status(400).json({ success: false, error: 'Valid numeric gameId path param required' });
+    }
+
+    const user = await User.findById(userId, 'userGames');
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const game = user.userGames.find(g => g.id === gameId);
+    if (!game) {
+      return res.status(404).json({ success: false, error: 'Game not found in user library' });
+    }
+
+    game.isLiked = !game.isLiked;
+    await user.save();
+
+    return res.status(200).json({ success: true, message: 'Game like status updated', isLiked: game.isLiked });
+  } catch (error) {
+    console.error('Error liking game:', error);
+    return res.status(500).json({ success: false, error: 'Error liking game' });
+  }
+};
+
 exports.editGameInfo = async (req, res) => {
   try {
     const userId = req.user?.sub; // Mongo _id lives in JWT `sub`

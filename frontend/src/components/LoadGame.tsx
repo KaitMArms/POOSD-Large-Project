@@ -27,6 +27,7 @@ type GlobalGame = {
   coverUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
+  isLiked?: boolean;
 };
 
 function LoadGame() {
@@ -130,6 +131,41 @@ function LoadGame() {
     }
   };
 
+  const likeGame = async (): Promise<void> => {
+    setSubmitMessage("");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitMessage("You must be logged in.");
+      return;
+    }
+    if (!id) {
+      setSubmitMessage("No game id.");
+      return;
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/user/games/${id}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        setGame(prevGame => {
+          if (!prevGame) return null;
+          return { ...prevGame, isLiked: !prevGame.isLiked };
+        });
+      } else {
+        const json = await resp.json().catch(() => ({}));
+        setSubmitMessage(json?.message || "Could not like game.");
+      }
+    } catch {
+      setSubmitMessage("Network error.");
+    }
+  };
+
   if (loading) {
     return <div>Loading game...</div>;
   }
@@ -178,6 +214,14 @@ function LoadGame() {
             <div className="added-description">
               {game.summary || "No description available."}
             </div>
+
+            <button
+              type="button"
+              className="add-button"
+              onClick={likeGame}
+            >
+              {game.isLiked ? 'Unlike' : 'Like'}
+            </button>
 
             <button
               type="button"
