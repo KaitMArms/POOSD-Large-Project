@@ -12,15 +12,17 @@
 }
 
 .pfp-container {
-  flex: 0 0 250px;
+  flex: 0 0 30%;
+  max-width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .pfp-container img {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid var(--button-bg);
@@ -201,7 +203,7 @@
 }
 
 .edit-profile-btn,
-.password-change-btn{
+.password-change-btn {
   background-color: var(--button-bg);
   border: none;
   color: var(--text-color);
@@ -213,8 +215,8 @@
   font-size: 1.1rem;
 }
 
-.edit-profile-btn,
-.password-change-btn :hover {
+.edit-profile-btn:hover,
+.password-change-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
 }
@@ -235,6 +237,7 @@
     max-width: 90%;
   }
 }
+
 .edit-user-container,
 .password-change-container {
   margin: 4em auto;
@@ -242,7 +245,7 @@
   padding: 2em;
   background-color: var(--div-color);
   border-radius: 1.5em;
-  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
+  box-shadow: none; 
 }
 
 .edit-user-grid {
@@ -261,8 +264,10 @@
 }
 
 .edit-user-avatar-wrapper {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 4px solid var(--button-bg);
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.6);
@@ -360,6 +365,7 @@
     width: 100%;
   }
 }
+
 .edit-user-fields select {
   width: 100%;
   padding: 0.7em 1em;
@@ -509,5 +515,4 @@
     width: 100%;
   }
 }
-
 
