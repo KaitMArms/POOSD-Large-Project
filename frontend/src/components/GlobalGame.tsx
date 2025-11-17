@@ -20,6 +20,7 @@ const gameTypeOptions = [
   { value: '14', label: 'Update' }
 ];
 
+
 const defaultGameTypeFilters = [
   gameTypeOptions.find(opt => opt.value === '0'),
   gameTypeOptions.find(opt => opt.value === '8')
@@ -64,7 +65,7 @@ function LoadGlobalGame() {
           const data = await response.json();
           console.log("Recommend API Response: ", data);
           const list = Array.isArray(data.recommendations)
-            ? data.recommendations.map(rec => rec.game).filter(Boolean)
+            ? data.recommendations.map((rec: any) => rec.game).filter(Boolean)
             : [];
           setRecommendedGames(list);
         } else {
