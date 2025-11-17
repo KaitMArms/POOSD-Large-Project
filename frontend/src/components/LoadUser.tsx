@@ -28,7 +28,6 @@ function LoadUser() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [fpOpen, setFpOpen] = useState(false);
-  const [fpEmail, setFpEmail] = useState("");
   const [fpOtp, setFpOtp] = useState("");
   const [fpMessage, setFpMessage] = useState("");
   const [fpCooldown, setFpCooldown] = useState(0);
@@ -127,7 +126,7 @@ async function sendForgotEmail() {
     const res = await fetch("https://playedit.games/api/auth/resend-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: fpEmail })
+      body: JSON.stringify({userEmail})
     });
 
     const data = await res.json().catch(() => ({}));
@@ -150,14 +149,14 @@ async function sendForgotEmail() {
 }
 
 async function verifyForgotCode() {
-  if (!fpEmail || fpOtp.trim().length < 6) return;
+  if (!userEmail || fpOtp.trim().length < 6) return;
 
   setFpVerifying(true);
   try {
     const res = await fetch("https://playedit.games/api/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: fpEmail, code: fpOtp.trim() })
+      body: JSON.stringify({userEmail, code: fpOtp.trim() })
     });
 
     const data = await res.json().catch(() => ({}));
@@ -372,21 +371,13 @@ async function verifyForgotCode() {
 
                   {fpMessage && <div className="alert">{fpMessage}</div>}
 
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={fpEmail}
-                    onChange={(e) => setFpEmail(e.target.value)}
-                  />
-
                   <button
-                    className="buttons"
-                    disabled={fpCooldown > 0}
+                    className="modal-btn"
                     onClick={sendForgotEmail}
+                    disabled={fpCooldown > 0}
                   >
-                    {fpCooldown > 0 ? `Resend in ${fpCooldown}s` : "Send code"}
+                    {fpCooldown > 0 ? `Resend in ${fpCooldown}s` : "Send Code"}
                   </button>
-
                   <br /><br />
 
                   <input
@@ -400,7 +391,7 @@ async function verifyForgotCode() {
 
                   <div className="modal-actions">
                     <button
-                      className="buttons"
+                      className="modal-btn"
                       onClick={verifyForgotCode}
                       disabled={fpVerifying || fpOtp.trim().length < 6}
                     >
@@ -408,9 +399,10 @@ async function verifyForgotCode() {
                     </button>
 
                     <button
-                      className="buttons outline"
+                      className="modal-btn"
                       onClick={() => {
                         setFpOpen(false);
+                        setFpOtp("");
                         setFpMessage("");
                       }}
                     >
