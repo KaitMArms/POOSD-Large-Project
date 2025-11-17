@@ -48,7 +48,6 @@ function LoadGame() {
       setError(null);
 
       const token = localStorage.getItem("token");
-
       if (!token) {
         setError("No token found. Please log in.");
         setLoading(false);
@@ -87,7 +86,6 @@ function LoadGame() {
     };
 
     fetchGame();
-
     return () => {
       cancelled = true;
     };
@@ -133,7 +131,6 @@ function LoadGame() {
   };
 
   const likeGame = async (): Promise<void> => {
-    setSubmitMessage("");
     const token = localStorage.getItem("token");
     if (!token) {
       setSubmitMessage("You must be logged in.");
@@ -154,7 +151,7 @@ function LoadGame() {
       });
 
       if (resp.ok) {
-        setGame(prevGame => {
+        setGame((prevGame) => {
           if (!prevGame) return null;
           return { ...prevGame, isLiked: !prevGame.isLiked };
         });
@@ -167,25 +164,13 @@ function LoadGame() {
     }
   };
 
-  if (loading) {
-    return <div>Loading game...</div>;
-  }
-
-  if (error) {
-    return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
-  }
-
-  if (!game) {
-    return <div>Game not found.</div>;
-  }
+  if (loading) return <div>Loading game...</div>;
+  if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
+  if (!game) return <div>Game not found.</div>;
 
   const coverUrl = game.coverUrl || "/default-game.png";
-
-
   const releaseDate = formatUnixDate(
-    typeof game.first_release_date === "number"
-      ? game.first_release_date
-      : null
+    typeof game.first_release_date === "number" ? game.first_release_date : null
   );
 
   return (
@@ -193,65 +178,38 @@ function LoadGame() {
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
           <div className="added-image-wrapper">
-            <img
-              src={coverUrl}
-              className="added-image"
-              alt={game.name ?? "cover"}
-            />
+            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
           </div>
 
           <div className="added-info">
             <h2 className="added-title">{game.name}</h2>
-            <p>
-              <strong>Release Date:</strong> {releaseDate}
-            </p>
+            <p><strong>Release Date:</strong> {releaseDate}</p>
+
             <div className="added-field">
               <strong>Genres:</strong>{" "}
-              {Array.isArray(game.genres)
-                ? game.genres.join(", ")
-                : String(game.genres ?? "Unknown")}
+              {Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
             </div>
 
-            <div className="added-description">
-              {game.summary || "No description available."}
-            </div>
+            <div className="added-description">{game.summary || "No description available."}</div>
 
-            <button
-              type="button"
-              className="add-button"
-              onClick={() => setShowModal(true)}
-            >
+            <button type="button" className="add-button" onClick={() => setShowModal(true)}>
               Add to My Games
+            </button>
+
+            <button type="button" className="like-button" onClick={likeGame}>
+              {game.isLiked ? "Unlike" : "Like"}
             </button>
           </div>
         </div>
       </div>
 
       {showModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setShowModal(false);
-          }}
-        >
-          <div
-            className="modal-box"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3>User's Game Settings</h3>
 
-            <label className="modal-label" htmlFor="status-select">
-              Status
-            </label>
-
-            {/* FIX HERE: changed id to className */}
-            <select
-              className="added-select"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
+            <label className="modal-label">Status</label>
+            <select className="added-select" value={status} onChange={(e) => setStatus(e.target.value)}>
               <option>Completed</option>
               <option>In Progress</option>
               <option>Paused</option>
@@ -259,9 +217,7 @@ function LoadGame() {
               <option>To Be Played</option>
             </select>
 
-            <label className="modal-label">
-              Rating: {rating.toFixed(1)}
-            </label>
+            <label className="modal-label">Rating: {rating.toFixed(1)}</label>
             <input
               type="range"
               min={0}
@@ -276,26 +232,17 @@ function LoadGame() {
               <input
                 type="checkbox"
                 id="like-checkbox"
-                checked={game?.isLiked}
-                onChange={() => setGame(prevGame => {
-                  if (!prevGame) return null;
-                  return { ...prevGame, isLiked: !prevGame.isLiked };
-                })}
+                checked={game.isLiked}
+                onChange={likeGame}
               />
               <label htmlFor="like-checkbox">Like this game?</label>
             </div>
 
-            <button
-              type="button"
-              className="modal-submit"
-              onClick={addToUserGames}
-            >
+            <button type="button" className="modal-submit" onClick={addToUserGames}>
               Submit
             </button>
 
-            <p className="submit-message" role="status" aria-live="polite">
-              {submitMessage}
-            </p>
+            <p className="submit-message" role="status" aria-live="polite">{submitMessage}</p>
           </div>
         </div>
       )}
