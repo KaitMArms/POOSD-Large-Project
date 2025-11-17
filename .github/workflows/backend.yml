@@ -51,20 +51,22 @@ jobs:
           cd /var/www/html/backend
           npm ci
 
+          EOF
 
-    - name: Start/Restart PM2 server
-      env:
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-      run: |
-        ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
-        pm2 describe server 2>/dev/null | grep -q "online"
-        if [ $? -eq 0 ]; then
-          echo "PM2 server exists: Restarting"
-          pm2 restart server
-        else
-          echo "PM2 server doesn't exist: Starting"
-          pm2 start server.js --name server
-        fi
 
-        EOF
+      - name: Start/Restart PM2 server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        run: |
+          ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+          pm2 describe server 2>/dev/null | grep -q "online"
+          if [ $? -eq 0 ]; then
+            echo "PM2 server exists: Restarting"
+            pm2 restart server
+          else
+            echo "PM2 server doesn't exist: Starting"
+            pm2 start server.js --name server
+          fi
+
+          EOF
