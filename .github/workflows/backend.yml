@@ -69,4 +69,6 @@ jobs:
             pm2 start server.js --name server
           fi
 
+          pm2 save
+
           EOF
