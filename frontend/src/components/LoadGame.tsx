@@ -40,6 +40,12 @@ function LoadGame() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
 
+  const numericId = (() => {
+    if (!id) return null;
+    const n = Number(id);
+    return Number.isFinite(n) ? n : null;
+  })();
+
   useEffect(() => {
     let cancelled = false;
 
@@ -60,8 +66,11 @@ function LoadGame() {
         return;
       }
 
+      // choose path param depending on numericId presence
+      const pathId = numericId ?? id;
+
       try {
-        const resp = await fetch(`${API_BASE}/api/globalgames/${id}`, {
+        const resp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +80,7 @@ function LoadGame() {
 
         if (!resp.ok) {
           const text = await resp.text().catch(() => "");
-          setError(text || "Failed to load game.");
+          setError(text || `Failed to load game (status ${resp.status}).`);
           setLoading(false);
           return;
         }
@@ -89,7 +98,7 @@ function LoadGame() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, numericId]);
 
   const addToUserGames = async (): Promise<void> => {
     setSubmitMessage("");
@@ -103,6 +112,8 @@ function LoadGame() {
       return;
     }
 
+    const gameIdToSend: number | string = numericId ?? id;
+
     try {
       const resp = await fetch(`${API_BASE}/api/user/games/add`, {
         method: "POST",
@@ -111,10 +122,10 @@ function LoadGame() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          gameId: id,
+          gameId: gameIdToSend,
           status,
           rating,
-          isLiked: game?.isLiked,
+          isLiked: !!game?.isLiked,
         }),
       });
 
@@ -122,15 +133,23 @@ function LoadGame() {
         setSubmitMessage("Game added to your list!");
         setShowModal(false);
       } else {
-        const json = await resp.json().catch(() => ({}));
-        setSubmitMessage(json?.message || "Could not add game.");
+        // prefer JSON message, but fall back to text
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not add game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not add game (status ${resp.status}).`);
+        }
       }
-    } catch {
+    } catch (err) {
       setSubmitMessage("Network error.");
     }
   };
 
   const likeGame = async (): Promise<void> => {
+    setSubmitMessage("");
     const token = localStorage.getItem("token");
     if (!token) {
       setSubmitMessage("You must be logged in.");
@@ -141,8 +160,10 @@ function LoadGame() {
       return;
     }
 
+    const pathId = numericId ?? id;
+
     try {
-      const resp = await fetch(`${API_BASE}/api/user/games/${id}/like`, {
+      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -151,15 +172,31 @@ function LoadGame() {
       });
 
       if (resp.ok) {
-        setGame((prevGame) => {
-          if (!prevGame) return null;
-          return { ...prevGame, isLiked: !prevGame.isLiked };
+        // toggle local state immediately for snappy UI
+        setGame((prev) => {
+          if (!prev) return prev;
+          return { ...prev, isLiked: !prev.isLiked };
         });
+
+        try {
+          const updated = await resp.json().catch(() => null);
+          if (updated && typeof updated.isLiked === "boolean") {
+            setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
+          }
+        } catch (e) {
+          console.warn("Failed to parse like response JSON:", e);
+        }
       } else {
-        const json = await resp.json().catch(() => ({}));
-        setSubmitMessage(json?.message || "Could not like game.");
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
+        }
       }
-    } catch {
+    } catch (err) {
       setSubmitMessage("Network error.");
     }
   };
@@ -228,7 +265,7 @@ function LoadGame() {
               <input
                 type="checkbox"
                 id="like-checkbox"
-                checked={game.isLiked}
+                checked={!!game.isLiked}
                 onChange={likeGame}
               />
               <label htmlFor="like-checkbox">Like this game?</label>
