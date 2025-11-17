@@ -36,7 +36,7 @@ function LoadGame() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [rating, setRating] = useState<number>(5);
-  const [status, setStatus] = useState<string>("To Be Played");
+  const [status, setStatus] = useState<string>("to-play");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
 
@@ -122,6 +122,7 @@ function LoadGame() {
         },
         body: JSON.stringify({
           gameId: gameIdToSend,
+          name: game?.name,
           status,
           rating,
           isLiked: !!game?.isLiked,
@@ -240,11 +241,11 @@ function LoadGame() {
 
             <label className="modal-label">Status</label>
             <select className="added-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option>Completed</option>
-              <option>In Progress</option>
-              <option>Paused</option>
-              <option>Dropped</option>
-              <option>To Be Played</option>
+              <option value="completed">Completed</option>
+              <option value="in-progress">In Progress</option>
+              <option value="on-hold">Paused</option>
+              <option value="dropped">Dropped</option>
+              <option value="to-played">To Be Played</option>
             </select>
 
             <label className="modal-label">Rating: {rating.toFixed(1)}</label>

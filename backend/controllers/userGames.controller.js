@@ -1,5 +1,4 @@
-const { UserModel: User } = require('../db');
-const Game = require('../models/Games');
+const { UserModel: User , GameModel: Game} = require('../db');
 
 exports.addUserGame = async (req, res) => {
   try {
@@ -8,7 +7,7 @@ exports.addUserGame = async (req, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
 
-    const { gameId, status, rating, isLiked } = req.body;
+    const { gameId, name, status, rating, isLiked } = req.body;
 
     if (!gameId || !status) {
       return res.status(400).json({ success: false, error: 'gameId and status are required' });
@@ -26,6 +25,7 @@ exports.addUserGame = async (req, res) => {
 
     const newGame = {
       id: gameId,
+      name: name,
       status: status,
       userRating: rating,
       isLiked: isLiked,
@@ -43,16 +43,70 @@ exports.addUserGame = async (req, res) => {
 
 exports.viewUserGames = async (req, res) => {
   try {
-    const userId = req.user?.sub; 
+    const userId = req.user?.sub;
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
-    const user = await User.findById(userId, 'userGames');
-    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-    return res.status(200).json({ success: true, games: user.userGames });
+    const user = await User.findById(userId).select('userGames').lean();
+    if (!user || !user.userGames || user.userGames.length === 0) {
+      return res.status(200).json({ success: true, games: [] }); 
+    }
+
+    const userGamesMap = new Map(user.userGames.map(g => [g.id, g]));
+    const gameIds = Array.from(userGamesMap.keys());
+
+    if (gameIds.length === 0) {
+      return res.status(200).json({ success: true, games: [] });
+    }
+
+    const pipeline = [
+      { $match: { id: { $in: gameIds } } },
+      
+      {
+        $lookup: {
+          from: 'covers',
+          localField: 'cover',
+          foreignField: 'id',
+          as: 'coverObject'
+        }
+      },
+
+      {
+        $addFields: {
+          coverUrl: {
+            $let: {
+              vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
+              in: {
+                $cond: [
+                  '$$coverDoc', 
+                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$coverDoc.image_id", ".jpg" ] },
+                  null 
+                ]
+              }
+            }
+          }
+        }
+      },
+      { $project: { coverObject: 0 } }
+    ];
+
+    const detailedGames = await Game.aggregate(pipeline);
+
+    const populatedGames = detailedGames.map(game => {
+      const userGameData = userGamesMap.get(game.id);
+      return {
+        ...game, 
+        status: userGameData.status,
+        userRating: userGameData.userRating,
+        isLiked: userGameData.isLiked,
+      };
+    });
+
+    return res.status(200).json({ success: true, games: populatedGames });
+
   } catch (error) {
-    console.error('Error fetching user games:', error);
+    console.error('Error fetching populated user games:', error);
     return res.status(500).json({ success: false, error: 'Error fetching user games' });
   }
 };

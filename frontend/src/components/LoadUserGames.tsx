@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080"
+    : "https://playedit.games";
+
 function LoadUserGames() {
     const [games, setGames] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -16,7 +21,7 @@ function LoadUserGames() {
         }
 
         try {
-        const response = await fetch('https://playedit.games/api/user/games', {
+        const response = await fetch(`${API_BASE}/api/user/games`, {
             method: 'GET',
             headers: {
             'Authorization': `Bearer ${token}`,
@@ -48,12 +53,21 @@ function LoadUserGames() {
     }, []);
 
     const gamesByStatus = (status: string) => {
-    return games
-        .filter(game => game.status === status)
-        .map(game => (
-        <div key={game.gameId} className="user-game-row">
-            <Link to={`/game/${game.gameId}`} className="game-link"> {game.title}</Link>
-        </div>
+        const filteredGames = games.filter(game => game.status === status);
+
+        if (filteredGames.length === 0) {
+            return <p className="empty-column-message">No games in this category.</p>;
+        }
+
+        return filteredGames.map(game => (
+            <Link to={`/game/${game.id}`} key={game.id} className="user-game-card">
+                <img
+                    src={game.coverUrl || "/default-game.png"}
+                    alt={game.name}
+                    className="user-game-cover"
+                />
+                {}
+            </Link>
         ));
     };
 
@@ -67,27 +81,27 @@ function LoadUserGames() {
             <div className="columns-wrapper">
                 <div className="column">
                     <div className="column-title">Completed</div>
-                    <div className="column-content">{gamesByStatus("Completed")}</div>
+                    <div className="column-content">{gamesByStatus("completed")}</div>
                 </div>
 
                 <div className="column">
                     <div className="column-title">In Progress</div>
-                    <div className="column-content">{gamesByStatus("In Progress")}</div>
+                    <div className="column-content">{gamesByStatus("in-progress")}</div>
                 </div>
 
                 <div className="column">
                     <div className="column-title">Paused</div>
-                    <div className="column-content">{gamesByStatus("Paused")}</div>
+                    <div className="column-content">{gamesByStatus("on-hold")}</div>
                 </div>
 
                 <div className="column">
                     <div className="column-title">Dropped</div>
-                    <div className="column-content">{gamesByStatus("Dropped")}</div>
+                    <div className="column-content">{gamesByStatus("dropped")}</div>
                 </div>
 
                 <div className="column">
                     <div className="column-title">To Be Played</div>
-                    <div className="column-content">{gamesByStatus("To Be Played")}</div>
+                    <div className="column-content">{gamesByStatus("to-play")}</div>
                 </div>
             </div>
         </div>

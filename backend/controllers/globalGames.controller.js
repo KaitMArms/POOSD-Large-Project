@@ -257,6 +257,7 @@ exports.addUserGame = async (req, res) => {
       name,
       status: 'to-play',
       isLiked: false,
+      userRating: 0,
       createdAt: new Date(),
       updatedAt: new Date()
     };
