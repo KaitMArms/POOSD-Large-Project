@@ -50,7 +50,7 @@ function LoadGlobalGame() {
 
       try {
         const response = await fetch(
-          `https://playedit.games/api/globalgames/recommended`,
+          `${BASE_URL}/api/globalgames/browse/recommended`,
           {
             method: 'GET',
             headers: {
@@ -62,9 +62,10 @@ function LoadGlobalGame() {
 
         if (response.ok) {
           const data = await response.json();
-
-          const list = Array.isArray(data.data) ? data.games : [];
-
+          console.log("Recommend API Response: ", data);
+          const list = Array.isArray(data.recommendations)
+            ? data.recommendations.map(rec => rec.game).filter(Boolean)
+            : [];
           setRecommendedGames(list);
         } else {
           const errorData = await response.json().catch(() => ({}));
@@ -105,20 +106,14 @@ function LoadGlobalGame() {
 
       const urlParams = new URLSearchParams({ q });
 
-      // --- THIS IS THE FIX ---
-      // Determine which set of filters to use for the API call.
       let filtersToUse = selectedGameTypes;
 
-      // If the user has cleared the dropdown (so it's empty),
-      // use our predefined default filters instead.
       if (selectedGameTypes.length === 0) {
         filtersToUse = defaultGameTypeFilters;
       }
-
-      // Now, build the query params using the correct set of filters.
       if (filtersToUse.length > 0) {
         filtersToUse.forEach(option => {
-          if (option) { // Add a check to ensure the option object is not null/undefined
+          if (option) {
             urlParams.append('game_types', option.value);
           }
         });
@@ -126,7 +121,6 @@ function LoadGlobalGame() {
       if (ratedOnly) {
         urlParams.append('ratedOnly', 'true');
       }
-      // -----------------------
 
       const url = `${BASE_URL}/api/globalgames/search?${urlParams.toString()}`;
       console.log("Search URL:", url);
@@ -166,12 +160,20 @@ function LoadGlobalGame() {
       <div className="components-container">
         <div className="recommend-games-container">
           <h2 className="section-title">Recommended Games</h2>
+          {}
           <div className="columns-wrapper">
             {recommendedGames.length > 0 ? (
               recommendedGames.map((game) => (
                 <div key={game._id} className="user-game-row">
                   <Link to={`/game/${game.id}`} className="game-link">
-                    {game.name}
+                    <img
+                      src={game.coverUrl || "/default-game.png"}
+                      alt={game.name}
+                      className="search-result-thumbnail"
+                    />
+                    <div className="game-title-container">
+                      {game.name}
+                    </div>
                   </Link>
                 </div>
               ))
@@ -217,9 +219,7 @@ function LoadGlobalGame() {
               <input
                 type="checkbox"
                 id="ratedOnlyCheckbox"
-                // The 'checked' prop is linked to our state variable
                 checked={ratedOnly}
-                // The 'onChange' event updates our state variable
                 onChange={(e) => setRatedOnly(e.target.checked)}
               />
               <label htmlFor="ratedOnlyCheckbox">Show only games with age ratings</label>
