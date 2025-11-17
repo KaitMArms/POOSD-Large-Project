@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-class UserDetails extends StatefulWidget {
-  const UserDetails({super.key});
+class ListCreator extends StatefulWidget {
+  const ListCreator({super.key});
 
   @override
-  State<UserDetails> createState() => UserDetailsState();
+  State<ListCreator> createState() => ListCreatorState();
 
 }
 
-class UserDetailsState extends State<UserDetails>  {
+class ListCreatorState extends State<ListCreator>  {
   
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
+  Widget build(BuildContext context) { 
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -26,7 +25,7 @@ class UserDetailsState extends State<UserDetails>  {
               Stack(
                 children: [
                   Text(
-                    "Edit User Details",
+                    "Your Games",
                     style: TextStyle(
                       color: Colors.deepPurpleAccent,
                       fontSize: 32,
@@ -35,7 +34,7 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 
                   Text(
-                    "Edit User Details",
+                    "Your Games",
                     style: TextStyle(
                       foreground: Paint() 
                       ..style = PaintingStyle.stroke
@@ -49,7 +48,7 @@ class UserDetailsState extends State<UserDetails>  {
                   ),
                 
                   Text(
-                    "Edit User Details",
+                    "Your Games",
                     style: TextStyle(
                       color: Colors.deepPurpleAccent,
                       shadows: 
@@ -66,7 +65,46 @@ class UserDetailsState extends State<UserDetails>  {
                 ],
               ),
 
-              
+              SizedBox(height: 30),
+
+              Text(
+                      "Your Games",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                  
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 30),
+
+              Text("Add New Games Here",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    
+                  ],
+                ),
+              )
             ],
           ),
         ),

@@ -56,7 +56,7 @@ jobs:
             pm2 restart server
           else
             echo "PM2 doesn't exist: Starting"
-            pm2 start server.js --name backend
+            pm2 start server.js --name server
           fi
 
           pm2 save
