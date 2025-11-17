@@ -503,6 +503,30 @@
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
 }
 
+.forgot-password-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.forgot-password-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid #A259FF;
+  padding: 0.6em 1.2em;         
+  border-radius: 1em;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.forgot-password-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(162, 89, 255, 0.8);
+}
+
 .modal-btn {
     width: 100%;
     background: var(--button-bg);
@@ -522,7 +546,6 @@
     box-shadow: 0 0 30px rgba(162, 89, 255, 0.9);
 }
 
-/* Stack Verify + Cancel */
 .modal-actions {
     display: flex;
     flex-direction: column;
