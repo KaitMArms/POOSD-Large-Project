@@ -59,8 +59,8 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          cd /var/www/html/backend
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+          cd /var/www/html/backend
           pm2 describe server 2>/dev/null | grep -q "online"
           if [ $? -eq 0 ]; then
             echo "PM2 server exists: Restarting"
