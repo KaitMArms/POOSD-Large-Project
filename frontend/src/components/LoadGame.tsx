@@ -195,10 +195,6 @@ function LoadGame() {
             <button type="button" className="add-button" onClick={() => setShowModal(true)}>
               Add to My Games
             </button>
-
-            <button type="button" className="like-button" onClick={likeGame}>
-              {game.isLiked ? "Unlike" : "Like"}
-            </button>
           </div>
         </div>
       </div>
