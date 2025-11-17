@@ -89,11 +89,6 @@ function LoadUserGames() {
                     <div className="column-title">To Be Played</div>
                     <div className="column-content">{gamesByStatus("To Be Played")}</div>
                 </div>
-
-                <div className="column">
-                    <div className="column-title">Liked Games</div>
-                    <div className="column-content">{}</div> {/*Adding in proper link to liked games*/}
-                </div>
             </div>
         </div>
     );

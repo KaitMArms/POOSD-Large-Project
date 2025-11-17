@@ -203,7 +203,7 @@
 }
 
 .edit-profile-btn,
-.password-change-btn{
+.password-change-btn {
   background-color: var(--button-bg);
   border: none;
   color: var(--text-color);
@@ -215,8 +215,8 @@
   font-size: 1.1rem;
 }
 
-.edit-profile-btn,
-.password-change-btn :hover {
+.edit-profile-btn:hover,
+.password-change-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
 }
@@ -237,6 +237,7 @@
     max-width: 90%;
   }
 }
+
 .edit-user-container,
 .password-change-container {
   margin: 4em auto;
@@ -244,7 +245,7 @@
   padding: 2em;
   background-color: var(--div-color);
   border-radius: 1.5em;
-  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
+  box-shadow: none; 
 }
 
 .edit-user-grid {
@@ -364,6 +365,7 @@
     width: 100%;
   }
 }
+
 .edit-user-fields select {
   width: 100%;
   padding: 0.7em 1em;
@@ -513,5 +515,4 @@
     width: 100%;
   }
 }
-
 
