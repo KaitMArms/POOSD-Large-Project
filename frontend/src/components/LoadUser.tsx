@@ -122,14 +122,7 @@ function LoadUser() {
     }
   };
 
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 async function sendForgotEmail() {
-  if (!emailRe.test(fpEmail)) {
-    setFpMessage("Please enter a valid email.");
-    return;
-  }
-
   try {
     const res = await fetch("https://playedit.games/api/auth/resend-otp", {
       method: "POST",
@@ -137,7 +130,7 @@ async function sendForgotEmail() {
       body: JSON.stringify({ email: fpEmail })
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.ok) {
       setFpMessage("Check your email for the 6-digit code.");
       setFpCooldown(30);
@@ -148,7 +141,6 @@ async function sendForgotEmail() {
           return c - 1;
         });
       }, 1000);
-
     } else {
       setFpMessage(data.message || "Unable to send email.");
     }
@@ -168,12 +160,15 @@ async function verifyForgotCode() {
       body: JSON.stringify({ email: fpEmail, code: fpOtp.trim() })
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     setFpVerifying(false);
 
     if (res.ok) {
-      // Successfully verified email → forward them to password reset page
-      window.location.href = "/reset-password";
+      setOldPassword(fpOtp.trim());
+      setFpOpen(false);
+      setFpMessage("");
+      setFpOtp("");
+      setPasswordChange(true);
     } else {
       setFpMessage(data.message || "Invalid code.");
     }
@@ -361,6 +356,7 @@ async function verifyForgotCode() {
                 Cancel
               </button>
               <div className="forgot-password-container">
+              <br />
               <button
                 className="password-forgot-btn"
                 onClick={() => setFpOpen(true)}

@@ -503,25 +503,69 @@
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
 }
 
-.forgot-password-container {
-  margin-top: 1em;
+.fp-email-display {
+  margin: 10px 0 15px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.25);
+  border-radius: 10px;
+  color: var(--text-color);
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.forgot-password-inline {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 .password-forgot-btn {
   background-color: var(--button-bg);
   border: none;
   color: var(--text-color);
-  padding: 0.8em 1.6em;
-  border-radius: 10px;
+  padding: 0.6em 1.1em;   
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(162, 89, 255, 0.35);
   cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 0 10px rgba(162, 89, 255, 0.4);
-  font-size: 1.1rem;
+  font-size: 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .password-forgot-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
+  transform: scale(1.03);
+  box-shadow: 0 0 18px rgba(162, 89, 255, 0.6);
+}
+
+.modal-card .modal-primary {
+  background-color: var(--button-bg) !important;
+  color: var(--text-color) !important;
+  border: none !important;
+  padding: 0.8em 1.4em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.35);
+}
+
+.modal-card .modal-secondary {
+  background-color: rgba(0,0,0,0.25) !important;
+  color: var(--text-color) !important;
+  border: none !important;
+  padding: 0.7em 1.2em;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(162, 89, 255, 0.25);
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 2px solid #72139B;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  text-align: center;
+  outline: none;
 }
 
 @media (max-width: 600px) {
