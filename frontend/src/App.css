@@ -41,38 +41,37 @@
   color: #888;
 }
 
-/* Custom Checkbox Styling */
+
 .modal-checkbox {
   display: flex;
   align-items: center;
   margin-top: 1em;
-  justify-content: center; /* Center the checkbox and label */
+  justify-content: center; 
 }
 
 .modal-checkbox input[type="checkbox"] {
-  /* Hide default checkbox */
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   width: 20px;
   height: 20px;
-  border: 2px solid #72139B; /* Border color from your inputs */
+  border: 2px solid #72139B; 
   border-radius: 4px;
   position: relative;
   cursor: pointer;
-  margin-right: 8px; /* Space between checkbox and label */
-  background-color: var(--button-bg); /* Background from your inputs */
+  margin-right: 8px; 
+  background-color: var(--button-bg); 
   transition: background-color 0.2s, border-color 0.2s;
 }
 
 .modal-checkbox input[type="checkbox"]:checked {
-  background-color: #72139B; /* Checked background color */
-  border-color: #72139B; /* Checked border color */
+  background-color: #72139B; 
+  border-color: #72139B; 
 }
 
 .modal-checkbox input[type="checkbox"]:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(114, 19, 155, 0.5); /* Focus ring */
+  box-shadow: 0 0 0 3px rgba(114, 19, 155, 0.5); 
 }
 
 .modal-checkbox input[type="checkbox"]::after {
@@ -85,15 +84,15 @@
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-  display: none; /* Hidden by default */
+  display: none; 
 }
 
 .modal-checkbox input[type="checkbox"]:checked::after {
-  display: block; /* Show checkmark when checked */
+  display: block; 
 }
 
 .modal-checkbox label {
-  color: var(--text-color); /* Label color */
+  color: var(--text-color); 
   cursor: pointer;
   font-size: 1rem;
 }

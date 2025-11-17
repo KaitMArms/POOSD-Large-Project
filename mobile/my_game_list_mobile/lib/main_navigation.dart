@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_game_list_mobile/browse.dart';
 import 'package:my_game_list_mobile/yourLists.dart';
 import 'profile.dart'; // your current Profile page
 
@@ -14,7 +15,7 @@ class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 3;
 
   final screens = [
-    Center(child: Text("Explore", style: TextStyle(fontSize: 30))),
+    AllGames(),
     YourGamesList(),
     Center(child: Text("For Later", style: TextStyle(fontSize: 30))),
     Profile(), // <- your full Profile screen here
