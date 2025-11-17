@@ -8,36 +8,41 @@ exports.addUserGame = async (req, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
 
-    const { gameId, status, rating, isLiked } = req.body;
-
+    const { gameId, status, rating } = req.body;
     if (!gameId || !status) {
       return res.status(400).json({ success: false, error: 'gameId and status are required' });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId, 'userGames');
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    const gameExists = user.userGames.some(game => game.id === gameId);
+    const gameExists = user.userGames.some(g => g.id === gameId);
     if (gameExists) {
-      return res.status(409).json({ success: false, error: 'Game already in user list' });
+      return res.status(409).json({ success: false, error: 'Game already in user library' });
     }
 
-    const newGame = {
-      id: gameId,
+    const gameToAdd = await Game.findOne({ id: gameId });
+    if (!gameToAdd) {
+      return res.status(404).json({ success: false, error: 'Game not found in global collection' });
+    }
+
+    const newUserGame = {
+      id: gameToAdd.id,
+      name: gameToAdd.name,
+      cover: gameToAdd.cover,
       status: status,
       userRating: rating,
-      isLiked: isLiked,
     };
 
-    user.userGames.push(newGame);
+    user.userGames.push(newUserGame);
     await user.save();
 
-    return res.status(201).json({ success: true, message: 'Game added to user list', game: newGame });
+    return res.status(201).json({ success: true, message: 'Game added to your library', game: newUserGame });
   } catch (error) {
     console.error('Error adding user game:', error);
-    return res.status(500).json({ success: false, error: 'Error adding game to user list' });
+    return res.status(500).json({ success: false, error: 'Error adding game to collection' });
   }
 };
 
@@ -146,38 +151,6 @@ exports.deleteUserGame = async (req, res) => {
   }
 };
 
-
-exports.likeGame = async (req, res) => {
-  try {
-    const userId = req.user?.sub;
-    if (!userId) {
-      return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
-
-    const gameId = Number(req.params.gameId);
-    if (!Number.isInteger(gameId)) {
-      return res.status(400).json({ success: false, error: 'Valid numeric gameId path param required' });
-    }
-
-    const user = await User.findById(userId, 'userGames');
-    if (!user) {
-      return res.status(404).json({ success: false, error: 'User not found' });
-    }
-
-    const game = user.userGames.find(g => g.id === gameId);
-    if (!game) {
-      return res.status(404).json({ success: false, error: 'Game not found in user library' });
-    }
-
-    game.isLiked = !game.isLiked;
-    await user.save();
-
-    return res.status(200).json({ success: true, message: 'Game like status updated', isLiked: game.isLiked });
-  } catch (error) {
-    console.error('Error liking game:', error);
-    return res.status(500).json({ success: false, error: 'Error liking game' });
-  }
-};
 
 exports.editGameInfo = async (req, res) => {
   try {

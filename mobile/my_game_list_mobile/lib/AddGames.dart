@@ -15,7 +15,6 @@ class AddGamesState extends State<AddGames> {
   String _gameId = '';
   String _status = 'To Be Played';
   double _rating = 5.0;
-  bool _isLiked = false;
   String _message = '';
 
   Future<void> _addGame() async {
@@ -42,7 +41,6 @@ class AddGamesState extends State<AddGames> {
           'gameId': int.parse(_gameId), // Ensure gameId is an integer
           'status': _status,
           'rating': _rating,
-          'isLiked': _isLiked,
         }),
       );
 
@@ -166,25 +164,6 @@ class AddGamesState extends State<AddGames> {
                             _rating = value;
                           });
                         },
-                      ),
-                      CheckboxListTile(
-                        title: Text(
-                          'Like this game?',
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                        ),
-                        value: _isLiked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _isLiked = value ?? false;
-                          });
-                        },
-                        activeColor: Colors.deepPurpleAccent, // Matches the web app's checked color
-                        checkColor: Colors.white, // Color of the checkmark
-                        tileColor: Theme.of(context).colorScheme.surfaceVariant, // Background color of the tile
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: Colors.deepPurpleAccent, width: 2), // Border color from your inputs
-                        ),
                       ),
                       ElevatedButton(
                         onPressed: _addGame,
