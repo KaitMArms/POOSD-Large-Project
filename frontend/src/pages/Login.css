@@ -1,3 +1,10 @@
+.login-mascot {
+  width: 60vw;
+  max-width: 460px;
+  height: auto;
+  margin-bottom: 2vh;
+}
+
 .page-container {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -7,13 +14,6 @@
   align-items: center;
   justify-content: flex-start;
   padding-top: 4vh;
-}
-
-img {
-  width: 60vw;
-  max-width: 460px;
-  height: auto;
-  margin-bottom: 2vh;
 }
 
 .login-container {

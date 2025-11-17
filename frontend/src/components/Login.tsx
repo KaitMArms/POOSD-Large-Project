@@ -127,7 +127,7 @@ function Login() {
   return (
     <div id="page-container">
       <div>
-        <img src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller" />
+        <img className="login-mascot" src="/Mascot.png" alt="Controllie - PlayedIt's Mascot, he's a living breathing controller" />
       </div>
       <br />
       <div id="login-container">
