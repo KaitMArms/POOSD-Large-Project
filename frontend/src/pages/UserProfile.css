@@ -238,16 +238,6 @@
   }
 }
 
-.edit-user-container,
-.password-change-container {
-  margin: 4em auto;
-  max-width: 1100px;
-  padding: 2em;
-  background-color: var(--div-color);
-  border-radius: 1.5em;
-  box-shadow: none; 
-}
-
 .edit-user-grid {
   margin-top: 1.5em;
   display: flex;
