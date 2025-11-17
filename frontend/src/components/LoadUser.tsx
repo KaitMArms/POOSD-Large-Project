@@ -27,6 +27,12 @@ function LoadUser() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [fpOpen, setFpOpen] = useState(false);
+  const [fpEmail, setFpEmail] = useState("");
+  const [fpOtp, setFpOtp] = useState("");
+  const [fpMessage, setFpMessage] = useState("");
+  const [fpCooldown, setFpCooldown] = useState(0);
+  const [fpVerifying, setFpVerifying] = useState(false);
 
   const { mode, toggleMode } = useColorMode();
 
@@ -115,6 +121,67 @@ function LoadUser() {
       setPasswordError("An error occurred while updating password.");
     }
   };
+
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function sendForgotEmail() {
+  if (!emailRe.test(fpEmail)) {
+    setFpMessage("Please enter a valid email.");
+    return;
+  }
+
+  try {
+    const res = await fetch("https://playedit.games/api/auth/resend-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: fpEmail })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setFpMessage("Check your email for the 6-digit code.");
+      setFpCooldown(30);
+
+      const t = setInterval(() => {
+        setFpCooldown((c) => {
+          if (c <= 1) { clearInterval(t); return 0; }
+          return c - 1;
+        });
+      }, 1000);
+
+    } else {
+      setFpMessage(data.message || "Unable to send email.");
+    }
+  } catch {
+    setFpMessage("Server error — try again later.");
+  }
+}
+
+async function verifyForgotCode() {
+  if (!fpEmail || fpOtp.trim().length < 6) return;
+
+  setFpVerifying(true);
+  try {
+    const res = await fetch("https://playedit.games/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: fpEmail, code: fpOtp.trim() })
+    });
+
+    const data = await res.json();
+    setFpVerifying(false);
+
+    if (res.ok) {
+      // Successfully verified email → forward them to password reset page
+      window.location.href = "/reset-password";
+    } else {
+      setFpMessage(data.message || "Invalid code.");
+    }
+  } catch {
+    setFpVerifying(false);
+    setFpMessage("Server error — try again.");
+  }
+}
 
   // 🔹 call /api/user/settings to update role
   const updateDevSetting = async (nextIsDev: boolean) => {
@@ -293,6 +360,71 @@ function LoadUser() {
               >
                 Cancel
               </button>
+              <div className="forgot-password-container">
+              <button
+                className="password-forgot-btn"
+                onClick={() => setFpOpen(true)}
+              >
+                Forgot Password?
+              </button>
+              {fpOpen && (
+              <div className="modal-overlay">
+                <div className="modal-card">
+                  <h3>Reset your password</h3>
+
+                  <p>Enter the email linked to your account.</p>
+
+                  {fpMessage && <div className="alert">{fpMessage}</div>}
+
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={fpEmail}
+                    onChange={(e) => setFpEmail(e.target.value)}
+                  />
+
+                  <button
+                    className="buttons"
+                    disabled={fpCooldown > 0}
+                    onClick={sendForgotEmail}
+                  >
+                    {fpCooldown > 0 ? `Resend in ${fpCooldown}s` : "Send code"}
+                  </button>
+
+                  <br /><br />
+
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit code"
+                    value={fpOtp}
+                    onChange={(e) => setFpOtp(e.target.value)}
+                    maxLength={6}
+                    inputMode="numeric"
+                  />
+
+                  <div className="modal-actions">
+                    <button
+                      className="buttons"
+                      onClick={verifyForgotCode}
+                      disabled={fpVerifying || fpOtp.trim().length < 6}
+                    >
+                      {fpVerifying ? "Verifying..." : "Verify"}
+                    </button>
+
+                    <button
+                      className="buttons outline"
+                      onClick={() => {
+                        setFpOpen(false);
+                        setFpMessage("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </div>
             </div>
           </form>
         </div>

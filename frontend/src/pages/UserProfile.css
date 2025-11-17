@@ -503,6 +503,27 @@
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
 }
 
+.forgot-password-container {
+  margin-top: 1em;
+}
+
+.password-forgot-btn {
+  background-color: var(--button-bg);
+  border: none;
+  color: var(--text-color);
+  padding: 0.8em 1.6em;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.4);
+  font-size: 1.1rem;
+}
+
+.password-forgot-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
+}
+
 @media (max-width: 600px) {
   .password-btn-row {
     flex-direction: column;
