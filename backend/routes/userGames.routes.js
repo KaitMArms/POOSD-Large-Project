@@ -8,7 +8,7 @@ router.use(requireAuth);
 
 router.get('/', viewUserGames);
 router.post('/add', addUserGame);
-router.post('/:gameId/like', likeGame);
+router.patch('/:gameId/like', likeGame);
 router.get('/search', searchUserGames);
 // router.get('/:gameId', viewUserGameById);
 router.delete('/:gameId', deleteUserGame);
