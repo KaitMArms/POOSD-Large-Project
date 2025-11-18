@@ -39,6 +39,7 @@ exports.browseGames = async (req, res) => {
 };
 
 exports.browseRecommended = async (req, res) => {
+
   try {
     const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
     const limit = Math.min(limitReq, 50);
@@ -47,54 +48,39 @@ exports.browseRecommended = async (req, res) => {
 
     if (userId) {
       const userDoc = await User.findById(userId).select('userGames').lean().exec();
-      const likedIds = (userDoc?.userGames || []).filter(g => g.isLiked === true).map(g => g.id);
+      const likedIds = (userDoc?.userGames || [])
+        .filter(g => g.isLiked === true)
+        .map(g => g.id);
 
       const userProfileVector = await user_profile.buildUserProfileVector(userId, { UserModel: User, GameModel: Game });
 
       const recs = await recommend.getRecommendations(userProfileVector, likedIds, { GameModel: Game });
-      if (recs.length === 0) {
-        return res.json({ recommendations: [] });
-      }
 
       const recIds = recs.map(r => r.id);
-      const pipeline = [
-        { $match: { id: { $in: recIds } } },
-        {
-          $lookup: {
-            from: 'covers',
-            localField: 'cover',
-            foreignField: 'id',
-            as: 'coverObject'
-          }
-        },
-        {
-          $addFields: {
-            coverUrl: {
-              $let: {
-                vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
-                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$coverDoc.image_id", ".jpg"] }, null] }
-              }
-            }
-          }
-        },
-        { $project: { coverObject: 0} }
-      ];
-
-      const games = await Game.aggregate(pipeline);
+      const games = await Game.find({ id: { $in: recIds } }).lean().exec();
 
       const gamesById = new Map(games.map(g => [g.id, g]));
-      const results = recs
-        .map(r => ({ ...r, game: gamesById.get(r.id) || null }))
-        .filter(r => r.game) 
+      const results = recs.map(r => ({ ...r, game: gamesById.get(r.id) || null }))
         .slice(0, limit);
 
       return res.json({ recommendations: results });
-    } 
-  } catch (err) {
-    console.error('recommendedGames error', err);
-    return res.status(500).json({ message: 'Server error recommended.' });
+
+    }
+    else {
+      const items = await Game.find({}, 'id name rating_count summary first_release_date')
+        .sort({ rating_count: -1, rating: -1, first_release_date: -1 })
+        .limit(limit).lean().exec();
+
+      return res.json({ recommendations: items });
+    }
   }
+  catch (err) {
+    console.error('browseRecommended error: ', err);
+    return res.status(500).json({ message: 'Server error browse.' });
+  }
+
 };
+
 function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
