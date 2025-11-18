@@ -343,6 +343,10 @@ async function verifyForgotCode() {
             />
 
             <div className="password-btn-row">
+              <button className="password-submit-btn" type="submit">
+                Update Password
+              </button>
+
               <button
                 type="button"
                 className="password-cancel-btn"
@@ -350,15 +354,10 @@ async function verifyForgotCode() {
               >
                 Cancel
               </button>
-
-              <button className="password-submit-btn" type="submit">
-                Update Password
-              </button>
-
               <div className="forgot-password-container">
               <br />
               <button
-                className="forgot-password-btn"
+                className="password-forgot-btn"
                 onClick={() => setFpOpen(true)}
               >
                 Forgot Password?
