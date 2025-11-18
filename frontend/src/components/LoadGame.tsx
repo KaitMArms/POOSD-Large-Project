@@ -177,20 +177,16 @@ function LoadGame() {
       return;
     }
 
-    if (!numericId) {
-      setSubmitMessage("Invalid game ID.");
+    if (!id) {
+      setSubmitMessage("No game id.");
       return;
     }
 
-    const gameIdToSend: number = numericId;
-    const endpointUrl = isEditMode
-      ? `${API_BASE}/api/user/games/${gameIdToSend}`
-      : `${API_BASE}/api/user/games/add`;
-    const httpMethod = isEditMode ? "PATCH" : "POST";
+    const pathId = numericId ?? id;
 
     try {
-      const resp = await fetch(endpointUrl, {
-        method: httpMethod,
+      const resp = await fetch(endpoint, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
