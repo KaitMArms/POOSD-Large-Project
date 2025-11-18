@@ -95,9 +95,6 @@ exports.browseRecommended = async (req, res) => {
     return res.status(500).json({ message: 'Server error recommended.' });
   }
 };
-function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 exports.searchGames = async (req, res) => {
   try {
@@ -311,42 +308,28 @@ exports.getGameById = async (req, res) => {
         $addFields: {
           genres: '$genreObjects.name',
           
-          bannerUrl: {
+          coverUrl: {
             $let: {
-              vars: {
-                artDoc: { $arrayElemAt: ['$artworkObjects', 0] }
-              },
+              vars: { doc: { $arrayElemAt: ['$coverObject', 0] } },
               in: {
-                $cond: {
-                  if: '$$artDoc', 
-                  then: {
-                    $concat: [
-                      "https:", 
-                      { $replaceOne: { input: "$$artDoc.url", find: "/t_thumb/", replacement: "/t_1080p/" } }
-                    ]
-                  },
-                  else: null 
-                }
+                $cond: [
+                  '$$doc',
+                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$doc.image_id", ".jpg" ] },
+                  null
+                ]
               }
             }
           },
 
-          coverUrl: {
+          bannerUrl: {
             $let: {
-              vars: {
-                coverDoc: { $arrayElemAt: ['$coverObject', 0] }
-              },
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } }, 
               in: {
-                $cond: {
-                  if: '$$coverDoc',
-                  then: {
-                    $concat: [
-                      "https:",
-                      { $replaceOne: { input: "$$coverDoc.url", find: "/t_thumb/", replacement: "/t_cover_big/" } }
-                    ]
-                  },
-                  else: null
-                }
+                $cond: [
+                  '$$artDoc',
+                  { $concat: [ "https:", "$$artDoc.url" ] },
+                  null 
+                ]
               }
             }
           }
