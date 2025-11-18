@@ -72,7 +72,7 @@ exports.browseRecommended = async (req, res) => {
             coverUrl: {
               $let: {
                 vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
-                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg"] }, null] }
+                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$coverDoc.image_id", ".jpg"] }, null] }
               }
             }
           }
@@ -188,7 +188,7 @@ exports.searchGames = async (req, res) => {
               { $gt: [{ $size: "$coverObject" }, 0] },
               {
                 $concat: [
-                  "https://images.igdb.com/igdb/image/upload/t_cover_small/",
+                  "https://images.igdb.com/igdb/image/upload/t_cover_big/",
                   { $arrayElemAt: ["$coverObject.image_id", 0] },
                   ".jpg"
                 ]

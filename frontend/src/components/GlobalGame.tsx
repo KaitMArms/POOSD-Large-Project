@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
+import { CSSProperties } from 'react';
 
 const gameTypeOptions = [
   { value: '0', label: 'Main Game' },
@@ -32,6 +33,7 @@ const BASE_URL =
     : "https://playedit.games";
 
 function LoadGlobalGame() {
+  const [itemSize, setItemSize] = useState(110);
   const [selectedGameTypes, setSelectedGameTypes] = useState(defaultGameTypeFilters);
   const [recommendedGames, setRecommendedGames] = useState<any[]>([]);
   const [searchedGames, setSearchedGames] = useState<any[]>([]);
@@ -152,28 +154,79 @@ function LoadGlobalGame() {
     }
   };
 
+  const gridStyles: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(auto-fill, minmax(${itemSize}px, 1fr))`,
+    gap: '1rem',
+  };
+
+  const userGameRowStyles: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 0,
+    width: '100%',
+  };
+
+  const gameLinkStyles: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    textDecoration: 'none',
+    color: '#fff',
+    width: '100%',
+    alignItems: 'center',
+  };
+  const imageStyle: CSSProperties = {
+    width: '100%',
+    maxWidth: `${itemSize}px`,
+    height: 'auto',
+    aspectRatio: '3 / 4',
+    objectFit: 'cover',
+  };
+
+  const dynamicFontSize = Math.max(10, itemSize * 0.08);
+  const textStyle: CSSProperties = {
+    fontSize: `${dynamicFontSize}px`,
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
   return (
     <div className="game-container">
       <h1 className="page-title">Global Games</h1>
+
+      <div style={{ margin: '1rem 0', padding: '1rem', background: '#2a2a2a', borderRadius: '8px' }}>
+        <label htmlFor="item-size-slider" style={{ marginRight: '1rem' }}>
+          Adjust Item Size: {itemSize}px
+        </label>
+        <input
+          type="range"
+          id="item-size-slider"
+          min="80"
+          max="250"
+          value={itemSize}
+          onChange={(e) => setItemSize(parseInt(e.target.value, 10))}
+          style={{ width: '300px' }}
+        />
+      </div>
+
       <div className="components-container">
         <div className="recommend-games-container">
           <h2 className="section-title">Recommended Games</h2>
-          {}
-          <div className="columns-wrapper">
+          { }
+          <div className="columns-wrapper" style={gridStyles}>
             {recommendedGames.length > 0 ? (
               recommendedGames.map((game) => (
-                <div key={game._id} className="user-game-row">
-                  <Link to={`/game/${game.id}`} className="game-link">
+                <div key={game._id} className="user-game-row" style={userGameRowStyles}>
+                  <Link to={`/game/${game.id}`} className="game-link" style={gameLinkStyles}>
                     <img
                       src={game.coverUrl || "/default-game.png"}
                       alt={game.name}
                       className="search-result-thumbnail"
+                      style={imageStyle}
                     />
                     <div className="game-title-container">
-                      {game.name}
+                      <span style={textStyle}>{game.name}</span>
                     </div>
                   </Link>
                 </div>
@@ -205,7 +258,7 @@ function LoadGlobalGame() {
             <div className="search-filters-dropdown">
               <label>Filter by Game Type:</label>
               <Select
-                isMulti // This enables multi-select
+                isMulti
                 options={gameTypeOptions}
                 className="react-select-container"
                 classNamePrefix="react-select"
@@ -227,18 +280,19 @@ function LoadGlobalGame() {
             </div>
           </div>
 
-          <div className="columns-wrapper">
+          <div className="columns-wrapper" style={gridStyles}>
             {searchedGames.length > 0 ? (
               searchedGames.map((game) => (
-                <div key={game._id} className="user-game-row">
-                  <Link to={`/game/${game.id}`} className="game-link">
+                <div key={game._id} className="user-game-row" style={userGameRowStyles}>
+                  <Link to={`/game/${game.id}`} className="game-link" style={gameLinkStyles}>
                     <img
                       src={game.coverUrl || "/default-game.png"}
                       alt={game.name}
                       className="search-result-thumbnail"
+                      style={imageStyle}
                     />
                     <div className="game-title-container">
-                      {game.name}
+                      <span style={textStyle}>{game.name}</span>
                     </div>
                   </Link>
                 </div>

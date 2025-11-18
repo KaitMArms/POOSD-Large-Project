@@ -216,8 +216,9 @@ function LoadGame() {
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
           <div className="added-info">
-            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
             <h2 className="added-title">{game.name}</h2>
+            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
+
             <p><strong>Release Date:</strong> {releaseDate}</p>
 
             <div className="added-field">
