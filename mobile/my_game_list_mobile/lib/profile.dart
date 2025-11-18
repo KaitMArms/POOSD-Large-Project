@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_game_list_mobile/AddGames.dart';
 import 'package:my_game_list_mobile/listCreator.dart';
+import 'package:my_game_list_mobile/secretDoor.dart';
 import 'package:my_game_list_mobile/user_details.dart';
 import 'package:my_game_list_mobile/log_out.dart';
 import 'package:my_game_list_mobile/notifications.dart';
@@ -193,7 +194,12 @@ class _ProfileState extends State<Profile> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {}, 
+            onPressed: () {
+              Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => Secretdoor())
+              );
+            }, 
             icon: Icon(MdiIcons.accountSettings),
           )
         ],
@@ -229,6 +235,16 @@ class _ProfileState extends State<Profile> {
               Text(
                 userProfile?.email ?? '',
                 style: TextStyle(color: Colors.grey),
+              ),
+
+              SizedBox(height: 5),
+
+              Text(
+                userProfile?.bio ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               
               const SizedBox(height: 25),

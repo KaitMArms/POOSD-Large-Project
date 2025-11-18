@@ -136,7 +136,7 @@ class AddGamesState extends State<AddGames> {
                       SizedBox(height: MediaQuery.heightOf(context) * 0.02),
 
                       DropdownButtonFormField<String>(
-                        value: _status,
+                        initialValue: _status,
                         decoration: const InputDecoration(labelText: 'Status'),
                         items: <String>[
                           'Completed',

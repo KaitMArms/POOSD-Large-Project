@@ -57,7 +57,7 @@ class AllGamesState extends State<AllGames> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://playedit.games/api/globalgames/browse'),
+        Uri.parse('https://playedit.games/api/globalgames/browse/recommended'),
         headers: <String, String>{
           'Authorization': 'Bearer $token',
         },
