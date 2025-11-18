@@ -114,18 +114,18 @@ function LoadGame() {
     const gameIdToSend: number | string = numericId ?? id;
 
     try {
-      const resp = await fetch(`${API_BASE}/api/globalgames/add`, { // Corrected endpoint
+      const resp = await fetch(`${API_BASE}/api/user/games/add`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: gameIdToSend, // Use 'id' for globalgames/add
+          gameId: gameIdToSend,
           name: game?.name,
           status,
           rating,
-          isLiked: false, // Default to false when adding
+          isLiked: !!game?.isLiked,
         }),
       });
 
@@ -140,6 +140,58 @@ function LoadGame() {
         } else {
           const text = await resp.text().catch(() => "");
           setSubmitMessage(text || `Could not add game (status ${resp.status}).`);
+        }
+      }
+    } catch (err) {
+      setSubmitMessage("Network error.");
+    }
+  };
+
+  const likeGame = async (): Promise<void> => {
+    setSubmitMessage("");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitMessage("You must be logged in.");
+      return;
+    }
+    if (!id) {
+      setSubmitMessage("No game id.");
+      return;
+    }
+
+    const pathId = numericId ?? id;
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        setGame((prev) => {
+          if (!prev) return prev;
+          return { ...prev, isLiked: !prev.isLiked };
+        });
+
+        try {
+          const updated = await resp.json().catch(() => null);
+          if (updated && typeof updated.isLiked === "boolean") {
+            setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
+          }
+        } catch (e) {
+          console.warn("Failed to parse like response JSON:", e);
+        }
+      } else {
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
         }
       }
     } catch (err) {
@@ -185,7 +237,7 @@ function LoadGame() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>Add Game to List</h3>
+            <h3>User's Game Settings</h3>
 
             <label className="modal-label">Status</label>
             <select className="added-select" value={status} onChange={(e) => setStatus(e.target.value)}>
@@ -193,7 +245,7 @@ function LoadGame() {
               <option value="in-progress">In Progress</option>
               <option value="on-hold">Paused</option>
               <option value="dropped">Dropped</option>
-              <option value="to-play">To Be Played</option>
+              <option value="to-played">To Be Played</option>
             </select>
 
             <label className="modal-label">Rating: {rating.toFixed(1)}</label>
@@ -207,7 +259,15 @@ function LoadGame() {
               className="modal-slider"
             />
 
-            {/* Removed like checkbox as it's handled in edit mode */}
+            <div className="modal-checkbox">
+              <input
+                type="checkbox"
+                id="like-checkbox"
+                checked={!!game.isLiked}
+                onChange={likeGame}
+              />
+              <label htmlFor="like-checkbox">Like this game?</label>
+            </div>
 
             <button type="button" className="modal-submit" onClick={addToUserGames}>
               Submit
