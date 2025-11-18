@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const mongoose = require('mongoose');
 
-const {connectionsReady, PlatformModel, GenreModel, FranchiseModel, AgeRatingModel, CoverModel, GameModeModel, KeywordModel, LanguageModel, ThemeModel, GameTypeModel, PerspectiveModel, CollectionsModel, GameEngineModel, ICompaniesModel} = require('../db');
+const {connectionsReady, ArtWorkModel, PlatformModel, GenreModel, FranchiseModel, AgeRatingModel, CoverModel, GameModeModel, KeywordModel, LanguageModel, ThemeModel, GameTypeModel, PerspectiveModel, CollectionsModel, GameEngineModel, ICompaniesModel, ArtWorkModel} = require('../db');
 
 // Authenticates with twitch 
 async function getAccessToken() {
@@ -104,20 +104,21 @@ async function run() {
     
     const accessToken = await getAccessToken();
     
-    await seedData('platforms', PlatformModel, accessToken);
-    await seedData('genres', GenreModel, accessToken);
-    await seedData('franchises', FranchiseModel, accessToken);
+    //await seedData('platforms', PlatformModel, accessToken);
+    //await seedData('genres', GenreModel, accessToken);
+    //await seedData('franchises', FranchiseModel, accessToken);
     // await seedData('age_ratings', AgeRatingModel, accessToken);
-    await seedData('covers', CoverModel, accessToken); 
-    await seedData('game_modes', GameModeModel, accessToken);
-    await seedData('keywords', KeywordModel, accessToken);
-    await seedData('languages', LanguageModel, accessToken);
-    await seedData('themes', ThemeModel, accessToken);
-    await seedData('game_types', GameTypeModel, accessToken);
-    await seedData('player_perspectives', PerspectiveModel, accessToken);
-    await seedData('involved_companies', ICompaniesModel, accessToken);
-    await seedData('collections', CollectionsModel, accessToken);
-    await seedData('game_engines', GameEngineModel, accessToken);
+    // await seedData('covers', CoverModel, accessToken); 
+    // await seedData('game_modes', GameModeModel, accessToken);
+    // await seedData('keywords', KeywordModel, accessToken);
+    // await seedData('languages', LanguageModel, accessToken);
+    // await seedData('themes', ThemeModel, accessToken);
+    // await seedData('game_types', GameTypeModel, accessToken);
+    // await seedData('player_perspectives', PerspectiveModel, accessToken);
+    // await seedData('involved_companies', ICompaniesModel, accessToken);
+    // await seedData('collections', CollectionsModel, accessToken);
+    // await seedData('game_engines', GameEngineModel, accessToken);
+    await seedData('artworks', ArtWorkModel, accessToken);
 
 
     await mongoose.connection.close();
