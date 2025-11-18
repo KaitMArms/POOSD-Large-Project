@@ -33,12 +33,14 @@ function formatUnixDate(unixSeconds: number | null | undefined): string {
 function LoadGame() {
   const { id } = useParams<{ id?: string }>();
 
+  const ref = document.referrer || "";
+  const isEditMode = ref.includes("/my-games");
+
   const [game, setGame] = useState<GlobalGame | null>(null);
   const [isEditMode, setIsEditMode] = useState<boolean | null>(null);
 
   const [rating, setRating] = useState<number>(5);
   const [status, setStatus] = useState<string>("to-play");
-  const [localLiked, setLocalLiked] = useState<boolean>(false);
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
@@ -135,28 +137,41 @@ function LoadGame() {
 
   const likeGame = async (): Promise<void> => {
     setSubmitMessage("");
+
     const token = localStorage.getItem("token");
     if (!token) {
       setSubmitMessage("You must be logged in.");
       return;
     }
+
     if (!id) {
       setSubmitMessage("No game id.");
       return;
     }
 
-    const pathId = numericId ?? id;
+    const gameIdToSend = numericId ?? id;
+
+    const endpoint = isEditMode
+      ? `${API_BASE}/api/user/games/${gameIdToSend}`
+      : `${API_BASE}/api/user/games/add`;
+
+    const method = isEditMode ? "PATCH" : "POST";
 
     try {
-      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
-        method: "POST",
+      const resp = await fetch(endpoint, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          gameId: gameIdToSend,
+          name: game?.name,
+          status,
+          rating,
+          isLiked: !!game?.isLiked,
+        }),
       });
-
-      setLocalLiked((prev) => !prev);
 
       if (resp.ok) {
         const updated = await resp.json().catch(() => null);
@@ -167,9 +182,8 @@ function LoadGame() {
           );
         }
       } else {
-        setLocalLiked((prev) => !prev);
         const text = await resp.text().catch(() => "");
-        setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
+        setSubmitMessage(text || "Error saving game.");
       }
     } catch {
       setLocalLiked((prev) => !prev);
@@ -177,14 +191,8 @@ function LoadGame() {
     }
   };
 
-  const submitUserGame = async (): Promise<void> => {
+  const likeGame = async () => {
     setSubmitMessage("");
-
-    if (isEditMode === null) {
-      setSubmitMessage("Still determining mode, please wait...");
-      return;
-    }
-
     const token = localStorage.getItem("token");
     if (!token) {
       setSubmitMessage("You must be logged in.");
@@ -202,19 +210,12 @@ function LoadGame() {
     const method = isEditMode ? "PATCH" : "POST";
 
     try {
-      const resp = await fetch(endpoint, {
-        method,
+      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          gameId: gameIdToSend,
-          name: game?.name,
-          status,
-          rating,
-          isLiked: !!localLiked,
-        }),
       });
 
       if (resp.ok) {
@@ -291,10 +292,10 @@ function LoadGame() {
               onChange={(e) => setStatus(e.target.value)}
             >
               <option value="completed">Completed</option>
-              <option value="in-progress">In Progress</option>
-              <option value="on-hold">Paused</option>
+              <option value="in-progress">In In Progress</option>
+              <option value="on-hold">On Hold</option>
               <option value="dropped">Dropped</option>
-              <option value="to-play">To Be Played</option>
+              <option value="to-play">To Play</option>
             </select>
 
             <label className="modal-label">Rating: {rating.toFixed(1)}</label>
@@ -312,7 +313,7 @@ function LoadGame() {
               <input
                 type="checkbox"
                 id="like-checkbox"
-                checked={!!localLiked}
+                checked={!!game.isLiked}
                 onChange={likeGame}
               />
               <label htmlFor="like-checkbox">Like this game?</label>
