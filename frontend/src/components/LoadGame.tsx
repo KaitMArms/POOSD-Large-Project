@@ -49,39 +49,53 @@ function LoadGame() {
     return Number.isFinite(n) ? n : null;
   })();
 
-  // Detect if game already exists in user's list
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
 
-    const checkUserGame = async () => {
+    const fetchGameData = async () => {
       const token = localStorage.getItem("token");
-      if (!token) {
-        setIsEditMode(false);
-        return;
-      }
-
       const pathId = numericId ?? id;
+
       try {
-        const resp = await fetch(`${API_BASE}/api/user/games/${pathId}`, {
+        // First, fetch the global game info.
+        const gameResp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
 
+        if (!gameResp.ok) return;
+        const gameData = (await gameResp.json()) as GlobalGame;
         if (cancelled) return;
 
-        if (resp.ok) {
-          const data = await resp.json().catch(() => null);
+        setGame(gameData);
+        setLocalLiked(!!gameData.isLiked);
 
-          setIsEditMode(true);
-          if (data?.rating) setRating(data.rating);
-          if (data?.status) setStatus(data.status);
+        // If logged in, check if the user has this game in their list.
+        if (token) {
+          const userGameResp = await fetch(`${API_BASE}/api/user/games/${pathId}`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-          if (typeof data?.isLiked === "boolean") {
-            setLocalLiked(data.isLiked);
-            setGame((prev) => (prev ? { ...prev, isLiked: data.isLiked } : prev));
+          if (cancelled) return;
+
+          if (userGameResp.ok) {
+            const data = await userGameResp.json().catch(() => null);
+            setIsEditMode(true);
+            if (data?.rating) setRating(data.rating);
+            if (data?.status) setStatus(data.status);
+            if (typeof data?.isLiked === "boolean") {
+              setLocalLiked(data.isLiked);
+              setGame((prev) => (prev ? { ...prev, isLiked: data.isLiked } : prev));
+            }
+          } else {
+            setIsEditMode(false);
           }
         } else {
           setIsEditMode(false);
@@ -91,43 +105,7 @@ function LoadGame() {
       }
     };
 
-    checkUserGame();
-    return () => {
-      cancelled = true;
-    };
-  }, [id, numericId]);
-
-  // Load global game info
-  useEffect(() => {
-    if (!id) return;
-    let cancelled = false;
-
-    const fetchGame = async () => {
-      const token = localStorage.getItem("token");
-      const pathId = numericId ?? id;
-
-      try {
-        const resp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!resp.ok) return;
-
-        const data = (await resp.json()) as GlobalGame;
-        if (!cancelled) {
-          setGame(data);
-          setLocalLiked(!!data.isLiked);
-        }
-      } catch {
-        /* no-op */
-      }
-    };
-
-    fetchGame();
+    fetchGameData();
     return () => {
       cancelled = true;
     };
@@ -147,6 +125,9 @@ function LoadGame() {
 
     const pathId = numericId ?? id;
 
+    // Optimistically update UI
+    setLocalLiked((prev: boolean) => !prev);
+
     try {
       const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
         method: "POST",
@@ -156,23 +137,24 @@ function LoadGame() {
         },
       });
 
-      setLocalLiked((prev) => !prev);
-
       if (resp.ok) {
         const updated = await resp.json().catch(() => null);
         if (updated && typeof updated.isLiked === "boolean") {
+          // Sync with server state
           setLocalLiked(updated.isLiked);
           setGame((prev) =>
             prev ? { ...prev, isLiked: updated.isLiked } : prev
           );
         }
       } else {
-        setLocalLiked((prev) => !prev);
+        // Revert on failure
+        setLocalLiked((prev: boolean) => !prev);
         const text = await resp.text().catch(() => "");
         setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
       }
     } catch {
-      setLocalLiked((prev) => !prev);
+      // Revert on network error
+      setLocalLiked((prev: boolean) => !prev);
       setSubmitMessage("Network error.");
     }
   };
