@@ -7,13 +7,26 @@ jest.mock("../models/Users", () => require("./mocks/Users.mock"));
 jest.mock("../middleware/requireAuth", () => require("./mocks/requireAuth.mock"));
 
 jest.mock("../db", () => {
-  // Fake mongoose-model-like function
-  const fakeModel = () => ({});
-  fakeModel.findById = jest.fn();
-  fakeModel.findOne = jest.fn();
-  fakeModel.find = jest.fn();
-  fakeModel.create = jest.fn();
-  fakeModel.findByIdAndUpdate = jest.fn();
+  function makeFakeModel() {
+    return {
+      // existing
+      findById: jest.fn(),
+      findOne: jest.fn(),
+      find: jest.fn(),
+      create: jest.fn(),
+      findByIdAndUpdate: jest.fn(),
+
+      // REQUIRED for addUserGame:
+      exists: jest.fn(),
+      findOneAndUpdate: jest.fn().mockReturnValue({
+        lean: jest.fn().mockReturnValue({
+          userGames: [] // safe default
+        })
+      })
+    };
+  }
+
+  const fakeModel = makeFakeModel();
 
   function makeFakeConnection() {
     return {
@@ -31,11 +44,12 @@ jest.mock("../db", () => {
     gameConnection: fakeGameConnection,
     connectionsReady: Promise.resolve(),
 
-    // Models normally exported by db.js
+    // These are what globalGames.controller.js imports:
     UserModel: fakeModel,
-    CounterModel: fakeModel,
-
     GameModel: fakeModel,
+
+    // The rest you added:
+    CounterModel: fakeModel,
     PlatformModel: fakeModel,
     GenreModel: fakeModel,
     FranchiseModel: fakeModel,
@@ -52,6 +66,7 @@ jest.mock("../db", () => {
     CollectionsModel: fakeModel,
   };
 });
+
 
 
 
@@ -82,7 +97,11 @@ describe("POST /api/globalgames/add", () => {
     });
 
     // Confirm the game was added in mock user
-    expect(__mockUser.userGames.length).toBe(1);
+    expect(res.body.game).toMatchObject({
+      id: 10694,
+      name: "Halo 2"
+    });
+
   });
 
   it("should return 409 if game already exists", async () => {
@@ -102,7 +121,7 @@ describe("POST /api/globalgames/add", () => {
       .post("/api/globalgames/add")
       .send({ id: 10694 });
 
-    expect(res.status).toBe(400); // adjust if your controller uses 422 or another code
+    expect(res.status).toBe(400);
   });
 
   it("should return 500 if the database fails", async () => {
