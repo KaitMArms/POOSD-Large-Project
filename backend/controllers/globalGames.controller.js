@@ -323,16 +323,27 @@ exports.getGameById = async (req, res) => {
 
           bannerUrl: {
             $let: {
-              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } }, 
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
               in: {
-                $cond: [
-                  '$$artDoc',
-                  { $concat: [ "https:", "$$artDoc.url" ] },
-                  null 
-                ]
+                $cond: {
+                  if: '$$artDoc', 
+                  then: {
+                    $concat: [
+                      "https:",
+                      {
+                        $replaceOne: {
+                          input: "$$artDoc.url", 
+                          find: "t_thumb",      
+                          replacement: "t_1080p" 
+                        }
+                      }
+                    ]
+                  },
+                  else: null 
+                }
               }
             }
-          }
+          },
         }
       },
 
