@@ -469,16 +469,15 @@
 }
 
 .password-submit-btn {
-  background-color: var(--button-bg);
-  border: none;
-  color: var(--text-color);
-  padding: 0.8em 1.6em;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(162, 89, 255, 0.4);
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid #A259FF;
+  padding: 0.6em 1.2em;         
+  border-radius: 1em;
+  font-size: 1.05rem;
   cursor: pointer;
-  transition: 0.3s ease;
-  font-size: 1.1rem;
-  font-weight: 600;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .password-submit-btn:hover {

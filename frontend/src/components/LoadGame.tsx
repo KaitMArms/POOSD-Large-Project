@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 const API_BASE =
   window.location.hostname === "localhost"
@@ -32,6 +32,9 @@ type GlobalGame = {
 
 function LoadGame() {
   const { id } = useParams<{ id?: string }>();
+  const location = useLocation();
+  const isEditMode = location.pathname.startsWith("/user/game");
+
   const [game, setGame] = useState<GlobalGame | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +102,46 @@ function LoadGame() {
     };
   }, [id, numericId]);
 
+  useEffect(() => {
+    if (!isEditMode) return;
+    if (!id) return;
+
+    let cancelled = false;
+
+    const fetchUserGame = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const pathId = numericId ?? id;
+      try {
+        const resp = await fetch(`${API_BASE}/api/user/games/${pathId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!resp.ok) return;
+
+        const ud = await resp.json().catch(() => null);
+        if (ud && !cancelled) {
+          if (typeof ud.rating === "number") setRating(ud.rating);
+          if (typeof ud.status === "string") setStatus(ud.status);
+          if (typeof ud.isLiked === "boolean") {
+            setGame((prev) => (prev ? { ...prev, isLiked: ud.isLiked } : prev));
+          }
+        }
+      } catch (err) {
+      }
+    };
+
+    fetchUserGame();
+    return () => {
+      cancelled = true;
+    };
+  }, [isEditMode, id, numericId]);
+
   const addToUserGames = async (): Promise<void> => {
     setSubmitMessage("");
     const token = localStorage.getItem("token");
@@ -113,9 +156,15 @@ function LoadGame() {
 
     const gameIdToSend: number | string = numericId ?? id;
 
+    const endpoint = isEditMode
+      ? `${API_BASE}/api/user/games/${gameIdToSend}` // PATCH to existing
+      : `${API_BASE}/api/user/games/add`; // POST to add new
+
+    const method = isEditMode ? "PATCH" : "POST";
+
     try {
-      const resp = await fetch(`${API_BASE}/api/user/games/add`, {
-        method: "POST",
+      const resp = await fetch(endpoint, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -130,16 +179,16 @@ function LoadGame() {
       });
 
       if (resp.ok) {
-        setSubmitMessage("Game added to your list!");
+        setSubmitMessage(isEditMode ? "Game updated!" : "Game added to your list!");
         setShowModal(false);
       } else {
         const contentType = resp.headers.get("content-type") || "";
         if (contentType.includes("application/json")) {
           const json = await resp.json().catch(() => ({}));
-          setSubmitMessage(json?.message || `Could not add game (status ${resp.status}).`);
+          setSubmitMessage(json?.message || `Could not ${isEditMode ? "update" : "add"} game (status ${resp.status}).`);
         } else {
           const text = await resp.text().catch(() => "");
-          setSubmitMessage(text || `Could not add game (status ${resp.status}).`);
+          setSubmitMessage(text || `Could not ${isEditMode ? "update" : "add"} game (status ${resp.status}).`);
         }
       }
     } catch (err) {
@@ -227,8 +276,12 @@ function LoadGame() {
 
             <div className="added-description">{game.summary || "No description available."}</div>
 
-            <button type="button" className="add-button" onClick={() => setShowModal(true)}>
-              Add to My Games
+            <button
+              type="button"
+              className="add-button"
+              onClick={() => setShowModal(true)}
+            >
+              {isEditMode ? "Edit My Game" : "Add to My Games"}
             </button>
           </div>
         </div>
@@ -237,7 +290,7 @@ function LoadGame() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>User's Game Settings</h3>
+            <h3>{isEditMode ? "Edit Game Settings" : "User's Game Settings"}</h3>
 
             <label className="modal-label">Status</label>
             <select className="added-select" value={status} onChange={(e) => setStatus(e.target.value)}>
@@ -245,7 +298,7 @@ function LoadGame() {
               <option value="in-progress">In Progress</option>
               <option value="on-hold">Paused</option>
               <option value="dropped">Dropped</option>
-              <option value="to-played">To Be Played</option>
+              <option value="to-play">To Be Played</option>
             </select>
 
             <label className="modal-label">Rating: {rating.toFixed(1)}</label>
@@ -270,7 +323,7 @@ function LoadGame() {
             </div>
 
             <button type="button" className="modal-submit" onClick={addToUserGames}>
-              Submit
+              {isEditMode ? "Save Changes" : "Submit"}
             </button>
 
             <p className="submit-message" role="status" aria-live="polite">{submitMessage}</p>
