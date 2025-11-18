@@ -26,6 +26,7 @@ type GlobalGame = {
   name?: string;
   summary?: string;
   coverUrl?: string | null;
+  bannerUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
   isLiked?: boolean;
@@ -149,57 +150,57 @@ function LoadGame() {
     }
   };
 
-  const likeGame = async (): Promise<void> => {
-    setSubmitMessage("");
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setSubmitMessage("You must be logged in.");
-      return;
-    }
-    if (!id) {
-      setSubmitMessage("No game id.");
-      return;
-    }
+  // const likeGame = async (): Promise<void> => {
+  //   setSubmitMessage("");
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     setSubmitMessage("You must be logged in.");
+  //     return;
+  //   }
+  //   if (!id) {
+  //     setSubmitMessage("No game id.");
+  //     return;
+  //   }
 
-    const pathId = numericId ?? id;
+  //   const pathId = numericId ?? id;
 
-    try {
-      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+  //   try {
+  //     const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      if (resp.ok) {
-        setGame((prev) => {
-          if (!prev) return prev;
-          return { ...prev, isLiked: !prev.isLiked };
-        });
+  //     if (resp.ok) {
+  //       setGame((prev) => {
+  //         if (!prev) return prev;
+  //         return { ...prev, isLiked: !prev.isLiked };
+  //       });
 
-        try {
-          const updated = await resp.json().catch(() => null);
-          if (updated && typeof updated.isLiked === "boolean") {
-            setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
-          }
-        } catch (e) {
-          console.warn("Failed to parse like response JSON:", e);
-        }
-      } else {
-        const contentType = resp.headers.get("content-type") || "";
-        if (contentType.includes("application/json")) {
-          const json = await resp.json().catch(() => ({}));
-          setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
-        } else {
-          const text = await resp.text().catch(() => "");
-          setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
-        }
-      }
-    } catch (err) {
-      setSubmitMessage("Network error.");
-    }
-  };
+  //       try {
+  //         const updated = await resp.json().catch(() => null);
+  //         if (updated && typeof updated.isLiked === "boolean") {
+  //           setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
+  //         }
+  //       } catch (e) {
+  //         console.warn("Failed to parse like response JSON:", e);
+  //       }
+  //     } else {
+  //       const contentType = resp.headers.get("content-type") || "";
+  //       if (contentType.includes("application/json")) {
+  //         const json = await resp.json().catch(() => ({}));
+  //         setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
+  //       } else {
+  //         const text = await resp.text().catch(() => "");
+  //         setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     setSubmitMessage("Network error.");
+  //   }
+  // };
 
   if (loading) return <div>Loading game...</div>;
   if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
