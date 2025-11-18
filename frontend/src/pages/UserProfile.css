@@ -12,15 +12,17 @@
 }
 
 .pfp-container {
-  flex: 0 0 250px;
+  flex: 0 0 30%;
+  max-width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .pfp-container img {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid var(--button-bg);
@@ -138,7 +140,8 @@
   font-size: 1.1rem;
 }
 
-.edit-profile-container {
+.edit-profile-container,
+.password-change-container {
   margin-top: 1.5em;
 }
 
@@ -199,7 +202,8 @@
   text-shadow: 0 0 6px rgba(162, 89, 255, 0.5);
 }
 
-.edit-profile-btn {
+.edit-profile-btn,
+.password-change-btn {
   background-color: var(--button-bg);
   border: none;
   color: var(--text-color);
@@ -211,7 +215,8 @@
   font-size: 1.1rem;
 }
 
-.edit-profile-btn:hover {
+.edit-profile-btn:hover,
+.password-change-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
 }
@@ -232,13 +237,14 @@
     max-width: 90%;
   }
 }
+
 .edit-user-container {
   margin: 4em auto;
   max-width: 1100px;
   padding: 2em;
   background-color: var(--div-color);
   border-radius: 1.5em;
-  box-shadow: 0 0 20px rgba(162, 89, 255, 0.3);
+  box-shadow: none; 
 }
 
 .edit-user-grid {
@@ -257,8 +263,10 @@
 }
 
 .edit-user-avatar-wrapper {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 4px solid var(--button-bg);
   box-shadow: 0 0 15px rgba(162, 89, 255, 0.6);
@@ -356,6 +364,7 @@
     width: 100%;
   }
 }
+
 .edit-user-fields select {
   width: 100%;
   padding: 0.7em 1em;
@@ -378,4 +387,193 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.password-form-container {
+  margin-top: 2em;
+  padding: 2em;
+  background-color: var(--div-color);
+  border-radius: 1.5em;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: none !important; 
+}
+
+.password-title {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #b26cff;
+  text-shadow: 0 0 10px rgba(162, 89, 255, 0.8);
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.password-error {
+  background-color: rgba(255, 0, 0, 0.15);
+  color: #ff6a6a;
+  padding: 0.9em 1.2em;
+  border-radius: 1em;
+  border-left: 4px solid #ff6a6a;
+  margin-bottom: 1em;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(255, 80, 80, 0.3);
+}
+
+.password-success {
+  background-color: rgba(0, 255, 0, 0.15);
+  color: #6aff83;
+  padding: 0.9em 1.2em;
+  border-radius: 1em;
+  border-left: 4px solid #6aff83;
+  margin-bottom: 1em;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(80, 255, 120, 0.3);
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+
+.password-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #b26cff;
+  text-shadow: 0 0 8px rgba(162, 89, 255, 0.6);
+}
+
+.password-input {
+  width: 100%;
+  padding: 0.8em 1em;
+  border-radius: 10px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.password-input:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.7);
+}
+
+.password-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.password-submit-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid #A259FF;
+  padding: 0.6em 1.2em;         
+  border-radius: 1em;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.password-submit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(162, 89, 255, 0.7);
+}
+
+.password-cancel-btn {
+  background-color: rgba(0, 0, 0, 0.25);
+  border: none;
+  color: var(--text-color);
+  padding: 0.8em 1.4em;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(162, 89, 255, 0.3);
+  transition: 0.3s ease;
+}
+
+.password-cancel-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
+}
+
+.forgot-password-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.forgot-password-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid #A259FF;
+  padding: 0.6em 1.2em;         
+  border-radius: 1em;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(162, 89, 255, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.forgot-password-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(162, 89, 255, 0.8);
+}
+
+.modal-btn {
+    width: 100%;
+    background: var(--button-bg);
+    color: var(--button-text);
+    padding: 0.9em 1.4em;
+    border-radius: 1em;
+    border: 2px solid #A259FF;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 0 18px rgba(162, 89, 255, 0.6);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.modal-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(162, 89, 255, 0.9);
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 1em;
+    border: 2px solid #A259FF;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    text-align: center;
+    margin-top: 15px;
+    outline: none;
+    box-shadow: 0 0 12px rgba(162, 89, 255, 0.35);
+}
+
+@media (max-width: 600px) {
+  .password-btn-row {
+    flex-direction: column;
+    gap: 0.8em;
+  }
+
+  .password-submit-btn,
+  .password-cancel-btn {
+    width: 100%;
+  }
+}
 
