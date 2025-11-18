@@ -21,17 +21,21 @@ function LoadUser() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDevUser, setIsDevUser] = useState(false);
+
+  // password change state
   const [passwordChange, setPasswordChange] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
-  const [fpOpen, setFpOpen] = useState(false);
-  const [fpOtp, setFpOtp] = useState("");
-  const [fpMessage, setFpMessage] = useState("");
-  const [fpCooldown, setFpCooldown] = useState(0);
-  const [fpVerifying, setFpVerifying] = useState(false);
+
+  // delete account state
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { mode, toggleMode } = useColorMode();
 
@@ -100,7 +104,7 @@ function LoadUser() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          oldPassword: oldPassword,
+          currentPassword: oldPassword,
           newPassword: newPassword,
         }),
       });
@@ -121,61 +125,63 @@ function LoadUser() {
     }
   };
 
-async function sendForgotEmail() {
-  try {
-    const res = await fetch("https://playedit.games/api/auth/resend-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({userEmail})
-    });
+  const handleDeleteAccount = async (e: any) => {
+    e.preventDefault();
+    setDeleteError("");
+    setDeleteSuccess("");
 
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) {
-      setFpMessage("Check your email for the 6-digit code.");
-      setFpCooldown(30);
-
-      const t = setInterval(() => {
-        setFpCooldown((c) => {
-          if (c <= 1) { clearInterval(t); return 0; }
-          return c - 1;
-        });
-      }, 1000);
-    } else {
-      setFpMessage(data.message || "Unable to send email.");
+    if (!deletePassword) {
+      setDeleteError("Please enter your current password.");
+      return;
     }
-  } catch {
-    setFpMessage("Server error — try again later.");
-  }
-}
 
-async function verifyForgotCode() {
-  if (!userEmail || fpOtp.trim().length < 6) return;
-
-  setFpVerifying(true);
-  try {
-    const res = await fetch("https://playedit.games/api/auth/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({userEmail, code: fpOtp.trim() })
-    });
-
-    const data = await res.json().catch(() => ({}));
-    setFpVerifying(false);
-
-    if (res.ok) {
-      setOldPassword(fpOtp.trim());
-      setFpOpen(false);
-      setFpMessage("");
-      setFpOtp("");
-      setPasswordChange(true);
-    } else {
-      setFpMessage(data.message || "Invalid code.");
+    if (
+      !window.confirm(
+        "Are you sure you want to permanently delete your account? This cannot be undone."
+      )
+    ) {
+      return;
     }
-  } catch {
-    setFpVerifying(false);
-    setFpMessage("Server error — try again.");
-  }
-}
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setDeleteError("You must be logged in.");
+      return;
+    }
+
+    try {
+      setDeleteLoading(true);
+      const res = await fetch(`${API_BASE}/api/user/delete`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword: deletePassword,
+          deleteAvatar: true,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      setDeleteLoading(false);
+
+      if (!res.ok) {
+        setDeleteError(data.message || "Failed to delete account.");
+        return;
+      }
+
+      setDeleteSuccess("Account deleted. Redirecting...");
+      localStorage.removeItem("token");
+      // redirect to landing page (which shows login)
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1200);
+    } catch {
+      setDeleteLoading(false);
+      setDeleteError("An error occurred while deleting your account.");
+    }
+  };
 
   // 🔹 call /api/user/settings to update role
   const updateDevSetting = async (nextIsDev: boolean) => {
@@ -298,126 +304,139 @@ async function verifyForgotCode() {
             className="password-change-btn"
             onClick={() => setPasswordChange(true)}
           >
-            Change / Reset Password
+            Change Password
           </button>
         </div>
 
         {passwordChange && (
-        <div className="password-form-container">
-          <span className="password-title">Change Your Password</span>
+          <div className="password-form-container">
+            <span className="password-title">Change Your Password</span>
 
-          {passwordError && (
-            <div className="password-error">{passwordError}</div>
-          )}
-
-          {passwordSuccess && (
-            <div className="password-success">{passwordSuccess}</div>
-          )}
-
-          <form className="password-form" onSubmit={handlePasswordChange}>
-            <label className="password-label">Current Password</label>
-            <input
-              type="password"
-              className="password-input"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              placeholder="Enter current password"
-            />
-
-            <label className="password-label">New Password</label>
-            <input
-              type="password"
-              className="password-input"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter new password"
-            />
-
-            <label className="password-label">Confirm New Password</label>
-            <input
-              type="password"
-              className="password-input"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm new password"
-            />
-
-            <div className="password-btn-row">
-              <button
-                type="button"
-                className="password-cancel-btn"
-                onClick={() => setPasswordChange(false)}
-              >
-                Cancel
-              </button>
-
-              <button className="password-submit-btn" type="submit">
-                Update Password
-              </button>
-
-              <div className="forgot-password-container">
-              <br />
-              <button
-                className="forgot-password-btn"
-                onClick={() => setFpOpen(true)}
-              >
-                Forgot Password?
-              </button>
-              {fpOpen && (
-              <div className="modal-overlay">
-                <div className="modal-card">
-                  <h3>Reset your password</h3>
-
-                  <p>Enter the email linked to your account.</p>
-
-                  {fpMessage && <div className="alert">{fpMessage}</div>}
-
-                  <button
-                    className="modal-btn"
-                    onClick={sendForgotEmail}
-                    disabled={fpCooldown > 0}
-                  >
-                    {fpCooldown > 0 ? `Resend in ${fpCooldown}s` : "Send Code"}
-                  </button>
-                  <br /><br />
-
-                  <input
-                    type="text"
-                    placeholder="Enter 6-digit code"
-                    value={fpOtp}
-                    onChange={(e) => setFpOtp(e.target.value)}
-                    maxLength={6}
-                    inputMode="numeric"
-                  />
-
-                  <div className="modal-actions">
-                    <button
-                      className="modal-btn"
-                      onClick={verifyForgotCode}
-                      disabled={fpVerifying || fpOtp.trim().length < 6}
-                    >
-                      {fpVerifying ? "Verifying..." : "Verify"}
-                    </button>
-
-                    <button
-                      className="modal-btn"
-                      onClick={() => {
-                        setFpOpen(false);
-                        setFpOtp("");
-                        setFpMessage("");
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
+            {passwordError && (
+              <div className="password-error">{passwordError}</div>
             )}
-            </div>
-            </div>
-          </form>
+
+            {passwordSuccess && (
+              <div className="password-success">{passwordSuccess}</div>
+            )}
+
+            <form className="password-form" onSubmit={handlePasswordChange}>
+              <label className="password-label">Current Password</label>
+              <input
+                type="password"
+                className="password-input"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                placeholder="Enter current password"
+              />
+
+              <label className="password-label">New Password</label>
+              <input
+                type="password"
+                className="password-input"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+
+              <label className="password-label">Confirm New Password</label>
+              <input
+                type="password"
+                className="password-input"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+              />
+
+              <div className="password-btn-row">
+                <button
+                  type="button"
+                  className="password-cancel-btn"
+                  onClick={() => {
+                    setPasswordChange(false);
+                    setPasswordError("");
+                    setPasswordSuccess("");
+                    setOldPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button className="password-submit-btn" type="submit">
+                  Update Password
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Delete account section */}
+        <div className="delete-account-toggle-container">
+          <button
+            className="delete-account-toggle-btn"
+            onClick={() => {
+              setDeleteOpen(true);
+              setDeleteError("");
+              setDeleteSuccess("");
+            }}
+          >
+            Delete Account
+          </button>
         </div>
-      )}
+
+        {deleteOpen && (
+          <div className="delete-account-container">
+            <span className="delete-title">Delete Your Account</span>
+            <p className="delete-warning">
+              This will permanently remove your account and associated data. This
+              action cannot be undone.
+            </p>
+
+            {deleteError && (
+              <div className="delete-error">{deleteError}</div>
+            )}
+
+            {deleteSuccess && (
+              <div className="delete-success">{deleteSuccess}</div>
+            )}
+
+            <form className="delete-form" onSubmit={handleDeleteAccount}>
+              <label className="delete-label">Current Password</label>
+              <input
+                type="password"
+                className="delete-input"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Enter current password"
+              />
+
+              <div className="delete-btn-row">
+                <button
+                  type="button"
+                  className="delete-cancel-btn"
+                  onClick={() => {
+                    setDeleteOpen(false);
+                    setDeletePassword("");
+                    setDeleteError("");
+                    setDeleteSuccess("");
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="delete-submit-btn"
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? "Deleting..." : "Delete Account"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
         <label className="dev-check-container">
           <input
@@ -425,7 +444,7 @@ async function verifyForgotCode() {
             checked={isDevUser}
             onChange={(e) => {
               const next = e.target.checked;
-              updateDevSetting(next);   // sync with backend
+              updateDevSetting(next); // sync with backend
             }}
           />
           <span className="checkmark"></span>
@@ -436,7 +455,6 @@ async function verifyForgotCode() {
       {/* 🔹 Dev view only renders when backend says you're dev */}
       <LoadDevUser event={isDevUser} />
     </div>
-    
   );
 }
 

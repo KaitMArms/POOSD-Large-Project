@@ -29,16 +29,24 @@ const userSchema = new mongoose.Schema({
   bio:       { type: String, trim: true, maxlength: 300 },
   role:      { type: String, enum: ['user', 'dev'], default: 'user' },
   settings:  { type: SettingsSchema, default: {} },
+
+  // Email verification OTP
   emailVerified: { type: Boolean, default: false },
   otpHash: { type: String, select: false },
   otpExpiresAt: { type: Date,  select: false },
   otpAttempts:   { type: Number, default: 0, select: false },
-  otpLastSentAt: { type: Date, select: false }, 
+  otpLastSentAt: { type: Date, select: false },
+
+  // Password reset OTP (separate from email verification)
+  resetOtpHash: { type: String, select: false },
+  resetOtpExpiresAt: { type: Date, select: false },
+  resetOtpAttempts: { type: Number, default: 0, select: false },
+  resetOtpLastSentAt: { type: Date, select: false },
+
   userGames: [UserGameSchema]
 }, {
   collection: 'game-users'
 });
-
 
 // Hide password in JSON responses
 userSchema.set('toJSON', {
