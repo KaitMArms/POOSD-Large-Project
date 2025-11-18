@@ -294,7 +294,6 @@ exports.addUserGame = async (req, res) => {
 };
 
 exports.getGameById = async (req, res) => {
-  console.log('getGameById called with id:', req.params.id);
   try {
     const gameId = parseInt(req.params.id, 10);
     if (isNaN(gameId)) {
@@ -304,63 +303,53 @@ exports.getGameById = async (req, res) => {
     const pipeline = [
       { $match: { id: gameId } },
 
-      {
-        $lookup: {
-          from: 'genres',
-          localField: 'genres',
-          foreignField: 'id',
-          as: 'genreObjects'
-        }
-      },
-
-      {
-        $lookup: {
-          from: 'covers',
-          localField: 'cover',
-          foreignField: 'id',
-          as: 'coverObject'
-        }
-      },
-
-      {
-        $lookup: {
-          from: 'artworks',
-          localField: 'artworks',
-          foreignField: 'id',
-          as: "artworkObjects"
-        }
-      },
+      { $lookup: { from: 'genres', localField: 'genres', foreignField: 'id', as: 'genreObjects' } },
+      { $lookup: { from: 'covers', localField: 'cover', foreignField: 'id', as: 'coverObject' } },
+      { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
 
       {
         $addFields: {
           genres: '$genreObjects.name',
           
+          bannerUrl: {
+            $let: {
+              vars: {
+                artDoc: { $arrayElemAt: ['$artworkObjects', 0] }
+              },
+              in: {
+                $cond: {
+                  if: '$$artDoc', 
+                  then: {
+                    $concat: [
+                      "https:", 
+                      { $replaceOne: { input: "$$artDoc.url", find: "/t_thumb/", replacement: "/t_1080p/" } }
+                    ]
+                  },
+                  else: null 
+                }
+              }
+            }
+          },
+
           coverUrl: {
             $let: {
               vars: {
                 coverDoc: { $arrayElemAt: ['$coverObject', 0] }
               },
               in: {
-                $concat: [
-                  "https://images.igdb.com/igdb/image/upload/t_1080p/",
-                  "$$coverDoc.image_id",
-                  ".jpg"
-                ]
+                $cond: {
+                  if: '$$coverDoc',
+                  then: {
+                    $concat: [
+                      "https:",
+                      { $replaceOne: { input: "$$coverDoc.url", find: "/t_thumb/", replacement: "/t_cover_big/" } }
+                    ]
+                  },
+                  else: null
+                }
               }
             }
-          },
-          bannerUrl: {
-            $let: {
-              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } }, 
-              in: {
-                $cond: [
-                  '$$artDoc', 
-                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_1080p/", "$$artDoc.image_id", ".jpg" ] },
-                  null 
-                ]
-              }
           }
-        }
         }
       },
 
@@ -368,7 +357,9 @@ exports.getGameById = async (req, res) => {
         $project: {
           genreObjects: 0,
           coverObject: 0,
-          cover: 0
+          artworkObjects: 0,
+          cover: 0,
+          artworks: 0
         }
       }
     ];
