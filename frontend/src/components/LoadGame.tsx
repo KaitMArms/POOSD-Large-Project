@@ -40,6 +40,7 @@ function LoadGame() {
   const [status, setStatus] = useState<string>("to-play");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
+  const [modalIsLiked, setModalIsLiked] = useState<boolean>(!!game?.isLiked);
 
   const numericId = (() => {
     if (!id) return null;
@@ -126,7 +127,7 @@ function LoadGame() {
           name: game?.name,
           status,
           rating,
-          isLiked: !!game?.isLiked,
+          isLiked: modalIsLiked,
         }),
       });
 
@@ -204,7 +205,7 @@ function LoadGame() {
   if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
   if (!game) return <div>Game not found.</div>;
 
-  const coverUrl = game.coverUrl || "/default-game.png";
+  const coverUrl = game.bannerUrl || "/default-game.png";
   const releaseDate = formatUnixDate(
     typeof game.first_release_date === "number" ? game.first_release_date : null
   );
@@ -213,11 +214,8 @@ function LoadGame() {
     <div className="game-view-container">
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
-          <div className="added-image-wrapper">
-            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
-          </div>
-
           <div className="added-info">
+            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
             <h2 className="added-title">{game.name}</h2>
             <p><strong>Release Date:</strong> {releaseDate}</p>
 
@@ -264,8 +262,8 @@ function LoadGame() {
               <input
                 type="checkbox"
                 id="like-checkbox"
-                checked={!!game.isLiked}
-                onChange={likeGame}
+                checked={modalIsLiked}
+                onChange={(e) => setModalIsLiked(e.target.checked)}
               />
               <label htmlFor="like-checkbox">Like this game?</label>
             </div>
