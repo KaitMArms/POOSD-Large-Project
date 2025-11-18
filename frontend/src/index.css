@@ -197,6 +197,15 @@ body[data-theme="dark"] {
   color: #fff;
 }
 
+.components-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 2rem;           
+  width: 95%;          
+  max-width: 1600px;   
+  margin: 0 auto;     
+}
+
 .columns-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));

@@ -80,7 +80,7 @@ exports.viewUserGames = async (req, res) => {
               in: {
                 $cond: [
                   '$$coverDoc', 
-                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$coverDoc.image_id", ".jpg" ] },
+                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg" ] },
                   null 
                 ]
               }
