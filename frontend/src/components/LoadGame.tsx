@@ -52,7 +52,6 @@ function LoadGame() {
   })();
 
   useEffect(() => {
-    if (!id) return;
     let cancelled = false;
 
     const fetchGameData = async () => {
@@ -116,7 +115,7 @@ function LoadGame() {
     return () => {
       cancelled = true;
     };
-  }, [id, numericId]);
+  }, [isEditMode, id, numericId]);
 
   const likeGame = async (): Promise<void> => {
     if (isLiking) return;
@@ -255,13 +254,8 @@ function LoadGame() {
               type="button"
               className="add-button"
               onClick={() => setShowModal(true)}
-              disabled={isEditMode === null}
             >
-              {isEditMode === null
-                ? "Checking…"
-                : isEditMode
-                ? "Edit My Game"
-                : "Add to My Games"}
+              {isEditMode ? "Edit My Game" : "Add to My Games"}
             </button>
           </div>
         </div>
@@ -317,9 +311,7 @@ function LoadGame() {
               {isEditMode ? "Save Changes" : "Submit"}
             </button>
 
-            <p className="submit-message" role="status" aria-live="polite">
-              {submitMessage}
-            </p>
+            <p className="submit-message">{submitMessage}</p>
           </div>
         </div>
       )}
