@@ -6,16 +6,6 @@ const API_BASE =
     ? "http://localhost:8080"
     : "https://playedit.games";
 
-type GlobalGame = {
-  id?: number | string;
-  name?: string;
-  summary?: string;
-  coverUrl?: string | null;
-  genres?: (string | number)[] | null;
-  first_release_date?: number | null;
-  isLiked?: boolean;
-};
-
 function formatUnixDate(unixSeconds: number | null | undefined): string {
   if (!unixSeconds || typeof unixSeconds !== "number") return "Unknown";
   try {
@@ -30,18 +20,23 @@ function formatUnixDate(unixSeconds: number | null | undefined): string {
   }
 }
 
+type GlobalGame = {
+  id?: number | string;
+  name?: string;
+  summary?: string;
+  coverUrl?: string | null;
+  genres?: (string | number)[] | null;
+  first_release_date?: number | null;
+  isLiked?: boolean;
+};
+
 function LoadGame() {
   const { id } = useParams<{ id?: string }>();
-
   const [game, setGame] = useState<GlobalGame | null>(null);
-  const [isEditMode, setIsEditMode] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [rating, setRating] = useState<number>(5);
   const [status, setStatus] = useState<string>("to-play");
-  const [localLiked, setLocalLiked] = useState<boolean>(false);
-  const [isLiking, setIsLiking] = useState<boolean>(false);
-
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
 
@@ -54,143 +49,73 @@ function LoadGame() {
   useEffect(() => {
     let cancelled = false;
 
-    const fetchGameData = async () => {
-      setIsLoading(true);
+    const fetchGame = async () => {
+      setLoading(true);
+      setError(null);
+
       const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No token found. Please log in.");
+        setLoading(false);
+        return;
+      }
+
+      if (!id) {
+        setError("No game id provided.");
+        setLoading(false);
+        return;
+      }
+
       const pathId = numericId ?? id;
 
       try {
-        // 1. Fetch global game details
-        const gameResp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const resp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
 
-        if (!gameResp.ok) {
-          throw new Error("Game not found");
+        if (!resp.ok) {
+          const text = await resp.text().catch(() => "");
+          setError(text || `Failed to load game (status ${resp.status}).`);
+          setLoading(false);
+          return;
         }
-        const gameData = (await gameResp.json()) as GlobalGame;
-        if (cancelled) return;
 
-        setGame(gameData);
-        setLocalLiked(!!gameData.isLiked);
-
-        // 2. If logged in, check for user-specific game data
-        if (token) {
-          const userGameResp = await fetch(`${API_BASE}/api/user/games/${pathId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          if (cancelled) return;
-
-          if (userGameResp.ok) {
-            const data = await userGameResp.json().catch(() => null);
-            setIsEditMode(true); // User has this game
-            if (data?.rating) setRating(data.rating);
-            if (data?.status) setStatus(data.status);
-            if (typeof data?.isLiked === "boolean") {
-              setLocalLiked(data.isLiked);
-            }
-          } else {
-            setIsEditMode(false); // User does not have this game
-          }
-        } else {
-          setIsEditMode(false); // Not logged in
-        }
-      } catch (error) {
-        if (!cancelled) {
-          if (error instanceof Error) {
-            setSubmitMessage(error.message);
-          } else {
-            setSubmitMessage("An unknown error occurred.");
-          }
-        }
+        const data = (await resp.json()) as GlobalGame;
+        if (!cancelled) setGame(data);
+      } catch (e) {
+        if (!cancelled) setError("Error fetching game details.");
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
 
-    fetchGameData();
+    fetchGame();
     return () => {
       cancelled = true;
     };
-  }, [isEditMode, id, numericId]);
+  }, [id, numericId]);
 
-  const likeGame = async (): Promise<void> => {
-    if (isLiking) return;
-    setIsLiking(true);
+  const addToUserGames = async (): Promise<void> => {
     setSubmitMessage("");
-
     const token = localStorage.getItem("token");
     if (!token) {
       setSubmitMessage("You must be logged in.");
-      setIsLiking(false);
       return;
     }
-
     if (!id) {
       setSubmitMessage("No game id.");
-      setIsLiking(false);
       return;
     }
 
-    const pathId = numericId ?? id;
+    const gameIdToSend: number | string = numericId ?? id;
 
     try {
-      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+      const resp = await fetch(`${API_BASE}/api/user/games/add`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (resp.ok) {
-        const updated = await resp.json().catch(() => null);
-        if (updated && typeof updated.isLiked === "boolean") {
-          setLocalLiked(updated.isLiked);
-        }
-      } else {
-        const text = await resp.text().catch(() => "");
-        setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        setSubmitMessage(error.message);
-      } else {
-        setSubmitMessage("An unknown error occurred.");
-      }
-    } finally {
-      setIsLiking(false);
-    }
-  };
-
-  const submitUserGame = async (): Promise<void> => {
-    setSubmitMessage("");
-
-    if (isEditMode === null) {
-      setSubmitMessage("Still determining mode, please wait...");
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setSubmitMessage("You must be logged in.");
-      return;
-    }
-
-    if (!numericId) {
-      setSubmitMessage("Invalid game ID.");
-      return;
-    }
-
-    const gameIdToSend: number = numericId;
-    const endpointUrl = isEditMode
-      ? `${API_BASE}/api/user/games/${gameIdToSend}`
-      : `${API_BASE}/api/user/games/add`;
-    const httpMethod = isEditMode ? "PATCH" : "POST";
-
-    try {
-      const resp = await fetch(endpointUrl, {
-        method: httpMethod,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -200,32 +125,88 @@ function LoadGame() {
           name: game?.name,
           status,
           rating,
-          isLiked: !!localLiked,
+          isLiked: !!game?.isLiked,
         }),
       });
 
       if (resp.ok) {
-        setSubmitMessage(isEditMode ? "Game updated!" : "Game added!");
-        setIsEditMode(true);
+        setSubmitMessage("Game added to your list!");
         setShowModal(false);
       } else {
-        const text = await resp.text().catch(() => "");
-        setSubmitMessage(text || `Error (status ${resp.status})`);
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not add game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not add game (status ${resp.status}).`);
+        }
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        setSubmitMessage(error.message);
-      } else {
-        setSubmitMessage("An unknown error occurred.");
-      }
+    } catch (err) {
+      setSubmitMessage("Network error.");
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  const likeGame = async (): Promise<void> => {
+    setSubmitMessage("");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitMessage("You must be logged in.");
+      return;
+    }
+    if (!id) {
+      setSubmitMessage("No game id.");
+      return;
+    }
+
+    const pathId = numericId ?? id;
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        setGame((prev) => {
+          if (!prev) return prev;
+          return { ...prev, isLiked: !prev.isLiked };
+        });
+
+        try {
+          const updated = await resp.json().catch(() => null);
+          if (updated && typeof updated.isLiked === "boolean") {
+            setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
+          }
+        } catch (e) {
+          console.warn("Failed to parse like response JSON:", e);
+        }
+      } else {
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
+        }
+      }
+    } catch (err) {
+      setSubmitMessage("Network error.");
+    }
+  };
+
+  if (loading) return <div>Loading game...</div>;
+  if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
   if (!game) return <div>Game not found.</div>;
 
   const coverUrl = game.coverUrl || "/default-game.png";
-  const releaseDate = formatUnixDate(game.first_release_date);
+  const releaseDate = formatUnixDate(
+    typeof game.first_release_date === "number" ? game.first_release_date : null
+  );
 
   return (
     <div className="game-view-container">
@@ -241,21 +222,13 @@ function LoadGame() {
 
             <div className="added-field">
               <strong>Genres:</strong>{" "}
-              {Array.isArray(game.genres)
-                ? game.genres.join(", ")
-                : "Unknown"}
+              {Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
             </div>
 
-            <div className="added-description">
-              {game.summary || "No description available."}
-            </div>
+            <div className="added-description">{game.summary || "No description available."}</div>
 
-            <button
-              type="button"
-              className="add-button"
-              onClick={() => setShowModal(true)}
-            >
-              {isEditMode ? "Edit My Game" : "Add to My Games"}
+            <button type="button" className="add-button" onClick={() => setShowModal(true)}>
+              Add to My Games
             </button>
           </div>
         </div>
@@ -264,19 +237,15 @@ function LoadGame() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>{isEditMode ? "Edit Game Settings" : "Add Game to List"}</h3>
+            <h3>User's Game Settings</h3>
 
             <label className="modal-label">Status</label>
-            <select
-              className="added-select"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
+            <select className="added-select" value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="completed">Completed</option>
               <option value="in-progress">In Progress</option>
               <option value="on-hold">Paused</option>
               <option value="dropped">Dropped</option>
-              <option value="to-play">To Be Played</option>
+              <option value="to-played">To Be Played</option>
             </select>
 
             <label className="modal-label">Rating: {rating.toFixed(1)}</label>
@@ -294,24 +263,17 @@ function LoadGame() {
               <input
                 type="checkbox"
                 id="like-checkbox"
-                checked={!!localLiked}
+                checked={!!game.isLiked}
                 onChange={likeGame}
-                disabled={isLiking}
               />
-              <label htmlFor="like-checkbox">
-                {isLiking ? "Liking..." : "Like this game?"}
-              </label>
+              <label htmlFor="like-checkbox">Like this game?</label>
             </div>
 
-            <button
-              type="button"
-              className="modal-submit"
-              onClick={submitUserGame}
-            >
-              {isEditMode ? "Save Changes" : "Submit"}
+            <button type="button" className="modal-submit" onClick={addToUserGames}>
+              Submit
             </button>
 
-            <p className="submit-message">{submitMessage}</p>
+            <p className="submit-message" role="status" aria-live="polite">{submitMessage}</p>
           </div>
         </div>
       )}
