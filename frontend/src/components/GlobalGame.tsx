@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
-import { CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 
 const gameTypeOptions = [
   { value: '0', label: 'Main Game' },
