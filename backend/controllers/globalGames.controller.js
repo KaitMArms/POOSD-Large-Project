@@ -81,10 +81,6 @@ exports.browseRecommended = async (req, res) => {
 
 };
 
-function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 exports.searchGames = async (req, res) => {
   try {
     const qRaw = (req.query.q || '').trim();
