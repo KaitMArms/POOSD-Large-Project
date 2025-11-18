@@ -60,7 +60,7 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> updateProfile(Map<String, String> userData) async {
+  /*static Future<Map<String, dynamic>> updateProfile(Map<String, String> userData) async {
     final response = await http.put(
       Uri.parse('$_baseUrl/user/profile'),
       headers: <String, String>{
@@ -73,6 +73,30 @@ class ApiService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to update profile');
+    }
+  }*/
+
+  static Future<Map<String, dynamic>> updateProfile(Map<String, String> userData) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found. Please log in again.');
+    }
+
+    final response = await http.patch(
+      Uri.parse('https://playedit.games/api/user/profile'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(userData),
+    );
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to update profile: ${response.statusCode} - ${response.body}');
     }
   }
 }

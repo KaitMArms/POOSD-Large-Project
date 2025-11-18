@@ -57,14 +57,15 @@ class AllGamesState extends State<AllGames> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://playedit.games/api/globalgames'),
+        Uri.parse('https://playedit.games/api/globalgames/browse'),
         headers: <String, String>{
           'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> gamesJson = jsonDecode(response.body);
+        final responseData = jsonDecode(response.body);
+        final List<dynamic> gamesJson = responseData['data'];
         setState(() {
           _games = gamesJson.map((json) => Game.fromJson(json)).toList();
         });
