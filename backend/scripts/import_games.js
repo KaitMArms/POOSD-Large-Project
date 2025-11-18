@@ -53,7 +53,7 @@ async function importGames() {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'text/plain',
                 },
-                body: `fields name,slug,summary,first_release_date,genres,cover,age_ratings,franchise,platforms,game_modes,keywords,language_supports,themes,game_type,player_perspectives,rating,rating_count,involved_companies,game_engines,collections,storyline,summary; limit ${limit}; offset ${offset}; where platforms != null;`
+                body: `fields name,slug,summary,first_release_date,genres,cover,age_ratings,franchise,platforms,game_modes,keywords,language_supports,themes,game_type,player_perspectives,rating,rating_count,involved_companies,game_engines,collections,storyline,summary,artworks; limit ${limit}; offset ${offset}; where platforms != null;`
             });
 
             const gamesBatch = await igdbResponse.json();
