@@ -303,35 +303,3 @@ exports.editGameInfo = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Error updating game information' });
   }
 };
-
-exports.viewUserGameById = async (req, res) => {
-  try {
-    const userId = req.user?.sub;
-    if (!userId) {
-      return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
-
-    const gameId = Number(req.params.gameId);
-    if (!Number.isInteger(gameId)) {
-      return res.status(400).json({ success: false, error: 'Valid numeric gameId path param required' });
-    }
-
-    const user = await User.findById(userId, 'userGames');
-    if (!user) {
-      return res.status(404).json({ success: false, error: 'User not found' });
-    }
-
-    const game = user.userGames.find(g => g.id === gameId);
-    if (!game) {
-      return res.status(404).json({ success: false, error: 'Game not found in user library' });
-    }
-
-    return res.status(200).json({ success: true, game: game });
-  } catch (error) {
-    console.error('Error fetching user game by id:', error);
-    return res.status(500).json({ success: false, error: 'Error fetching user game by id' });
-  }
-};
-
-
-
