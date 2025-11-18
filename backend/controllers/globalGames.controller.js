@@ -72,7 +72,7 @@ exports.browseRecommended = async (req, res) => {
             coverUrl: {
               $let: {
                 vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
-                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$coverDoc.image_id", ".jpg"] }, null] }
+                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg"] }, null] }
               }
             }
           }
