@@ -1,5 +1,38 @@
 const { UserModel, connectionsReady } = require('./db.js');
 
+const testUserGames2 = [
+    {
+        id: 29411,
+        name: "Clone Drone in the Danger Zone",
+        status: 'completed',
+        isLiked: true
+    },
+     {
+        id: 294041,
+        name: "Marvel Rivals",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 200850,
+        name: "Warframe: Valkyr Unleashed",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 90101,
+        name: "Super Smash Bros. Ultimate",
+        status: 'completed',
+        isLiked: true
+    },
+    {
+        id: 139134,
+        name: "Hatsune Miku: Colorful Stage!",
+        status: 'completed',
+        isLiked: true
+    },
+];
+
 const testUserGames = [
     {
         id: 266733,
@@ -84,78 +117,6 @@ const testUserGames = [
         name: "Terraria",
         status: 'completed',
         isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
-    },
-    {
-        id: 1879,
-        name: "Terraria",
-        status: 'completed',
-        isLiked: true
     }
 ];
 
@@ -192,7 +153,7 @@ async function createTestUsers() {
         console.log("--- Starting to create test users ---");
 
         await addUserWithGames('Gage', 'Lappin', 'GageLappin119@gmail.com','asdfads', 'password', testUserGames);
-
+        await addUserWithGames('Brandyn', 'Largo', 'temp@temp.com', 'asdfa', 'asdf', testUserGames2);
         await addUserWithGames('Hatunse', 'Aedo', 'HatunseAedo@gmail.com', 'JohnAedo', [
             { id: 3008, name: "Baldur's Gate 3", status: 'in-progress', isLiked: true }
         ]);

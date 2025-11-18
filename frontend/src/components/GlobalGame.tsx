@@ -231,14 +231,16 @@ function LoadGlobalGame() {
             {searchedGames.length > 0 ? (
               searchedGames.map((game) => (
                 <div key={game._id} className="user-game-row">
-                  <div className="game-title-container">
-                    <Link to={`/game/${game.id}`} className="game-link"> {game.name}</Link>
-                  </div>
-                  <img
-                    src={game.coverUrl || "/default-game.png"}
-                    alt={game.name}
-                    className="search-result-thumbnail"
-                  />
+                  <Link to={`/game/${game.id}`} className="game-link">
+                    <img
+                      src={game.coverUrl || "/default-game.png"}
+                      alt={game.name}
+                      className="search-result-thumbnail"
+                    />
+                    <div className="game-title-container">
+                      {game.name}
+                    </div>
+                  </Link>
                 </div>
               ))
             ) : (
