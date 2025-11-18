@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, verifyOTP, resendOTP} = require('../controllers/login.controller');
+const {
+  register,
+  login,
+  verifyOTP,
+  resendOTP,
+  forgotPassword,
+  verifyResetOTP,
+  resetPassword
+} = require('../controllers/login.controller');
 const rateLimit = require('express-rate-limit');
 
 const otpLimiter = rateLimit({
@@ -14,5 +22,10 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/verify-otp', otpLimiter, verifyOTP);
 router.post('/resend-otp', otpLimiter, resendOTP);
+
+// Forgot password flow
+router.post('/forgot-password', forgotPassword);
+router.post('/forgot-password/verify', verifyResetOTP);
+router.post('/forgot-password/reset', resetPassword);
 
 module.exports = router;

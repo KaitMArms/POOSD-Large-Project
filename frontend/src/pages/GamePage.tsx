@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PageTitle from '../components/PageTitle.tsx';
 import LoadGame from '../components/LoadGame.tsx';
-import LoadGameEdit from '../components/LoadGameEdit.tsx'; // Import the new component
+import LoadGameEdit from '../components/LoadGameEdit.tsx';
 import "./GamePage.css"
 import "../index.css";
 
@@ -24,13 +24,7 @@ const GamePage = () =>
             setIsLoadingUserList(true);
             const token = localStorage.getItem("token");
 
-            if (!token) {
-                setIsGameInUserList(false); // Not logged in, so game can't be in list
-                setIsLoadingUserList(false);
-                return;
-            }
-
-            if (!id) {
+            if (!token || !id) {
                 setIsGameInUserList(false);
                 setIsLoadingUserList(false);
                 return;
@@ -44,7 +38,7 @@ const GamePage = () =>
             }
 
             try {
-                const userGamesResp = await fetch(`${API_BASE}/api/user/games/`, {
+                const userGamesResp = await fetch(`${API_BASE}/api/user/games/list`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -56,7 +50,9 @@ const GamePage = () =>
                 if (userGamesResp.ok) {
                     const userGamesData = await userGamesResp.json();
                     const games = Array.isArray(userGamesData.games) ? userGamesData.games : [];
-                    const gameInList = games.find((g: any) => g.id === numericId);
+
+                    const gameInList = games.find((g: any) => g.gameId === numericId);
+
                     setIsGameInUserList(!!gameInList);
                 } else {
                     setIsGameInUserList(false);
@@ -93,4 +89,5 @@ const GamePage = () =>
         </div>
     );
 };
+
 export default GamePage;

@@ -19,7 +19,7 @@ const gameSchema = new mongoose.Schema(
     cover: { type: Number },
     age_ratings: [{ type: Number }],
     franchise: { type: Number },
-
+    artworks: [{type: Number}],
     // Stores what platform the game is available on (IGDB numeric ids)
     platforms: [{ type: Number }],
 

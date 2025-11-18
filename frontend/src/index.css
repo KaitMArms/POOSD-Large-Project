@@ -197,12 +197,6 @@ body[data-theme="dark"] {
   color: #fff;
 }
 
-.columns-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem; 
-}
-
 .user-game-row {
   display: flex;
   flex-direction: column; 
@@ -244,4 +238,37 @@ body[data-theme="dark"] {
 .user-game-row .game-link:hover {
   text-decoration: underline;
   color: #c594ff;
+}
+
+.components-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem; 
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.game-container {
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box; 
+}
+
+.recommend-games-container,
+.search-games {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.columns-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 1rem; 
+}
+
+@media (max-width: 1200px) {
+  .components-container {
+    grid-template-columns: 1fr;
+  }
 }

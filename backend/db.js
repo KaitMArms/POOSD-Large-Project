@@ -30,6 +30,7 @@ const connectionsReady = Promise.all([
     console.log("--- All database connections are ready ---");
 });
 
+const ArtWorkSchema = require('./models/Artwork');
 const UserSchema = require('./models/Users');
 const CounterSchema = require('./models/Counter');
 const GameSchema = require('./models/Games');
@@ -51,6 +52,7 @@ const CollectionsSchema = require('./models/Collections');
 const UserModel = userConnection.models.User || userConnection.model('User', UserSchema);
 const CounterModel = userConnection.models.Counter || userConnection.model('Counter', CounterSchema);
 
+const ArtWorkModel = gameConnection.model('ArtWork', ArtWorkSchema);
 const GameModel = gameConnection.model('Game', GameSchema);
 const PlatformModel = gameConnection.model('Platform', PlatformSchema);
 const GenreModel = gameConnection.model('Genre', GenreSchema);
@@ -72,6 +74,7 @@ module.exports = {
     gameConnection,
     connectionsReady,
 
+    ArtWorkModel,
     UserModel,
     CounterModel,
     GameModel,
