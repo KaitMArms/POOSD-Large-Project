@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart'; // ADD THIS IMPORT
 
 class ApiService {
-  static const String _baseUrl = 'https://playedIt.games'; // Replace with your backend URL
+  static const String _baseUrl = 'https://playedit.games/api/auth';
 
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final response = await http.post(
@@ -11,21 +12,34 @@ class ApiService {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'username': username,
+        'email': username,
         'password': password,
       }),
     );
 
     if (response.statusCode == 200) {
-      //return jsonDecode(response.body);
-        final data = jsonDecode(response.body);
-        // ADD THIS DEBUG LINE:
-        //print("LOGIN RESPONSE: $data");
-        return data;
+      final data = jsonDecode(response.body);
+      print("LOGIN RESPONSE: $data");
+      
+      // SAVE THE TOKEN
+      if (data['token'] != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', data['token']);
+        print("✅ Token saved successfully: ${data['token']}");
+      }
+      
+      return data;
 
+    } else if (response.statusCode == 403) {
+      // Handle email not verified case
+      final data = jsonDecode(response.body);
+      print("Failed with status: ${response.statusCode}");
+      print("Error response body: ${response.body}");
+      throw Exception(data['message'] ?? 'Email not verified');
+      
     } else {
-     //print("Failed with status: ${response.statusCode}");
-      //print("Error response body: ${response.body}"); // ADD THIS
+      print("Failed with status: ${response.statusCode}");
+      print("Error response body: ${response.body}");
       throw Exception('Failed to login');
     }
   }

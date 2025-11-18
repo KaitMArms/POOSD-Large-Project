@@ -300,8 +300,28 @@ class _ProfileState extends State<Profile> {
                               ),
                               Spacer(),
                               ElevatedButton(
-                                onPressed: () {
-                                  if (card.page != null) {
+                                onPressed: () async {
+                                  if (card.title == "Set Your Profile Details") {
+                                    // Special handling for UserDetails
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => UserDetails(
+                                          currentUserData: {
+                                            'firstName': userProfile?.firstName ?? '',
+                                            'lastName': userProfile?.lastName ?? '',
+                                            'bio': userProfile?.bio ?? '',
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                    
+                                    // Reload profile if changes were made
+                                    if (result == true) {
+                                      loadProfile();
+                                    }
+                                  } else if (card.page != null) {
+                                    // Handle other cards normally
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (_) => card.page!),
@@ -398,7 +418,8 @@ List<ProfileCompletionCard> profileCompletionCards = [
     title: "Set Your Profile Details",
     buttonText: "Continue",
     icon: CupertinoIcons.person_circle,
-    page: UserDetails(),
+    //page: UserDetails(),
+    page: null,
   ),
   ProfileCompletionCard(
     title: "Manage Your Games",
