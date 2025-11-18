@@ -12,12 +12,12 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int currentIndex = 3;
+  int currentIndex = 2;
 
   final screens = [
     AllGames(),
     YourGamesList(),
-    Center(child: Text("For Later", style: TextStyle(fontSize: 30))),
+    //Center(child: Text("For Later", style: TextStyle(fontSize: 30))),
     Profile(), // <- your full Profile screen here
   ];
 
@@ -40,11 +40,11 @@ class _MainNavigationState extends State<MainNavigation> {
             activeIcon: Icon(MdiIcons.chartPie),
             label: "Games",
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: Icon(MdiIcons.lockOutline),
             activeIcon: Icon(MdiIcons.lock),
             label: "For Later"
-          ),
+          ),*/
           BottomNavigationBarItem(
             icon: Icon(MdiIcons.accountOutline),
             activeIcon: Icon(MdiIcons.account),

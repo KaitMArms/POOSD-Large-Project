@@ -17,8 +17,15 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      //return jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        // ADD THIS DEBUG LINE:
+        //print("LOGIN RESPONSE: $data");
+        return data;
+
     } else {
+     //print("Failed with status: ${response.statusCode}");
+      //print("Error response body: ${response.body}"); // ADD THIS
       throw Exception('Failed to login');
     }
   }
