@@ -17,7 +17,6 @@ function signToken(user) {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: JWT_EXPIRES });
 }
 
-
 exports.profile = async (req, res) => {
   try {
     const userID = req.user.sub;
@@ -114,7 +113,6 @@ exports.profileUpd = async (req, res) => {
   }
 };
 
-
 exports.settings = async (req, res) => {
   try {
     const user = await User.findById(req.user.sub)
@@ -181,6 +179,34 @@ exports.settingsUpd = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required.' });
+    }
+
+    // Need password for comparison
+    const user = await User.findById(req.user.sub).select('+password');
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    const ok = await user.checkPassword(currentPassword);
+    if (!ok) {
+      return res.status(401).json({ message: 'Current password is incorrect.' });
+    }
+
+    // Set new password; pre-save hook will hash it
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ success: true, message: 'Password updated.' });
+  } catch (err) {
+    console.error('changePassword error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
 exports.deleteAccount = async (req, res) => {
   try {
     const { currentPassword, deleteAvatar = false } = req.body;
@@ -201,9 +227,6 @@ exports.deleteAccount = async (req, res) => {
       { developers: user._id },
       { $pull: { developers: user._id } }
     );
-
-    // Optional: delete orphan games (no developers left)
-    await Game.deleteMany({ developers: { $size: 0 } });
 
     // Optional avatar cleanup
     if (deleteAvatar && user.avatarUrl) {

@@ -1,3 +1,10 @@
+.login-mascot {
+  width: 60vw;
+  max-width: 460px;
+  height: auto;
+  margin-bottom: 2vh;
+}
+
 .page-container {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -7,13 +14,6 @@
   align-items: center;
   justify-content: flex-start;
   padding-top: 4vh;
-}
-
-img {
-  width: 60vw;
-  max-width: 460px;
-  height: auto;
-  margin-bottom: 2vh;
 }
 
 .login-container {
@@ -40,6 +40,7 @@ img {
   text-align: center;
 }
 
+/* Login button width is controlled here */
 #login-container input[type="submit"] {
   background-color: var(--button-bg);
   color: var(--button-text);
@@ -74,6 +75,47 @@ img {
   box-shadow: 0 0 8px var(--button-bg), 0 0 14px var(--button-bg);
   transform: scale(1.03);
 }
+
+/* Row that holds the login button and the forgot link */
+.login-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Make sure the login button doesn't grow too large inside the row */
+.login-actions #loginButton {
+  margin-top: 0;
+}
+
+/* Small “Forgot password?” button to the right of Log In */
+.forgot-link {
+  background: none;
+  border: none;
+  color: #72139B;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-shadow:
+    -1px -1px 0 var(--text-color),
+    1px -1px 0 var(--text-color),
+    -1px  1px 0 var(--text-color),
+    1px  1px 0 var(--text-color),
+    0 0 4px rgba(162, 89, 255, 0.9),
+    0 0 10px rgba(162, 89, 255, 0.6),
+    0 0 16px rgba(162, 89, 255, 0.4);
+}
+
+.forgot-link:hover {
+  text-decoration: none;
+  transform: scale(1.03);
+}
+
+/* Existing styles... */
 
 .password-field {
   display: flex;
@@ -137,7 +179,6 @@ img {
 
 /* ======== OTP Modal Styling ======== */
 
-/* Overlay centered, covers whole viewport */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -150,7 +191,6 @@ img {
   backdrop-filter: blur(6px);
 }
 
-/* Modal box */
 .modal-card {
   width: 100%;
   max-width: 380px;
@@ -162,7 +202,6 @@ img {
   box-shadow: 0 0 25px rgba(162, 89, 255, 0.3);
 }
 
-/* Modal input */
 .modal-card input {
   width: 100%;
   padding: 10px 12px;
@@ -180,7 +219,6 @@ img {
   box-shadow: 0 0 8px rgba(162, 89, 255, 0.5);
 }
 
-/* Buttons grid inside modal */
 .modal-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -192,7 +230,6 @@ img {
   grid-column: 1 / -1;
 }
 
-/* Message / alert box inside modal */
 .alert {
   margin-top: 10px;
   padding: 10px 12px;
@@ -204,7 +241,6 @@ img {
   word-wrap: break-word;
 }
 
-/* Make sure modal is above everything */
 #page-container,
 #login-container {
   position: relative;
@@ -215,7 +251,7 @@ img {
   margin-top: 10px;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #b24bcf;   /* fits your purple theme */
+  border: 1px solid #b24bcf;
   background: rgba(178, 75, 207, 0.12);
   color: #ffdfff;
   font-size: 0.95rem;

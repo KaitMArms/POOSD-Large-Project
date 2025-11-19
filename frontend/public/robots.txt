@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Disallow common administrative or private areas
+Disallow: /admin/
+Disallow: /private/
+Disallow: /login/
+Disallow: /signup/
+Disallow: /settings/
+Disallow: /profile/

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -27,6 +28,7 @@ type GlobalGame = {
   coverUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
+  isLiked?: boolean;
 };
 
 function LoadGame() {
@@ -35,9 +37,15 @@ function LoadGame() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [rating, setRating] = useState<number>(5);
-  const [status, setStatus] = useState<string>("To Be Played");
+  const [status, setStatus] = useState<string>("to-play");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
+
+  const numericId = (() => {
+    if (!id) return null;
+    const n = Number(id);
+    return Number.isFinite(n) ? n : null;
+  })();
 
   useEffect(() => {
     let cancelled = false;
@@ -47,7 +55,6 @@ function LoadGame() {
       setError(null);
 
       const token = localStorage.getItem("token");
-
       if (!token) {
         setError("No token found. Please log in.");
         setLoading(false);
@@ -60,8 +67,10 @@ function LoadGame() {
         return;
       }
 
+      const pathId = numericId ?? id;
+
       try {
-        const resp = await fetch(`${API_BASE}/api/globalgames/${id}`, {
+        const resp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +80,7 @@ function LoadGame() {
 
         if (!resp.ok) {
           const text = await resp.text().catch(() => "");
-          setError(text || "Failed to load game.");
+          setError(text || `Failed to load game (status ${resp.status}).`);
           setLoading(false);
           return;
         }
@@ -86,11 +95,10 @@ function LoadGame() {
     };
 
     fetchGame();
-
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, numericId]);
 
   const addToUserGames = async (): Promise<void> => {
     setSubmitMessage("");
@@ -104,6 +112,8 @@ function LoadGame() {
       return;
     }
 
+    const gameIdToSend: number | string = numericId ?? id;
+
     try {
       const resp = await fetch(`${API_BASE}/api/user/games/add`, {
         method: "POST",
@@ -112,9 +122,11 @@ function LoadGame() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          gameId: id,
+          gameId: gameIdToSend,
+          name: game?.name,
           status,
           rating,
+          isLiked: !!game?.isLiked,
         }),
       });
 
@@ -122,33 +134,79 @@ function LoadGame() {
         setSubmitMessage("Game added to your list!");
         setShowModal(false);
       } else {
-        const json = await resp.json().catch(() => ({}));
-        setSubmitMessage(json?.message || "Could not add game.");
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not add game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not add game (status ${resp.status}).`);
+        }
       }
-    } catch {
+    } catch (err) {
       setSubmitMessage("Network error.");
     }
   };
 
-  if (loading) {
-    return <div>Loading game...</div>;
-  }
+  const likeGame = async (): Promise<void> => {
+    setSubmitMessage("");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSubmitMessage("You must be logged in.");
+      return;
+    }
+    if (!id) {
+      setSubmitMessage("No game id.");
+      return;
+    }
 
-  if (error) {
-    return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
-  }
+    const pathId = numericId ?? id;
 
-  if (!game) {
-    return <div>Game not found.</div>;
-  }
+    try {
+      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (resp.ok) {
+        setGame((prev) => {
+          if (!prev) return prev;
+          return { ...prev, isLiked: !prev.isLiked };
+        });
+
+        try {
+          const updated = await resp.json().catch(() => null);
+          if (updated && typeof updated.isLiked === "boolean") {
+            setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
+          }
+        } catch (e) {
+          console.warn("Failed to parse like response JSON:", e);
+        }
+      } else {
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await resp.json().catch(() => ({}));
+          setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
+        } else {
+          const text = await resp.text().catch(() => "");
+          setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
+        }
+      }
+    } catch (err) {
+      setSubmitMessage("Network error.");
+    }
+  };
+
+  if (loading) return <div>Loading game...</div>;
+  if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
+  if (!game) return <div>Game not found.</div>;
 
   const coverUrl = game.coverUrl || "/default-game.png";
-
-
   const releaseDate = formatUnixDate(
-    typeof game.first_release_date === "number"
-      ? game.first_release_date
-      : null
+    typeof game.first_release_date === "number" ? game.first_release_date : null
   );
 
   return (
@@ -156,34 +214,21 @@ function LoadGame() {
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
           <div className="added-image-wrapper">
-            <img
-              src={coverUrl}
-              className="added-image"
-              alt={game.name ?? "cover"}
-            />
+            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
           </div>
 
           <div className="added-info">
             <h2 className="added-title">{game.name}</h2>
-            <p>
-              <strong>Release Date:</strong> {releaseDate}
-            </p>
+            <p><strong>Release Date:</strong> {releaseDate}</p>
+
             <div className="added-field">
               <strong>Genres:</strong>{" "}
-              {Array.isArray(game.genres)
-                ? game.genres.join(", ")
-                : String(game.genres ?? "Unknown")}
+              {Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
             </div>
 
-            <div className="added-description">
-              {game.summary || "No description available."}
-            </div>
+            <div className="added-description">{game.summary || "No description available."}</div>
 
-            <button
-              type="button"
-              className="add-button"
-              onClick={() => setShowModal(true)}
-            >
+            <button type="button" className="add-button" onClick={() => setShowModal(true)}>
               Add to My Games
             </button>
           </div>
@@ -191,40 +236,20 @@ function LoadGame() {
       </div>
 
       {showModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setShowModal(false);
-          }}
-        >
-          <div
-            className="modal-box"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3>User's Game Settings</h3>
 
-            <label className="modal-label" htmlFor="status-select">
-              Status
-            </label>
-
-            {/* FIX HERE: changed id to className */}
-            <select
-              className="added-select"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option>Completed</option>
-              <option>In Progress</option>
-              <option>Paused</option>
-              <option>Dropped</option>
-              <option>To Be Played</option>
+            <label className="modal-label">Status</label>
+            <select className="added-select" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="completed">Completed</option>
+              <option value="in-progress">In Progress</option>
+              <option value="on-hold">Paused</option>
+              <option value="dropped">Dropped</option>
+              <option value="to-played">To Be Played</option>
             </select>
 
-            <label className="modal-label">
-              Rating: {rating.toFixed(1)}
-            </label>
+            <label className="modal-label">Rating: {rating.toFixed(1)}</label>
             <input
               type="range"
               min={0}
@@ -235,17 +260,21 @@ function LoadGame() {
               className="modal-slider"
             />
 
-            <button
-              type="button"
-              className="modal-submit"
-              onClick={addToUserGames}
-            >
+            <div className="modal-checkbox">
+              <input
+                type="checkbox"
+                id="like-checkbox"
+                checked={!!game.isLiked}
+                onChange={likeGame}
+              />
+              <label htmlFor="like-checkbox">Like this game?</label>
+            </div>
+
+            <button type="button" className="modal-submit" onClick={addToUserGames}>
               Submit
             </button>
 
-            <p className="submit-message" role="status" aria-live="polite">
-              {submitMessage}
-            </p>
+            <p className="submit-message" role="status" aria-live="polite">{submitMessage}</p>
           </div>
         </div>
       )}

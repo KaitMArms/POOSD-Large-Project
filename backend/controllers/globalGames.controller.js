@@ -38,105 +38,185 @@ exports.browseGames = async (req, res) => {
   }
 };
 
-exports.browseRecommended = async (req,res) => {
+exports.browseRecommended = async (req, res) => {
+  try {
+    const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
+    const limit = Math.min(limitReq, 50);
 
-  try{
-      const limitReq = Math.max(parseInt(req.query.limit || '50', 10), 1);
-      const limit = Math.min (limitReq, 50);
+    const userId = req.user?.sub || req.user?.uid || null;
 
-      const userId = req.user?.sub || req.user?.uid ||null;
+    if (userId) {
+      const userDoc = await User.findById(userId).select('userGames').lean().exec();
+      const likedIds = (userDoc?.userGames || []).filter(g => g.isLiked === true).map(g => g.id);
 
-      if (userId){
-        const userDoc = await User.findById(userId).select('userGames').lean().exec();
-        const likedIds = (userDoc?.userGames || [])
-        .filter(g=>g.isLiked === true)
-        .map(g => g.id);
+      const userProfileVector = await user_profile.buildUserProfileVector(userId, { UserModel: User, GameModel: Game });
 
-        const userProfileVector = await user_profile.buildUserProfileVector(userId, { UserModel: User, GameModel: Game});
-
-        const recs = await recommend.getRecommendations(userProfileVector, likedIds, {GameModel: Game});
-
-        const recIds = recs.map(r =>r.id);
-        const games = await Game.find({id: {$in: recIds } }).lean().exec();
-
-        const gamesById = new Map (games.map(g => [g.id, g]));
-        const results  = recs.map (r=> ({ ...r,game: gamesById.get(r.id) || null}))
-        .slice(0,limit);
-
-        return res.json ({recommendations: results});
-
+      const recs = await recommend.getRecommendations(userProfileVector, likedIds, { GameModel: Game });
+      if (recs.length === 0) {
+        return res.json({ recommendations: [] });
       }
-      else {
-        const items = await Game.find({}, 'id name rating_count summary first_release_date')
-        .sort({rating_count: -1, rating: -1, first_release_date: -1})
-        .limit(limit).lean().exec();
 
-        return res.json ({recommendations: items });
-      }
-  }
-  catch (err)
-  {
-    console.error('browseRecommended error: ', err);
-    return res.status(500).json({message: 'Server error browse.'});
-  }
+      const recIds = recs.map(r => r.id);
+      const pipeline = [
+        { $match: { id: { $in: recIds } } },
+        {
+          $lookup: {
+            from: 'covers',
+            localField: 'cover',
+            foreignField: 'id',
+            as: 'coverObject'
+          }
+        },
+        {
+          $addFields: {
+            coverUrl: {
+              $let: {
+                vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
+                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg"] }, null] }
+              }
+            }
+          }
+        },
+        { $project: { coverObject: 0} }
+      ];
 
+      const games = await Game.aggregate(pipeline);
+
+      const gamesById = new Map(games.map(g => [g.id, g]));
+      const results = recs
+        .map(r => ({ ...r, game: gamesById.get(r.id) || null }))
+        .filter(r => r.game) 
+        .slice(0, limit);
+
+      return res.json({ recommendations: results });
+    } 
+  } catch (err) {
+    console.error('recommendedGames error', err);
+    return res.status(500).json({ message: 'Server error recommended.' });
+  }
 };
+<<<<<<< HEAD
+=======
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+>>>>>>> origin/main
 
 exports.searchGames = async (req, res) => {
   try {
     const qRaw = (req.query.q || '').trim();
-    if (!qRaw) {
-      return res.status(400).json({ message: "Query param 'q' is required." });
+    const hasGameTypes = req.query.game_types && req.query.game_types.length > 0;
+    const hasRatedOnly = req.query.ratedOnly === 'true';
+
+    if (!qRaw && !hasGameTypes && !hasRatedOnly) {
+      return res.json({
+        data: [],
+        paging: { page: 1, limit: 24, total: 0, totalPages: 1, hasPrev: false, hasNext: false }
+      });
     }
 
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
-    const limitReq = Math.max(parseInt(req.query.limit || '24', 10), 1);
-    const limit = Math.min(limitReq, 50);
+    const limit = Math.min(parseInt(req.query.limit || '24', 10), 50);
+    const skip = (page - 1) * limit;
 
-    const anywhereRegex = new RegExp(escapeRegex(qRaw), 'i');
-    const qLower = qRaw.toLowerCase();
-    const startsWithPattern = `^${escapeRegex(qLower)}`;
+    const matchConditions = {};
+
+    if (qRaw) {
+      const anywhereRegex = new RegExp(escapeRegex(qRaw), 'i');
+      matchConditions.name = { $regex: anywhereRegex };
+    }
+
+    if (hasGameTypes) {
+      const gameTypes = Array.isArray(req.query.game_types)
+        ? req.query.game_types.map(id => parseInt(id, 10))
+        : [parseInt(req.query.game_types, 10)];
+
+      const validGameTypes = gameTypes.filter(id => !isNaN(id));
+      if (validGameTypes.length > 0) {
+        matchConditions.game_type = { $in: validGameTypes };
+      }
+    }
+
+    if (hasRatedOnly) {
+      matchConditions['age_ratings.0'] = { $exists: true };
+    }
+
+    if (qRaw) {
+      const anywhereRegex = new RegExp(escapeRegex(qRaw), 'i');
+      matchConditions.name = { $regex: anywhereRegex };
+    }
+
+    if (hasGameTypes) {
+      const gameTypes = Array.isArray(req.query.game_types)
+        ? req.query.game_types.map(id => parseInt(id, 10))
+        : [parseInt(req.query.game_types, 10)];
+
+      const validGameTypes = gameTypes.filter(id => !isNaN(id));
+      if (validGameTypes.length > 0) {
+        matchConditions.game_type = { $in: validGameTypes };
+      }
+    }
+
+    if (hasRatedOnly) {
+      matchConditions['age_ratings.0'] = { $exists: true };
+    }
 
     const pipeline = [
-      { $match: { name: { $regex: anywhereRegex } } },
+      { $match: matchConditions },
+
+      { $sort: { name: 1 } },
+
+      { $skip: skip },
+      { $limit: limit },
+
       {
-        $addFields: {
-          _lowerName: { $toLower: "$name" },
-          _startsWith: {
-            $cond: [
-              { $regexMatch: { input: { $toLower: "$name" }, regex: startsWithPattern } },
-              1,
-              0
-            ]
-          }
+        $lookup: {
+          from: 'covers', 
+          localField: 'cover',
+          foreignField: 'id',
+          as: 'coverObject'
         }
       },
-      // Sort priority:
-      // 1. starts-with first
-      // 2. lowercase version (case-insensitive alpha)
-      // 3. original-case name (so Halo < HalOpe)
-      // 4. _id for stability
-      { $sort: { _startsWith: -1, _lowerName: 1, name: 1, _id: 1 } },
+
       {
-        $facet: {
-          data: [
-            { $skip: (page - 1) * limit },
-            { $limit: limit }
-          ],
-          total: [
-            { $count: "count" }
-          ]
+        $lookup: {
+          from: 'genres', 
+          localField: 'genres',
+          foreignField: 'id',
+          as: 'genreObjects'
         }
-      }
+      },
+
+      {
+        $addFields: {
+          coverUrl: {
+            $cond: [
+              { $gt: [{ $size: "$coverObject" }, 0] },
+              {
+                $concat: [
+                  "https://images.igdb.com/igdb/image/upload/t_cover_small/",
+                  { $arrayElemAt: ["$coverObject.image_id", 0] },
+                  ".jpg"
+                ]
+              },
+              null 
+            ]
+          },
+          genres: '$genreObjects.name'
+        }
+      },
+
+      { $project: { coverObject: 0, genreObjects: 0 } }
     ];
 
-    const agg = await Game.aggregate(pipeline);
-    const data = (agg[0]?.data) || [];
-    const total = (agg[0]?.total?.[0]?.count) ?? 0;
+    const results = await Game.aggregate(pipeline);
+
+    const total = await Game.countDocuments(matchConditions);
 
     const totalPages = Math.max(1, Math.ceil(total / limit));
+
     return res.json({
-      data,
+      data: results,
       paging: {
         page,
         limit,
@@ -146,32 +226,32 @@ exports.searchGames = async (req, res) => {
         hasNext: page < totalPages
       }
     });
+
   } catch (err) {
-    console.error('Global search error:', err);
+    console.error('searchGames error:', err);
     return res.status(500).json({ message: 'Server error.' });
   }
 };
 
 exports.recommendedGames = async (req, res) => {
   // Get usergames IDs
-  try{
+  try {
     const curUser = req.user?.sub || req.user?.uid || req.user?.userID;
-    if (!curUser) return res.status(401).json({message: 'Unauthorized'});
+    if (!curUser) return res.status(401).json({ message: 'Unauthorized' });
 
     const userDoc = await User.findById(curUser).select('userGames').lean().exec();
-    const likedIds = (userDoc?.userGames || []).map(g=> g.id);
+    const likedIds = (userDoc?.userGames || []).map(g => g.id);
 
-    const userProfileVector = await user_profile.buildUserProfileVector(curUser, {UserModel: User, GameModel: Game});
+    const userProfileVector = await user_profile.buildUserProfileVector(curUser, { UserModel: User, GameModel: Game });
     // Call functions for recommending games
-    const recommendations = await recommend.getRecommendations(userProfileVector, likedIds, {GameModel: Game});
+    const recommendations = await recommend.getRecommendations(userProfileVector, likedIds, { GameModel: Game });
 
-    return res.json({recommendations});
+    return res.json({ recommendations });
   }
-  catch(err)
-  {
-    console.error('recommendedGames error',err);
-    return res.status(500).json({message: 'Server error recommended.'});
-  } 
+  catch (err) {
+    console.error('recommendedGames error', err);
+    return res.status(500).json({ message: 'Server error recommended.' });
+  }
 };
 
 exports.addUserGame = async (req, res) => {
@@ -194,6 +274,7 @@ exports.addUserGame = async (req, res) => {
       name,
       status: 'to-play',
       isLiked: false,
+      userRating: 0,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -228,7 +309,7 @@ exports.getGameById = async (req, res) => {
 
       {
         $lookup: {
-          from: 'genres', 
+          from: 'genres',
           localField: 'genres',
           foreignField: 'id',
           as: 'genreObjects'
@@ -237,17 +318,17 @@ exports.getGameById = async (req, res) => {
 
       {
         $lookup: {
-          from: 'covers', 
+          from: 'covers',
           localField: 'cover',
           foreignField: 'id',
-          as: 'coverObject' 
+          as: 'coverObject'
         }
       },
 
       {
         $addFields: {
           genres: '$genreObjects.name',
-          
+
           coverUrl: {
             $let: {
               vars: {
@@ -269,7 +350,7 @@ exports.getGameById = async (req, res) => {
         $project: {
           genreObjects: 0,
           coverObject: 0,
-          cover: 0 
+          cover: 0
         }
       }
     ];

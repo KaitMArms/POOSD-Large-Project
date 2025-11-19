@@ -1,17 +1,112 @@
-const { UserModel: User } = require('../db');
+const { UserModel: User , GameModel: Game} = require('../db');
 
-exports.viewUserGames = async (req, res) => {
+exports.addUserGame = async (req, res) => {
   try {
-    const userId = req.user?.sub; 
+    const userId = req.user?.sub;
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
-    const user = await User.findById(userId, 'userGames');
-    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-    return res.status(200).json({ success: true, games: user.userGames });
+    const { gameId, name, status, rating, isLiked } = req.body;
+
+    if (!gameId || !status) {
+      return res.status(400).json({ success: false, error: 'gameId and status are required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const gameExists = user.userGames.some(game => game.id === gameId);
+    if (gameExists) {
+      return res.status(409).json({ success: false, error: 'Game already in user list' });
+    }
+
+    const newGame = {
+      id: gameId,
+      name: name,
+      status: status,
+      userRating: rating,
+      isLiked: isLiked,
+    };
+
+    user.userGames.push(newGame);
+    await user.save();
+
+    return res.status(201).json({ success: true, message: 'Game added to user list', game: newGame });
   } catch (error) {
-    console.error('Error fetching user games:', error);
+    console.error('Error adding user game:', error);
+    return res.status(500).json({ success: false, error: 'Error adding game to user list' });
+  }
+};
+
+exports.viewUserGames = async (req, res) => {
+  try {
+    const userId = req.user?.sub;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const user = await User.findById(userId).select('userGames').lean();
+    if (!user || !user.userGames || user.userGames.length === 0) {
+      return res.status(200).json({ success: true, games: [] }); 
+    }
+
+    const userGamesMap = new Map(user.userGames.map(g => [g.id, g]));
+    const gameIds = Array.from(userGamesMap.keys());
+
+    if (gameIds.length === 0) {
+      return res.status(200).json({ success: true, games: [] });
+    }
+
+    const pipeline = [
+      { $match: { id: { $in: gameIds } } },
+      
+      {
+        $lookup: {
+          from: 'covers',
+          localField: 'cover',
+          foreignField: 'id',
+          as: 'coverObject'
+        }
+      },
+
+      {
+        $addFields: {
+          coverUrl: {
+            $let: {
+              vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
+              in: {
+                $cond: [
+                  '$$coverDoc', 
+                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg" ] },
+                  null 
+                ]
+              }
+            }
+          }
+        }
+      },
+      { $project: { coverObject: 0 } }
+    ];
+
+    const detailedGames = await Game.aggregate(pipeline);
+
+    const populatedGames = detailedGames.map(game => {
+      const userGameData = userGamesMap.get(game.id);
+      return {
+        ...game, 
+        status: userGameData.status,
+        userRating: userGameData.userRating,
+        isLiked: userGameData.isLiked,
+      };
+    });
+
+    return res.status(200).json({ success: true, games: populatedGames });
+
+  } catch (error) {
+    console.error('Error fetching populated user games:', error);
     return res.status(500).json({ success: false, error: 'Error fetching user games' });
   }
 };
@@ -106,6 +201,38 @@ exports.deleteUserGame = async (req, res) => {
 };
 
 
+exports.likeGame = async (req, res) => {
+  try {
+    const userId = req.user?.sub;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const gameId = Number(req.params.gameId);
+    if (!Number.isInteger(gameId)) {
+      return res.status(400).json({ success: false, error: 'Valid numeric gameId path param required' });
+    }
+
+    const user = await User.findById(userId, 'userGames');
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const game = user.userGames.find(g => g.id === gameId);
+    if (!game) {
+      return res.status(404).json({ success: false, error: 'Game not found in user library' });
+    }
+
+    game.isLiked = !game.isLiked;
+    await user.save();
+
+    return res.status(200).json({ success: true, message: 'Game like status updated', isLiked: game.isLiked });
+  } catch (error) {
+    console.error('Error liking game:', error);
+    return res.status(500).json({ success: false, error: 'Error liking game' });
+  }
+};
+
 exports.editGameInfo = async (req, res) => {
   try {
     const userId = req.user?.sub; // Mongo _id lives in JWT `sub`
@@ -176,6 +303,3 @@ exports.editGameInfo = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Error updating game information' });
   }
 };
-
-
-

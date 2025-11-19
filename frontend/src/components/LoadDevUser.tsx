@@ -482,11 +482,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
                       <img
                         src={resolvedEditCoverSrc}
                         alt="Game cover"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
+                        className="dev-modal-cover"
                       />
                     ) : (
                       <div
