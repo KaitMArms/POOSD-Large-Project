@@ -670,6 +670,13 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
     );
   };
 
+  const resolveGameCoverUrl = (coverUrl: string | null | undefined): string => {
+    if (!coverUrl) return "/default-game.png";
+    if (coverUrl.startsWith("http")) return coverUrl;
+    if (!coverUrl.startsWith("/")) return `${API_BASE}/uploads/gamecovers/${coverUrl}`;
+    return `${API_BASE}${coverUrl}`;
+  };
+
   // MAIN RENDER
   return (
     <div className="dev-game-container">
@@ -688,15 +695,17 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
             devGames.map((game) => (
               <div
                 key={game.id || game.gameId}
-                className="user-game-row dev-game-row"
+                className="user-game-card"
+                onClick={() => openGameModal(game)}
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => e.key === 'Enter' && openGameModal(game)}
               >
-                <button
-                  type="button"
-                  className="game-link-button game-link"
-                  onClick={() => openGameModal(game)}
-                >
-                  {game.name || game.title}
-                </button>
+                <img
+                  src={resolveGameCoverUrl(game.dev_cover_url || game.coverUrl)}
+                  alt={game.name || game.title}
+                  className="user-game-cover"
+                />
               </div>
             ))
           ) : (
