@@ -68,6 +68,11 @@ function LoadUserGames() {
             )
         );
     };
+    const handleRemoveGame = (gameIdToRemove: number | string) => {
+        setGames(currentGames =>
+            currentGames.filter(game => game.id !== gameIdToRemove)
+        )
+    }
     const gamesByStatus = (status: string) => {
         const filteredGames = games.filter(game => game.status === status);
 
@@ -112,7 +117,7 @@ function LoadUserGames() {
                     game={selectedGame}
                     onClose={handleCloseModal}
                     onSave={handleSaveChanges}
-                    onRemove={handleSaveChanges}
+                    onRemove={handleRemoveGame}
                 />
             )}
             <div className="columns-wrapper">

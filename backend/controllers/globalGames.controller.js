@@ -321,7 +321,7 @@ exports.getGameById = async (req, res) => {
               }
             },
             { $unwind: '$languageDetails' },
-            { $replaceRoot: { newRoot: '$languageDetails.name' } }
+            { $replaceRoot: { newRoot: '$languageDetails' } }
           ],
           as: 'languageNames' 
         }
@@ -336,7 +336,7 @@ exports.getGameById = async (req, res) => {
           platforms: '$platformObjects.name',
           franchise: { $arrayElemAt: ['$franchiseObjects.name', 0] },
 
-          languages: '$languageNames',
+          languages: '$languageNames.name',
 
           coverUrl: {
             $let: {

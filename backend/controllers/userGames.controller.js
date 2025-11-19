@@ -291,7 +291,7 @@ exports.editGameInfo = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Valid numeric gameId required (path param)' });
     }
 
-    const { status, isLiked, rating, review } = req.body;
+    const { status, isLiked, rating: newRating, review } = req.body;
 
     // Validate status
     if (status !== undefined) {
@@ -302,8 +302,8 @@ exports.editGameInfo = async (req, res) => {
     }
 
     // Validate rating
-    if (rating !== undefined) {
-      const n = Number(rating);
+    if (newRating !== undefined) {
+      const n = Number(newRating);
       if (!Number.isFinite(n) || n < 0 || n > 10) {
         return res.status(400).json({ success: false, error: 'rating must be a number between 0 and 10' });
       }
@@ -319,7 +319,7 @@ exports.editGameInfo = async (req, res) => {
     if (
       status === undefined &&
       isLiked === undefined &&
-      rating === undefined &&
+      newRating === undefined &&
       review === undefined
     ) {
       return res.status(400).json({ success: false, error: 'Provide at least one of {status, isLiked, rating, review}' });
@@ -328,7 +328,7 @@ exports.editGameInfo = async (req, res) => {
     const update = {};
     if (status !== undefined) update['userGames.$.status'] = status;
     if (isLiked !== undefined) update['userGames.$.isLiked'] = !!isLiked;
-    if (rating !== undefined) update['userGames.$.userRating'] = Number(rating);
+    if (newRating !== undefined) update['userGames.$.userRating'] = Number(newRating);
     if (review !== undefined) update['userGames.$.review'] = review;
 
     const updatedDoc = await User.findOneAndUpdate(
@@ -379,7 +379,7 @@ exports.editGameInfo = async (req, res) => {
         console.error(`Failed to update global rating for game ${gameId}:`, ratingUpdateError);
       }
     }
-    return res.status(200).json({ success: true, message: 'Updated', game: updatedGame });
+    return res.status(200).json({ success: true, message: 'Updated', game: gameToUpdate });
   } catch (error) {
     console.error('Error updating game info:', error);
     return res.status(500).json({ success: false, error: 'Error updating game information' });
