@@ -64,15 +64,16 @@ function LoadUserGames() {
     const handleSaveChanges = (updatedGame: any) => {
         setGames(currentGames =>
             currentGames.map(game =>
-                game.id === updatedGame.id ? updatedGame : game
+                String(game.id) === String(updatedGame.id) ? updatedGame : game
             )
         );
     };
-    const handleRemoveGame = (gameIdToRemove: number | string) => {
+    
+    const handleRemove = (gameId: number | string) => {
         setGames(currentGames =>
-            currentGames.filter(game => game.id !== gameIdToRemove)
-        )
-    }
+            currentGames.filter(g => String(g.id) !== String(gameId))
+        );
+    };
     const gamesByStatus = (status: string) => {
         const filteredGames = games.filter(game => game.status === status);
 
@@ -117,7 +118,7 @@ function LoadUserGames() {
                     game={selectedGame}
                     onClose={handleCloseModal}
                     onSave={handleSaveChanges}
-                    onRemove={handleRemoveGame}
+                    onRemove={handleRemove}
                 />
             )}
             <div className="columns-wrapper">
