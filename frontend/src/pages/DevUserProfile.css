@@ -57,6 +57,7 @@
   box-shadow: 0 4px 10px rgba(162, 89, 255, 0.4);
   cursor: pointer;
   transition: all 0.25s ease;
+  margin-bottom: 1.5em;
 }
 
 .add-game-button:hover {
