@@ -670,10 +670,16 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
     );
   };
 
-  const resolveGameCoverUrl = (coverUrl: string | null | undefined): string => {
-    if (!coverUrl) return "/default-game.png";
-    if (coverUrl.startsWith("http")) return coverUrl;
-    if (!coverUrl.startsWith("/")) return `${API_BASE}/uploads/gamecovers/${coverUrl}`;
+  const resolveGameCoverUrl = (coverUrl: any): string => {
+    if (typeof coverUrl !== 'string' || !coverUrl) {
+        return "/default-game.png";
+    }
+    if (coverUrl.startsWith("http")) {
+        return coverUrl;
+    }
+    if (!coverUrl.startsWith("/")) {
+        return `${API_BASE}/uploads/gamecovers/${coverUrl}`;
+    }
     return `${API_BASE}${coverUrl}`;
   };
 
