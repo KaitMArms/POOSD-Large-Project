@@ -247,9 +247,9 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               
-              const SizedBox(height: 25),
+              //const SizedBox(height: 25),
               
-              // Complete Your Profile Section
+              /*// Complete Your Profile Section
               Row(
                 children: const [
                   Padding(
@@ -281,7 +281,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   );
                 }),
-              ),
+              ),*/
               
               const SizedBox(height: 30),
               

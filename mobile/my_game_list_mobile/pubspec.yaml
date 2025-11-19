@@ -41,6 +41,7 @@ dependencies:
   google_fonts: ^6.3.2
   flutter_lints: ^6.0.0
   http: ^1.2.1
+  webview_flutter: ^4.13.0
 
 dev_dependencies:
   flutter_test:
