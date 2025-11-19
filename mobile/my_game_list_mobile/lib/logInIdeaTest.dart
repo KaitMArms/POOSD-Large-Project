@@ -243,17 +243,6 @@ class _LogInTestState extends State<LogInIdea> {
                                 ),
                               ]),
                             ),
-                    
-                            //FUTURE ERKINS REMOVE BELOW SECTION ONCE I AM DONE
-                    
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
-                              }, 
-                              child: Text("Dev Skip Button :D")
-                            ) 
-                    
-                            //FUTURE ERKINS REMOVE ABOVE SECTION ONCE I AM DONE
                           ],
                         ),
                       ),
