@@ -102,7 +102,7 @@ function EditGameModal({ game, onClose, onSave ,onRemove}: EditGameModalProps) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-        <Link to={`/game/${game.id}`} className="game-link" style={gameLinkStyles}>
+        <Link to={`/game/${game.slug}`} className="game-link" style={gameLinkStyles}>
 
           <img
             src={game.bannerUrl || game.coverUrl || "/default-game.png"}
