@@ -25,14 +25,26 @@ type GlobalGame = {
   id?: number | string;
   name?: string;
   summary?: string;
+  slug?: string;
   coverUrl?: string | null;
+  bannerUrl?: string | null;
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
   isLiked?: boolean;
+  userRating?: number;
+  gameModes?: number[];
+  franchise?: number;
+  storyline?: string;
+  userRatingCount?: number;
+  platforms?: number[];
+  gameType?: number[];
+  languages?: string[];
 };
 
 function LoadGame() {
-  const { id } = useParams<{ id?: string }>();
+  console.log("Result from useParams():", useParams());
+
+
   const [game, setGame] = useState<GlobalGame | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,12 +52,8 @@ function LoadGame() {
   const [status, setStatus] = useState<string>("to-play");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
-
-  const numericId = (() => {
-    if (!id) return null;
-    const n = Number(id);
-    return Number.isFinite(n) ? n : null;
-  })();
+  const [modalIsLiked, setModalIsLiked] = useState<boolean>(!!game?.isLiked);
+  const { slug } = useParams<{ slug?: string }>();
 
   useEffect(() => {
     let cancelled = false;
@@ -60,17 +68,15 @@ function LoadGame() {
         setLoading(false);
         return;
       }
-
-      if (!id) {
-        setError("No game id provided.");
+      console.log(slug);
+      if (!slug) {
+        setError("Invalid Slug.");
         setLoading(false);
         return;
       }
 
-      const pathId = numericId ?? id;
-
       try {
-        const resp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
+        const resp = await fetch(`${API_BASE}/api/globalgames/${slug}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -86,7 +92,10 @@ function LoadGame() {
         }
 
         const data = (await resp.json()) as GlobalGame;
-        if (!cancelled) setGame(data);
+        if (!cancelled) {
+          setGame(data);
+          setModalIsLiked(!!data.isLiked);
+        }
       } catch (e) {
         if (!cancelled) setError("Error fetching game details.");
       } finally {
@@ -98,7 +107,7 @@ function LoadGame() {
     return () => {
       cancelled = true;
     };
-  }, [id, numericId]);
+  }, [slug]);
 
   const addToUserGames = async (): Promise<void> => {
     setSubmitMessage("");
@@ -107,12 +116,12 @@ function LoadGame() {
       setSubmitMessage("You must be logged in.");
       return;
     }
-    if (!id) {
+    if (!game || !game.id) {
       setSubmitMessage("No game id.");
       return;
     }
 
-    const gameIdToSend: number | string = numericId ?? id;
+    const gameIdToSend = game.id;
 
     try {
       const resp = await fetch(`${API_BASE}/api/user/games/add`, {
@@ -126,7 +135,7 @@ function LoadGame() {
           name: game?.name,
           status,
           rating,
-          isLiked: !!game?.isLiked,
+          isLiked: modalIsLiked,
         }),
       });
 
@@ -148,79 +157,87 @@ function LoadGame() {
     }
   };
 
-  const likeGame = async (): Promise<void> => {
-    setSubmitMessage("");
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setSubmitMessage("You must be logged in.");
-      return;
-    }
-    if (!id) {
-      setSubmitMessage("No game id.");
-      return;
-    }
+  // const likeGame = async (): Promise<void> => {
+  //   setSubmitMessage("");
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     setSubmitMessage("You must be logged in.");
+  //     return;
+  //   }
+  //   if (!id) {
+  //     setSubmitMessage("No game id.");
+  //     return;
+  //   }
 
-    const pathId = numericId ?? id;
+  //   const pathId = numericId ?? id;
 
-    try {
-      const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+  //   try {
+  //     const resp = await fetch(`${API_BASE}/api/user/games/${pathId}/like`, {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      if (resp.ok) {
-        setGame((prev) => {
-          if (!prev) return prev;
-          return { ...prev, isLiked: !prev.isLiked };
-        });
+  //     if (resp.ok) {
+  //       setGame((prev) => {
+  //         if (!prev) return prev;
+  //         return { ...prev, isLiked: !prev.isLiked };
+  //       });
 
-        try {
-          const updated = await resp.json().catch(() => null);
-          if (updated && typeof updated.isLiked === "boolean") {
-            setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
-          }
-        } catch (e) {
-          console.warn("Failed to parse like response JSON:", e);
-        }
-      } else {
-        const contentType = resp.headers.get("content-type") || "";
-        if (contentType.includes("application/json")) {
-          const json = await resp.json().catch(() => ({}));
-          setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
-        } else {
-          const text = await resp.text().catch(() => "");
-          setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
-        }
-      }
-    } catch (err) {
-      setSubmitMessage("Network error.");
-    }
-  };
+  //       try {
+  //         const updated = await resp.json().catch(() => null);
+  //         if (updated && typeof updated.isLiked === "boolean") {
+  //           setGame((prev) => (prev ? { ...prev, isLiked: updated.isLiked } : prev));
+  //         }
+  //       } catch (e) {
+  //         console.warn("Failed to parse like response JSON:", e);
+  //       }
+  //     } else {
+  //       const contentType = resp.headers.get("content-type") || "";
+  //       if (contentType.includes("application/json")) {
+  //         const json = await resp.json().catch(() => ({}));
+  //         setSubmitMessage(json?.message || `Could not like game (status ${resp.status}).`);
+  //       } else {
+  //         const text = await resp.text().catch(() => "");
+  //         setSubmitMessage(text || `Could not like game (status ${resp.status}).`);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     setSubmitMessage("Network error.");
+  //   }
+  // };
 
   if (loading) return <div>Loading game...</div>;
   if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
   if (!game) return <div>Game not found.</div>;
 
-  const coverUrl = game.coverUrl || "/default-game.png";
+  const coverUrl = game.bannerUrl || game.coverUrl || "/default-game.png";
+  const gameRating = game.userRating;
   const releaseDate = formatUnixDate(
     typeof game.first_release_date === "number" ? game.first_release_date : null
   );
-
+  const franchise = game.franchise;
+  const storyline = game.storyline;
+  const languages = game.languages;
   return (
     <div className="game-view-container">
       <div className="game-feature-wrapper">
         <div className="added-feature-container">
-          <div className="added-image-wrapper">
-            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
-          </div>
-
           <div className="added-info">
             <h2 className="added-title">{game.name}</h2>
-            <p><strong>Release Date:</strong> {releaseDate}</p>
+            <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
 
+            <p><strong>Release Date:</strong> {releaseDate}</p>
+            <p><strong>Rating:</strong> {gameRating}</p>
+            <p><strong>Franchise:</strong> {franchise}</p>
+            <p><strong>Story Line:</strong> {storyline}</p>
+            <p><strong>Languages:</strong> {languages}</p>
+            <div className="added-field">
+              <strong>Platforms:</strong>{" "}
+              {Array.isArray(game.platforms) ? game.platforms.join(", ") : String(game.platforms ?? "Unknown")}
+            </div>
             <div className="added-field">
               <strong>Genres:</strong>{" "}
               {Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}
@@ -264,8 +281,8 @@ function LoadGame() {
               <input
                 type="checkbox"
                 id="like-checkbox"
-                checked={!!game.isLiked}
-                onChange={likeGame}
+                checked={modalIsLiked}
+                onChange={(e) => setModalIsLiked(e.target.checked)}
               />
               <label htmlFor="like-checkbox">Like this game?</label>
             </div>

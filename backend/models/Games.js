@@ -24,6 +24,7 @@ const gameSchema = new mongoose.Schema(
     platforms: [{ type: Number }],
 
     userRating: { type: Number, default: 0 },
+    userRatingCount: {type: Number, default: 0},
     themes: [{ type: Number }],
     language_supports: [{ type: Number }],
     keywords: [{ type: Number }],

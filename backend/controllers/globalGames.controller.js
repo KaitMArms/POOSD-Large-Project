@@ -72,7 +72,7 @@ exports.browseRecommended = async (req, res) => {
             coverUrl: {
               $let: {
                 vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
-                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg"] }, null] }
+                in: { $cond: ['$$coverDoc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$coverDoc.image_id", ".jpg"] }, null] }
               }
             }
           }
@@ -188,7 +188,7 @@ exports.searchGames = async (req, res) => {
               { $gt: [{ $size: "$coverObject" }, 0] },
               {
                 $concat: [
-                  "https://images.igdb.com/igdb/image/upload/t_cover_small/",
+                  "https://images.igdb.com/igdb/image/upload/t_cover_big/",
                   { $arrayElemAt: ["$coverObject.image_id", 0] },
                   ".jpg"
                 ]
@@ -291,52 +291,63 @@ exports.addUserGame = async (req, res) => {
 };
 
 exports.getGameById = async (req, res) => {
-  console.log('getGameById called with id:', req.params.id);
   try {
-    const gameId = parseInt(req.params.id, 10);
-    if (isNaN(gameId)) {
-      return res.status(400).json({ message: 'Invalid Game ID format.' });
+    const slug = req.params.slug;
+    if (!slug) {
+      return res.status(400).json({ message: 'Invalid Slug format.' });
     }
 
     const pipeline = [
-      { $match: { id: gameId } },
+      { $match: { slug: slug } },
 
-      {
-        $lookup: {
-          from: 'genres',
-          localField: 'genres',
-          foreignField: 'id',
-          as: 'genreObjects'
-        }
-      },
-
-      {
-        $lookup: {
-          from: 'covers',
-          localField: 'cover',
-          foreignField: 'id',
-          as: 'coverObject'
-        }
-      },
-
+      { $lookup: { from: 'genres', localField: 'genres', foreignField: 'id', as: 'genreObjects' } },
+      { $lookup: { from: 'covers', localField: 'cover', foreignField: 'id', as: 'coverObject' } },
+      { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
+      { $lookup: { from: 'platforms', localField: 'platforms', foreignField: 'id', as: 'platformObjects'} },
+      { $lookup: { from: 'languages', localField: 'language_supports', foreignField: 'id', as: 'languageObjects'} },
+      { $lookup: { from: 'franchises', localField: 'franchise', foreignField: 'id', as: 'franchiseObjects'} },
       {
         $addFields: {
           genres: '$genreObjects.name',
-
+          franchise: '$franchiseObjects.name',
+          languages: '$languageObjects.name',
+          platforms: '$platformObjects.name',
           coverUrl: {
             $let: {
-              vars: {
-                coverDoc: { $arrayElemAt: ['$coverObject', 0] }
-              },
+              vars: { doc: { $arrayElemAt: ['$coverObject', 0] } },
               in: {
-                $concat: [
-                  "https://images.igdb.com/igdb/image/upload/t_1080p/",
-                  "$$coverDoc.image_id",
-                  ".jpg"
+                $cond: [
+                  '$$doc',
+                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$doc.image_id", ".jpg" ] },
+                  null
                 ]
               }
             }
-          }
+          },
+
+          bannerUrl: {
+            $let: {
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
+              in: {
+                $cond: {
+                  if: '$$artDoc', 
+                  then: {
+                    $concat: [
+                      "https:",
+                      {
+                        $replaceOne: {
+                          input: "$$artDoc.url", 
+                          find: "t_thumb",      
+                          replacement: "t_1080p" 
+                        }
+                      }
+                    ]
+                  },
+                  else: null 
+                }
+              }
+            }
+          },
         }
       },
 
@@ -344,7 +355,12 @@ exports.getGameById = async (req, res) => {
         $project: {
           genreObjects: 0,
           coverObject: 0,
-          cover: 0
+          artworkObjects: 0,
+          cover: 0,
+          artworks: 0,
+          franchiseObjects: 0,
+          languagesObjects: 0,
+          platformObjects: 0,
         }
       }
     ];

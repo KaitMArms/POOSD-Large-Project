@@ -1,4 +1,4 @@
-const { UserModel: User , GameModel: Game} = require('../db');
+const { UserModel: User, GameModel: Game } = require('../db');
 
 exports.addUserGame = async (req, res) => {
   try {
@@ -34,6 +34,21 @@ exports.addUserGame = async (req, res) => {
     user.userGames.push(newGame);
     await user.save();
 
+    const globalGame = await Game.findOne({ id: gameId });
+    if (globalGame) {
+      const currentTotalRating = globalGame.userRating * globalGame.userRatingCount;
+      const newTotalRating = currentTotalRating + rating;
+      const newRatingCount = globalGame.userRatingCount + 1;
+      const newAverageRating = newTotalRating / newRatingCount;
+
+      globalGame.userRating = newAverageRating;
+      globalGame.userRatingCount = newRatingCount;
+      await globalGame.save()
+    } else {
+      console.warn(`Could not find global game with id ${gameId} to update rating.`);
+
+    }
+
     return res.status(201).json({ success: true, message: 'Game added to user list', game: newGame });
   } catch (error) {
     console.error('Error adding user game:', error);
@@ -50,7 +65,7 @@ exports.viewUserGames = async (req, res) => {
 
     const user = await User.findById(userId).select('userGames').lean();
     if (!user || !user.userGames || user.userGames.length === 0) {
-      return res.status(200).json({ success: true, games: [] }); 
+      return res.status(200).json({ success: true, games: [] });
     }
 
     const userGamesMap = new Map(user.userGames.map(g => [g.id, g]));
@@ -62,7 +77,7 @@ exports.viewUserGames = async (req, res) => {
 
     const pipeline = [
       { $match: { id: { $in: gameIds } } },
-      
+
       {
         $lookup: {
           from: 'covers',
@@ -71,7 +86,7 @@ exports.viewUserGames = async (req, res) => {
           as: 'coverObject'
         }
       },
-
+      { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
       {
         $addFields: {
           coverUrl: {
@@ -79,16 +94,46 @@ exports.viewUserGames = async (req, res) => {
               vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
               in: {
                 $cond: [
-                  '$$coverDoc', 
-                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg" ] },
-                  null 
+                  '$$coverDoc',
+                  { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg"] },
+                  null
                 ]
               }
             }
-          }
+          },
+          bannerUrl: {
+            $let: {
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
+              in: {
+                $cond: {
+                  if: '$$artDoc',
+                  then: {
+                    $concat: [
+                      "https:",
+                      {
+                        $replaceOne: {
+                          input: "$$artDoc.url",
+                          find: "t_thumb",
+                          replacement: "t_1080p"
+                        }
+                      }
+                    ]
+                  },
+                  else: null
+                }
+              }
+            }
+          },
         }
       },
-      { $project: { coverObject: 0 } }
+      {
+        $project: {
+          coverObject: 0,
+          artworkObjects: 0,
+          cover: 0,
+          artworks: 0
+        }
+      }
     ];
 
     const detailedGames = await Game.aggregate(pipeline);
@@ -96,7 +141,7 @@ exports.viewUserGames = async (req, res) => {
     const populatedGames = detailedGames.map(game => {
       const userGameData = userGamesMap.get(game.id);
       return {
-        ...game, 
+        ...game,
         status: userGameData.status,
         userRating: userGameData.userRating,
         isLiked: userGameData.isLiked,
@@ -281,10 +326,10 @@ exports.editGameInfo = async (req, res) => {
     }
 
     const update = {};
-    if (status !== undefined)  update['userGames.$.status']  = status;
+    if (status !== undefined) update['userGames.$.status'] = status;
     if (isLiked !== undefined) update['userGames.$.isLiked'] = !!isLiked;
-    if (rating !== undefined)  update['userGames.$.userRating']  = Number(rating);
-    if (review !== undefined)  update['userGames.$.review']  = review;
+    if (rating !== undefined) update['userGames.$.userRating'] = Number(rating);
+    if (review !== undefined) update['userGames.$.review'] = review;
 
     const updatedDoc = await User.findOneAndUpdate(
       { _id: userId, 'userGames.id': gameId },
@@ -296,7 +341,44 @@ exports.editGameInfo = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Game not found in user library' });
     }
 
-    const updatedGame = updatedDoc.userGames.find(g => g.id === gameId);
+    const user = await User.findOne({ _id: userId, 'userGames.id': gameId });
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Game not found in user library' });
+    }
+
+    const gameToUpdate = user.userGames.find(g => g.id === gameId);
+
+    let oldRating = null;
+    if (newRating !== undefined) {
+      oldRating = gameToUpdate.userRating || 0;
+    }
+    if (status !== undefined) gameToUpdate.status = status;
+    if (isLiked !== undefined) gameToUpdate.isLiked = !!isLiked;
+    if (newRating !== undefined) gameToUpdate.userRating = Number(newRating);
+    if (review !== undefined) gameToUpdate.review = review;
+
+    await user.save();
+
+    if (newRating !== undefined && oldRating !== null) {
+      try {
+        const globalGame = await Game.findOne({ id: gameId });
+        if (globalGame) {
+          const currentTotal = (globalGame.userRating || 0) * (globalGame.userRatingCount || 0);
+          const totalWithoutOld = currentTotal - oldRating;
+
+          const newTotal = totalWithoutOld + Number(newRating);
+
+          const newAverage = globalGame.userRatingCount > 0 ? newTotal / globalGame.userRatingCount : 0;
+
+          globalGame.userRating = newAverage;
+          await globalGame.save();
+        } else {
+          console.warn(`Could not find global game with id ${gameId} to update its rating.`);
+        }
+      } catch (ratingUpdateError) {
+        console.error(`Failed to update global rating for game ${gameId}:`, ratingUpdateError);
+      }
+    }
     return res.status(200).json({ success: true, message: 'Updated', game: updatedGame });
   } catch (error) {
     console.error('Error updating game info:', error);

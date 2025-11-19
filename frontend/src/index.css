@@ -5,7 +5,8 @@
   color: var(--text-color);
 }
 
-html, body {
+html,
+body {
   margin: 0 !important;
   padding: 0 !important;
   font-family: 'Orbitron', sans-serif;
@@ -21,10 +22,10 @@ body[data-theme="dark"] {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;    
+  align-items: center;
   width: 100%;
   margin: 0;
-  padding: 0 1rem;       
+  padding: 0 1rem;
   overflow-x: hidden;
   margin: 0;
   padding: 0;
@@ -120,7 +121,8 @@ body {
     font-size: 1.8rem !important;
   }
 
-  h1, h2 {
+  h1,
+  h2 {
     font-size: clamp(1.4rem, 6vw, 2rem) !important;
     text-align: center;
   }
@@ -144,13 +146,13 @@ body[data-theme="dark"] {
 
 .search-bar {
   display: flex;
-  flex-direction: column; 
-  gap: 1rem;              
-  
+  flex-direction: column;
+  gap: 1rem;
+
   padding: 1rem;
-  border: 1px solid #444; 
+  border: 1px solid #444;
   border-radius: 8px;
-  margin-bottom: 2rem;    
+  margin-bottom: 2rem;
 }
 
 .search-filters-dropdown {
@@ -161,10 +163,10 @@ body[data-theme="dark"] {
 
 .search-filter-checkbox {
   display: flex;
-  flex-direction: row;  
-  align-items: center;  
-  gap: 0.5rem;          
-  cursor: pointer;      
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
 }
 
 .react-select-container .react-select__control {
@@ -197,42 +199,13 @@ body[data-theme="dark"] {
   color: #fff;
 }
 
-.user-game-row {
-  display: flex;
-  flex-direction: column; 
-  background-color: #2a2a2a;
-  border-radius: 8px;
-  border: 1px solid #444;
-  overflow: hidden; 
-}
-
-.search-result-thumbnail {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-}
-
 .game-title-container {
-  height: 45px; 
   display: flex;
-  align-items: center;   
+  align-items: center;
   justify-content: center;
   padding: 0.75rem;
-  
-}
-
-.user-game-row .game-link {
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1rem;
   text-align: center;
-  
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; 
-  -webkit-box-orient: vertical;
+  flex-shrink: 0;
 }
 
 .user-game-row .game-link:hover {
@@ -243,7 +216,7 @@ body[data-theme="dark"] {
 .components-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem; 
+  gap: 2rem;
   max-width: 1800px;
   margin: 0 auto;
 }
@@ -251,7 +224,7 @@ body[data-theme="dark"] {
 .game-container {
   width: 100%;
   padding: 1rem;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .recommend-games-container,
@@ -259,16 +232,90 @@ body[data-theme="dark"] {
   background-color: #1a1a1a;
   border-radius: 8px;
   padding: 1.5rem;
+  min-width: 0;
 }
 
-.columns-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 1rem; 
-}
 
 @media (max-width: 1200px) {
   .components-container {
     grid-template-columns: 1fr;
   }
+}
+
+.columns-wrapper {
+  gap: 1rem;
+}
+
+.user-game-row {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  border: 1px solid #444;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+
+.user-game-row .game-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  flex-grow: 1;
+}
+
+.search-result-thumbnail {
+  display: block;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.modal-box {
+  overflow: hidden; 
+  background: #2a2a2a;
+  padding: 0; 
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px; 
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-banner-image {
+  width: 100%; 
+  height: auto; 
+  max-height: 200px; 
+  object-fit: contain; 
+  display: block; 
+}
+
+.modal-content {
+    padding: 20px;
+}
+
+.user-game-card {
+  position: relative; 
+  display: block;
+  cursor: pointer;
+  overflow: hidden; 
+  border-radius: 8px;
+}
+
+.liked-icon {
+  position: absolute; 
+  top: 8px;
+  right: 8px;
+  z-index: 10; 
+  width: 24px;
+  height: 24px;
+}
+
+.liked-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: #FFD700; 
+  filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.7));
 }

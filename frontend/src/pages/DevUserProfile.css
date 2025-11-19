@@ -57,6 +57,7 @@
   box-shadow: 0 4px 10px rgba(162, 89, 255, 0.4);
   cursor: pointer;
   transition: all 0.25s ease;
+  margin-bottom: 1.5em;
 }
 
 .add-game-button:hover {
@@ -203,9 +204,6 @@
   width: 100%;
   text-align: center;
 }
-
-/* The actual neon text + pill come from .user-game-row and .game-link
-   (defined in your existing CSS for user/global games). */
 
 /* === Dev game modal & buttons === */
 
@@ -362,4 +360,29 @@
   color: #ff4b4b;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.user-game-card {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 8px;
+  width: 150px; /* Adjust width as needed */
+}
+
+.user-game-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+}
+
+.columns-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
 }
