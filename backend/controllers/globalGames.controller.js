@@ -292,13 +292,13 @@ exports.addUserGame = async (req, res) => {
 
 exports.getGameById = async (req, res) => {
   try {
-    const gameId = parseInt(req.params.id, 10);
-    if (isNaN(gameId)) {
-      return res.status(400).json({ message: 'Invalid Game ID format.' });
+    const slug = req.params.slug;
+    if (!slug) {
+      return res.status(400).json({ message: 'Invalid Slug format.' });
     }
 
     const pipeline = [
-      { $match: { id: gameId } },
+      { $match: { slug: slug } },
 
       { $lookup: { from: 'genres', localField: 'genres', foreignField: 'id', as: 'genreObjects' } },
       { $lookup: { from: 'covers', localField: 'cover', foreignField: 'id', as: 'coverObject' } },

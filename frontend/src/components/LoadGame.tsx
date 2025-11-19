@@ -25,6 +25,7 @@ type GlobalGame = {
   id?: number | string;
   name?: string;
   summary?: string;
+  slug?: string;
   coverUrl?: string | null;
   bannerUrl?: string | null;
   genres?: (string | number)[] | null;
@@ -33,7 +34,9 @@ type GlobalGame = {
 };
 
 function LoadGame() {
-  const { id } = useParams<{ id?: string }>();
+  console.log("Result from useParams():", useParams());
+
+
   const [game, setGame] = useState<GlobalGame | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +45,7 @@ function LoadGame() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitMessage, setSubmitMessage] = useState<string>("");
   const [modalIsLiked, setModalIsLiked] = useState<boolean>(!!game?.isLiked);
-
-  const numericId = (() => {
-    if (!id) return null;
-    const n = Number(id);
-    return Number.isFinite(n) ? n : null;
-  })();
+  const { slug } = useParams<{ slug?: string }>();
 
   useEffect(() => {
     let cancelled = false;
@@ -62,17 +60,15 @@ function LoadGame() {
         setLoading(false);
         return;
       }
-
-      if (!id) {
-        setError("No game id provided.");
+      console.log(slug);
+      if (!slug) {
+        setError("Invalid Slug.");
         setLoading(false);
         return;
       }
 
-      const pathId = numericId ?? id;
-
       try {
-        const resp = await fetch(`${API_BASE}/api/globalgames/${pathId}`, {
+        const resp = await fetch(`${API_BASE}/api/globalgames/${slug}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -88,7 +84,10 @@ function LoadGame() {
         }
 
         const data = (await resp.json()) as GlobalGame;
-        if (!cancelled) setGame(data);
+        if (!cancelled) {
+          setGame(data);
+          setModalIsLiked(!!data.isLiked);
+        }
       } catch (e) {
         if (!cancelled) setError("Error fetching game details.");
       } finally {
@@ -100,7 +99,7 @@ function LoadGame() {
     return () => {
       cancelled = true;
     };
-  }, [id, numericId]);
+  }, [slug]);
 
   const addToUserGames = async (): Promise<void> => {
     setSubmitMessage("");
@@ -109,12 +108,12 @@ function LoadGame() {
       setSubmitMessage("You must be logged in.");
       return;
     }
-    if (!id) {
+    if (!game || !game.id) {
       setSubmitMessage("No game id.");
       return;
     }
 
-    const gameIdToSend: number | string = numericId ?? id;
+    const gameIdToSend = game.id;
 
     try {
       const resp = await fetch(`${API_BASE}/api/user/games/add`, {
@@ -206,7 +205,7 @@ function LoadGame() {
   if (error) return <div style={{ color: "var(--text-color)" }}>Error: {error}</div>;
   if (!game) return <div>Game not found.</div>;
 
-  const coverUrl = game.bannerUrl || "/default-game.png";
+  const coverUrl = game.bannerUrl || game.coverUrl || "/default-game.png";
   const releaseDate = formatUnixDate(
     typeof game.first_release_date === "number" ? game.first_release_date : null
   );

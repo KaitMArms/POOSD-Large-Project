@@ -10,6 +10,6 @@ router.get('/search', searchGames);
 router.get('/recommended', recommendedGames);
 router.post('/add', addUserGame);
 router.get('/browse/recommended', browseRecommended);
-router.get('/:id', getGameById);
+router.get('/:slug', getGameById);
 
 module.exports = router;

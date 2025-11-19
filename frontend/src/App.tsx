@@ -19,7 +19,7 @@ function App()
             <Route path="/profile" element={<UserProfilePage />}/>
             <Route path="/all-games" element={<GlobalGamesPage />}/>
             <Route path="/my-games" element={<UserGamesPage />}/>
-            <Route path="/game/:id" element={<GamePage />} />
+            <Route path="/game/:slug" element={<GamePage />} />
           </Routes>
         </main>
       </Router>

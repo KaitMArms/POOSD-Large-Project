@@ -216,21 +216,23 @@ function LoadGlobalGame() {
           { }
           <div className="columns-wrapper" style={gridStyles}>
             {recommendedGames.length > 0 ? (
-              recommendedGames.map((game) => (
-                <div key={game._id} className="user-game-row" style={userGameRowStyles}>
-                  <Link to={`/game/${game.id}`} className="game-link" style={gameLinkStyles}>
-                    <img
-                      src={game.coverUrl || "/default-game.png"}
-                      alt={game.name}
-                      className="search-result-thumbnail"
-                      style={imageStyle}
-                    />
-                    <div className="game-title-container">
-                      <span style={textStyle}>{game.name}</span>
-                    </div>
-                  </Link>
-                </div>
-              ))
+              recommendedGames.map((game) => {
+                return (
+                  <div key={game._id} className="user-game-row" style={userGameRowStyles}>
+                    <Link to={`/game/${game.slug}`} className="game-link" style={gameLinkStyles}>
+                      <img
+                        src={game.coverUrl || "/default-game.png"}
+                        alt={game.name}
+                        className="search-result-thumbnail"
+                        style={imageStyle}
+                      />
+                      <div className="game-title-container">
+                        <span style={textStyle}>{game.name}</span>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })
             ) : (
               <p>No recommended games found.</p>
             )}
@@ -284,7 +286,7 @@ function LoadGlobalGame() {
             {searchedGames.length > 0 ? (
               searchedGames.map((game) => (
                 <div key={game._id} className="user-game-row" style={userGameRowStyles}>
-                  <Link to={`/game/${game.id}`} className="game-link" style={gameLinkStyles}>
+                  <Link to={`/game/${game.slug}`} className="game-link" style={gameLinkStyles}>
                     <img
                       src={game.coverUrl || "/default-game.png"}
                       alt={game.name}

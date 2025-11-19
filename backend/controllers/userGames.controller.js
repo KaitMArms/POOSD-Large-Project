@@ -1,4 +1,4 @@
-const { UserModel: User , GameModel: Game} = require('../db');
+const { UserModel: User, GameModel: Game } = require('../db');
 
 exports.addUserGame = async (req, res) => {
   try {
@@ -50,7 +50,7 @@ exports.viewUserGames = async (req, res) => {
 
     const user = await User.findById(userId).select('userGames').lean();
     if (!user || !user.userGames || user.userGames.length === 0) {
-      return res.status(200).json({ success: true, games: [] }); 
+      return res.status(200).json({ success: true, games: [] });
     }
 
     const userGamesMap = new Map(user.userGames.map(g => [g.id, g]));
@@ -62,7 +62,7 @@ exports.viewUserGames = async (req, res) => {
 
     const pipeline = [
       { $match: { id: { $in: gameIds } } },
-      
+
       {
         $lookup: {
           from: 'covers',
@@ -71,7 +71,7 @@ exports.viewUserGames = async (req, res) => {
           as: 'coverObject'
         }
       },
-
+      { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
       {
         $addFields: {
           coverUrl: {
@@ -79,16 +79,44 @@ exports.viewUserGames = async (req, res) => {
               vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
               in: {
                 $cond: [
-                  '$$coverDoc', 
-                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg" ] },
-                  null 
+                  '$$coverDoc',
+                  { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_small/", "$$coverDoc.image_id", ".jpg"] },
+                  null
                 ]
               }
             }
-          }
+          },
+          bannerUrl: {
+            $let: {
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
+              in: {
+                $cond: {
+                  if: '$$artDoc',
+                  then: {
+                    $concat: [
+                      "https:",
+                      {
+                        $replaceOne: {
+                          input: "$$artDoc.url",
+                          find: "t_thumb",
+                          replacement: "t_1080p"
+                        }
+                      }
+                    ]
+                  },
+                  else: null
+                }
+              }
+            }
+          },
         }
       },
-      { $project: { coverObject: 0 } }
+      { $project: {           
+          coverObject: 0,
+          artworkObjects: 0,
+          cover: 0,
+          artworks: 0 
+        } }
     ];
 
     const detailedGames = await Game.aggregate(pipeline);
@@ -96,7 +124,7 @@ exports.viewUserGames = async (req, res) => {
     const populatedGames = detailedGames.map(game => {
       const userGameData = userGamesMap.get(game.id);
       return {
-        ...game, 
+        ...game,
         status: userGameData.status,
         userRating: userGameData.userRating,
         isLiked: userGameData.isLiked,
@@ -281,10 +309,10 @@ exports.editGameInfo = async (req, res) => {
     }
 
     const update = {};
-    if (status !== undefined)  update['userGames.$.status']  = status;
+    if (status !== undefined) update['userGames.$.status'] = status;
     if (isLiked !== undefined) update['userGames.$.isLiked'] = !!isLiked;
-    if (rating !== undefined)  update['userGames.$.userRating']  = Number(rating);
-    if (review !== undefined)  update['userGames.$.review']  = review;
+    if (rating !== undefined) update['userGames.$.userRating'] = Number(rating);
+    if (review !== undefined) update['userGames.$.review'] = review;
 
     const updatedDoc = await User.findOneAndUpdate(
       { _id: userId, 'userGames.id': gameId },
