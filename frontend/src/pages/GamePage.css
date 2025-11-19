@@ -285,7 +285,9 @@
   margin-top: 0.5rem;
 }
 
-.modal-submit {
+.modal-submit,
+.modal-remove-button,
+.modal-close-button {
   margin-top: 1.5rem;
   padding: 0.8rem 1.2rem;
   width: 100%;
