@@ -41,7 +41,6 @@ function LoadGlobalGame() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [ratedOnly, setRatedOnly] = useState<boolean>(true);
-  const [searchCurrentPage, setSearchCurrentPage] = useState(1);
   const [searchPage, setSearchPage] = useState(1);
   const [totalSearchPages, setTotalSearchPages] = useState(1);
 
