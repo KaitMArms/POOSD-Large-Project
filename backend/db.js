@@ -48,6 +48,7 @@ const KeywordSchema = require('./models/KeyWords');
 const ICompaniesSchema = require('./models/ICompanies');
 const GameEngineSchema = require('./models/GameEngine');
 const CollectionsSchema = require('./models/Collections');
+const LanguageSupportSchema = require('./model/LanguageSupport');
 
 const UserModel = userConnection.models.User || userConnection.model('User', UserSchema);
 const CounterModel = userConnection.models.Counter || userConnection.model('Counter', CounterSchema);
@@ -68,12 +69,14 @@ const KeywordModel = gameConnection.model('Keyword', KeywordSchema);
 const ICompaniesModel = gameConnection.model('ICompanies', ICompaniesSchema);
 const GameEngineModel = gameConnection.model('GameEngine', GameEngineSchema);
 const CollectionsModel = gameConnection.model('Collections', CollectionsSchema);
+const LanguageSupportModel = gameConnection.model('LanguageSupports', LanguageSupportSchema);
 
 module.exports = {
     userConnection,
     gameConnection,
     connectionsReady,
 
+    LanguageSupportModel,
     ArtWorkModel,
     UserModel,
     CounterModel,

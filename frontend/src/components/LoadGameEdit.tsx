@@ -33,7 +33,7 @@ function EditGameModal({ game, onClose, onSave ,onRemove}: EditGameModalProps) {
       isLiked,
     }
     try {
-      const resp = await fetch(`${API_BASE}/api/user/games/${game.slug}`, {
+      const resp = await fetch(`${API_BASE}/api/user/games/${game.id}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,

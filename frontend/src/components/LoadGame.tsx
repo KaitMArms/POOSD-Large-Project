@@ -38,6 +38,7 @@ type GlobalGame = {
   userRatingCount?: number;
   platforms?: number[];
   gameType?: number[];
+  languages?: string[];
 };
 
 function LoadGame() {
@@ -217,11 +218,9 @@ function LoadGame() {
   const releaseDate = formatUnixDate(
     typeof game.first_release_date === "number" ? game.first_release_date : null
   );
-  const gameModes = game.gameModes;
   const franchise = game.franchise;
-  const platforms = game.platforms;
   const storyline = game.storyline;
-  const gametype = game.gameType;
+  const languages = game.languages;
   return (
     <div className="game-view-container">
       <div className="game-feature-wrapper">
@@ -232,12 +231,13 @@ function LoadGame() {
 
             <p><strong>Release Date:</strong> {releaseDate}</p>
             <p><strong>Rating:</strong> {gameRating}</p>
-            <p><strong>Game Modes:</strong> {gameModes}</p>
             <p><strong>Franchise:</strong> {franchise}</p>
-            <p><strong>Platforms:</strong> {platforms}</p>
             <p><strong>Story Line:</strong> {storyline}</p>
-            <p><strong>Game Type:</strong> {gametype}</p>
-
+            <p><strong>Languages:</strong> {languages}</p>
+            <div className="added-field">
+              <strong>Platforms:</strong>{" "}
+              {Array.isArray(game.platforms) ? game.platforms.join(", ") : String(game.platforms ?? "Unknown")}
+            </div>
             <div className="added-field">
               <strong>Genres:</strong>{" "}
               {Array.isArray(game.genres) ? game.genres.join(", ") : String(game.genres ?? "Unknown")}

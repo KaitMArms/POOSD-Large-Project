@@ -303,11 +303,15 @@ exports.getGameById = async (req, res) => {
       { $lookup: { from: 'genres', localField: 'genres', foreignField: 'id', as: 'genreObjects' } },
       { $lookup: { from: 'covers', localField: 'cover', foreignField: 'id', as: 'coverObject' } },
       { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
-
+      { $lookup: { from: 'platforms', localField: 'platforms', foreignField: 'id', as: 'platformObjects'} },
+      { $lookup: { from: 'languages', localField: 'language_supports', foreignField: 'id', as: 'languageObjects'} },
+      { $lookup: { from: 'franchises', localField: 'franchise', foreignField: 'id', as: 'franchiseObjects'} },
       {
         $addFields: {
           genres: '$genreObjects.name',
-          
+          franchise: '$franchiseObjects.name',
+          languages: '$languageObjects.name',
+          platforms: '$platformObjects.name',
           coverUrl: {
             $let: {
               vars: { doc: { $arrayElemAt: ['$coverObject', 0] } },
@@ -353,7 +357,10 @@ exports.getGameById = async (req, res) => {
           coverObject: 0,
           artworkObjects: 0,
           cover: 0,
-          artworks: 0
+          artworks: 0,
+          franchiseObjects: 0,
+          languagesObjects: 0,
+          platformObjects: 0,
         }
       }
     ];

@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const mongoose = require('mongoose');
 
-const {connectionsReady, ArtWorkModel, PlatformModel, GenreModel, FranchiseModel, AgeRatingModel, CoverModel, GameModeModel, KeywordModel, LanguageModel, ThemeModel, GameTypeModel, PerspectiveModel, CollectionsModel, GameEngineModel, ICompaniesModel, ArtWorkModel} = require('../db');
+const {connectionsReady, PlatformModel, GenreModel, FranchiseModel, AgeRatingModel, CoverModel, GameModeModel, KeywordModel, LanguageModel, ThemeModel, GameTypeModel, PerspectiveModel, CollectionsModel, GameEngineModel, ICompaniesModel, ArtWorkModel, LanguageSupportModel} = require('../db');
 
 // Authenticates with twitch 
 async function getAccessToken() {
@@ -118,8 +118,8 @@ async function run() {
     // await seedData('involved_companies', ICompaniesModel, accessToken);
     // await seedData('collections', CollectionsModel, accessToken);
     // await seedData('game_engines', GameEngineModel, accessToken);
-    await seedData('artworks', ArtWorkModel, accessToken);
-
+    // await seedData('artworks', ArtWorkModel, accessToken);
+    await seedData('language_support', LanguageSupportModel, accessToken);
 
     await mongoose.connection.close();
     console.log("\nSeeding complete. Mongo connection closed.");
