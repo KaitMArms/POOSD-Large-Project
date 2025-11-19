@@ -31,6 +31,13 @@ type GlobalGame = {
   genres?: (string | number)[] | null;
   first_release_date?: number | null;
   isLiked?: boolean;
+  userRating?: number;
+  gameModes?: number[];
+  franchise?: number;
+  storyline?: string;
+  userRatingCount?: number;
+  platforms?: number[];
+  gameType?: number[];
 };
 
 function LoadGame() {
@@ -206,10 +213,15 @@ function LoadGame() {
   if (!game) return <div>Game not found.</div>;
 
   const coverUrl = game.bannerUrl || game.coverUrl || "/default-game.png";
+  const gameRating = game.userRating;
   const releaseDate = formatUnixDate(
     typeof game.first_release_date === "number" ? game.first_release_date : null
   );
-
+  const gameModes = game.gameModes;
+  const franchise = game.franchise;
+  const platforms = game.platforms;
+  const storyline = game.storyline;
+  const gametype = game.gameType;
   return (
     <div className="game-view-container">
       <div className="game-feature-wrapper">
@@ -219,6 +231,12 @@ function LoadGame() {
             <img src={coverUrl} className="added-image" alt={game.name ?? "cover"} />
 
             <p><strong>Release Date:</strong> {releaseDate}</p>
+            <p><strong>Rating:</strong> {gameRating}</p>
+            <p><strong>Game Modes:</strong> {gameModes}</p>
+            <p><strong>Franchise:</strong> {franchise}</p>
+            <p><strong>Platforms:</strong> {platforms}</p>
+            <p><strong>Story Line:</strong> {storyline}</p>
+            <p><strong>Game Type:</strong> {gametype}</p>
 
             <div className="added-field">
               <strong>Genres:</strong>{" "}
