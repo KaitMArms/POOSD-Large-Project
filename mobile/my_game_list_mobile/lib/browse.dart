@@ -114,7 +114,7 @@ class AllGamesState extends State<AllGames> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.purpleAccent.withOpacity(0.2),
+                  color: Colors.purpleAccent.withValues(alpha: 0.2),
                   offset: Offset(0, 2),
                   blurRadius: 24,
                 ),
@@ -184,6 +184,8 @@ class AllGamesState extends State<AllGames> {
               ),
             )
           else
+          //RECOMMENDED GAMES SECTION
+            SizedBox(height: 20),
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.all(16.0),
