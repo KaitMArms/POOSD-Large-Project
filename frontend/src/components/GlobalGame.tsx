@@ -41,6 +41,9 @@ function LoadGlobalGame() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [ratedOnly, setRatedOnly] = useState<boolean>(true);
+  const [searchCurrentPage, setSearchCurrentPage] = useState(1);
+  const [searchPage, setSearchPage] = useState(1);
+  const [totalSearchPages, setTotalSearchPages] = useState(1);
 
   useEffect(() => {
     const fetchRecommendedGames = async () => {
@@ -86,7 +89,7 @@ function LoadGlobalGame() {
 
   const [isSearching, setIsSearching] = useState(false);
 
-  const doSearchGame = async () => {
+  const doSearchGame = async (pageToFetch = 1) => {
     const q = (searchQuery || "").trim();
     if (!q) {
       setSearchedGames([]);
@@ -104,10 +107,12 @@ function LoadGlobalGame() {
     try {
       setError(null);
       setIsSearching(true);
-      setSearchedGames([]);
       console.log(`Searching for: "${q}"`);
 
       const urlParams = new URLSearchParams({ q });
+
+      urlParams.append('page', String(pageToFetch));
+      urlParams.append('limit', '24');
 
       let filtersToUse = selectedGameTypes;
 
@@ -145,6 +150,10 @@ function LoadGlobalGame() {
       const data = await response.json();
       const list = Array.isArray(data.data) ? data.data : [];
       setSearchedGames(list);
+      if (data.paging) {
+        setSearchPage(data.paging.page);
+        setTotalSearchPages(data.paging.totalPages);
+      }
 
     } catch (err) {
       console.error("Search threw error:", err);
@@ -252,7 +261,7 @@ function LoadGlobalGame() {
               type="button"
               id="searchButton"
               className="buttons"
-              onClick={doSearchGame}
+              onClick={() => doSearchGame(1)}
               disabled={isSearching}
             >
               {isSearching ? "Searching..." : "Search"}
@@ -281,7 +290,29 @@ function LoadGlobalGame() {
               <label htmlFor="ratedOnlyCheckbox">Show only games with age ratings</label>
             </div>
           </div>
+          {searchedGames.length > 0 && (
+            <div className="pagination-controls">
+              <button
+                className="buttons"
+                onClick={() => doSearchGame(searchPage - 1)}
+                disabled={searchPage <= 1 || isSearching}
+              >
+                &laquo; Previous
+              </button>
 
+              <span>
+                Page {searchPage} of {totalSearchPages}
+              </span>
+
+              <button
+                className="buttons"
+                onClick={() => doSearchGame(searchPage + 1)}
+                disabled={searchPage >= totalSearchPages || isSearching}
+              >
+                Next &raquo;
+              </button>
+            </div>
+          )}
           <div className="columns-wrapper" style={gridStyles}>
             {searchedGames.length > 0 ? (
               searchedGames.map((game) => (

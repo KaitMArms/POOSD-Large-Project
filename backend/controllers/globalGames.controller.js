@@ -77,7 +77,7 @@ exports.browseRecommended = async (req, res) => {
             }
           }
         },
-        { $project: { coverObject: 0} }
+        { $project: { coverObject: 0 } }
       ];
 
       const games = await Game.aggregate(pipeline);
@@ -85,11 +85,11 @@ exports.browseRecommended = async (req, res) => {
       const gamesById = new Map(games.map(g => [g.id, g]));
       const results = recs
         .map(r => ({ ...r, game: gamesById.get(r.id) || null }))
-        .filter(r => r.game) 
+        .filter(r => r.game)
         .slice(0, limit);
 
       return res.json({ recommendations: results });
-    } 
+    }
   } catch (err) {
     console.error('recommendedGames error', err);
     return res.status(500).json({ message: 'Server error recommended.' });
@@ -160,12 +160,12 @@ exports.searchGames = async (req, res) => {
 
       { $sort: { name: 1 } },
 
-      { $skip: skip },
-      { $limit: limit },
+      // { $skip: skip },
+      // { $limit: limit },
 
       {
         $lookup: {
-          from: 'covers', 
+          from: 'covers',
           localField: 'cover',
           foreignField: 'id',
           as: 'coverObject'
@@ -174,7 +174,7 @@ exports.searchGames = async (req, res) => {
 
       {
         $lookup: {
-          from: 'genres', 
+          from: 'genres',
           localField: 'genres',
           foreignField: 'id',
           as: 'genreObjects'
@@ -193,7 +193,7 @@ exports.searchGames = async (req, res) => {
                   ".jpg"
                 ]
               },
-              null 
+              null
             ]
           },
           genres: '$genreObjects.name'
@@ -303,64 +303,61 @@ exports.getGameById = async (req, res) => {
       { $lookup: { from: 'genres', localField: 'genres', foreignField: 'id', as: 'genreObjects' } },
       { $lookup: { from: 'covers', localField: 'cover', foreignField: 'id', as: 'coverObject' } },
       { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
-      { $lookup: { from: 'platforms', localField: 'platforms', foreignField: 'id', as: 'platformObjects'} },
-      { $lookup: { from: 'languages', localField: 'language_supports', foreignField: 'id', as: 'languageObjects'} },
-      { $lookup: { from: 'franchises', localField: 'franchise', foreignField: 'id', as: 'franchiseObjects'} },
-      {
-        $addFields: {
-          genres: '$genreObjects.name',
-          franchise: '$franchiseObjects.name',
-          languages: '$languageObjects.name',
-          platforms: '$platformObjects.name',
-          coverUrl: {
-            $let: {
-              vars: { doc: { $arrayElemAt: ['$coverObject', 0] } },
-              in: {
-                $cond: [
-                  '$$doc',
-                  { $concat: [ "https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$doc.image_id", ".jpg" ] },
-                  null
-                ]
-              }
-            }
-          },
+      { $lookup: { from: 'platforms', localField: 'platforms', foreignField: 'id', as: 'platformObjects' } },
+      { $lookup: { from: 'franchises', localField: 'franchise', foreignField: 'id', as: 'franchiseObjects' } },
 
-          bannerUrl: {
-            $let: {
-              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
-              in: {
-                $cond: {
-                  if: '$$artDoc', 
-                  then: {
-                    $concat: [
-                      "https:",
-                      {
-                        $replaceOne: {
-                          input: "$$artDoc.url", 
-                          find: "t_thumb",      
-                          replacement: "t_1080p" 
-                        }
-                      }
-                    ]
-                  },
-                  else: null 
-                }
+      {
+        $lookup: {
+          from: 'languagesupports', 
+          let: { support_ids: '$language_supports' }, 
+          pipeline: [
+            { $match: { $expr: { $in: ['$id', '$$support_ids'] } } },
+            {
+              $lookup: {
+                from: 'languages', 
+                localField: 'language',
+                foreignField: 'id',     
+                as: 'languageDetails'
               }
-            }
-          },
+            },
+            { $unwind: '$languageDetails' },
+            { $replaceRoot: { newRoot: '$languageDetails.name' } }
+          ],
+          as: 'languageNames' 
         }
       },
 
       {
         $project: {
-          genreObjects: 0,
-          coverObject: 0,
-          artworkObjects: 0,
-          cover: 0,
-          artworks: 0,
-          franchiseObjects: 0,
-          languagesObjects: 0,
-          platformObjects: 0,
+          _id: 1, id: 1, name: 1, slug: 1, summary: 1, first_release_date: 1,
+          userRating: 1, userRatingCount: 1, storyline: 1,
+
+          genres: '$genreObjects.name',
+          platforms: '$platformObjects.name',
+          franchise: { $arrayElemAt: ['$franchiseObjects.name', 0] },
+
+          languages: '$languageNames',
+
+          coverUrl: {
+            $let: {
+              vars: { doc: { $arrayElemAt: ['$coverObject', 0] } },
+              in: { $cond: ['$$doc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$doc.image_id", ".jpg"] }, null] }
+            }
+          },
+          bannerUrl: {
+            $let: {
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
+              in: {
+                $cond: {
+                  if: '$$artDoc',
+                  then: {
+                    $concat: ["https:", { $replaceOne: { input: "$$artDoc.url", find: "t_thumb", replacement: "t_1080p" } }]
+                  },
+                  else: null
+                }
+              }
+            }
+          }
         }
       }
     ];

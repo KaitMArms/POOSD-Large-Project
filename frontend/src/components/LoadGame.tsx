@@ -220,7 +220,6 @@ function LoadGame() {
   );
   const franchise = game.franchise;
   const storyline = game.storyline;
-  const languages = game.languages;
   return (
     <div className="game-view-container">
       <div className="game-feature-wrapper">
@@ -233,7 +232,10 @@ function LoadGame() {
             <p><strong>Rating:</strong> {gameRating}</p>
             <p><strong>Franchise:</strong> {franchise}</p>
             <p><strong>Story Line:</strong> {storyline}</p>
-            <p><strong>Languages:</strong> {languages}</p>
+            <div className="added-field">
+              <strong>Language:</strong>{" "}
+              {Array.isArray(game.languages) ? game.languages.join(", ") : String(game.languages ?? "Unknown")}
+            </div>            
             <div className="added-field">
               <strong>Platforms:</strong>{" "}
               {Array.isArray(game.platforms) ? game.platforms.join(", ") : String(game.platforms ?? "Unknown")}
