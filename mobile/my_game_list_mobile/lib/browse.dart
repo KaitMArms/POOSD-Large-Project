@@ -101,75 +101,77 @@ class AllGamesState extends State<AllGames> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // bigger box
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.purpleAccent.withOpacity(0.2),
-                      offset: Offset(0, 2),
-                      blurRadius: 24,
-                    ),
-                  ],
+      body: Column(
+        children: [
+          AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // bigger box
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.purpleAccent.withOpacity(0.2),
+                  offset: Offset(0, 2),
+                  blurRadius: 24,
                 ),
-                child: Stack(
+              ],
+            ),
+            child: Stack(
+              children: [
+                Text(
+                  "Global Games",
+                  style: TextStyle(
+                    color: Colors.deepPurpleAccent,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Global Games",
+                  style: TextStyle(
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 3
+                      ..color = Colors.white,
+                    decorationColor: Colors.purple,
+                    decorationThickness: 2,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Global Games",
+                  style: TextStyle(
+                    color: Colors.deepPurpleAccent,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 12,
+                        color: Colors.white,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_loading)
+            const CircularProgressIndicator()
+          else if (_error != null)
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32.0, 0.0, 32.0, 32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Global Games",
-                      style: TextStyle(
-                        color: Colors.deepPurpleAccent,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      "Global Games",
-                      style: TextStyle(
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 3
-                          ..color = Colors.white,
-                        decorationColor: Colors.purple,
-                        decorationThickness: 2,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      "Global Games",
-                      style: TextStyle(
-                        color: Colors.deepPurpleAccent,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 12,
-                            color: Colors.white,
-                            offset: Offset(0, 0),
-                          ),
-                        ],
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (_loading)
-                const CircularProgressIndicator()
-              else if (_error != null)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Text(
                       _error!,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -177,53 +179,53 @@ class AllGamesState extends State<AllGames> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                )
-              else
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16.0,
-                      mainAxisSpacing: 16.0,
-                      childAspectRatio: 0.7,
-                    ),
-                    itemCount: _games.length,
-                    itemBuilder: (context, index) {
-                      final game = _games[index];
-                      return Card(
-                        elevation: 4.0,
-                        child: Column(
-                          children: [
-                            if (game.coverUrl != null)
-                              Expanded(
-                                child: Image.network(
-                                  game.coverUrl!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                              ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                game.name,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                  ],
                 ),
-            ],
-          ),
-        ),
+              ),
+            )
+          else
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16.0),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16.0,
+                  mainAxisSpacing: 16.0,
+                  childAspectRatio: 0.7,
+                ),
+                itemCount: _games.length,
+                itemBuilder: (context, index) {
+                  final game = _games[index];
+                  return Card(
+                    elevation: 4.0,
+                    child: Column(
+                      children: [
+                        if (game.coverUrl != null)
+                          Expanded(
+                            child: Image.network(
+                              game.coverUrl!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            game.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
