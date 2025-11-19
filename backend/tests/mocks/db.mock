@@ -1,0 +1,12 @@
+const fakeUserModel = {
+  exists: jest.fn(),
+  findOneAndUpdate: jest.fn(),
+  findById: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+};
+
+module.exports = {
+  UserModel: fakeUserModel,
+  GameModel: fakeUserModel,
+};

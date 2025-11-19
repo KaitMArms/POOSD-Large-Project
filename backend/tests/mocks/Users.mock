@@ -1,12 +1,15 @@
 const mockUser = {
   _id: "user123",
-  userGames: [],
-  save: jest.fn().mockResolvedValue(true),
+  userGames: []
 };
 
-module.exports = {
-  User: {
-    findById: jest.fn().mockResolvedValue(mockUser),
-  },
-  __mockUser: mockUser
+mockUser.save = jest.fn().mockResolvedValue(mockUser);
+
+const User = {
+  exists: jest.fn(),
+  findOneAndUpdate: jest.fn(),
+  findById: jest.fn().mockResolvedValue(mockUser),
 };
+
+module.exports = {User};
+module.exports.__mockUser = mockUser;

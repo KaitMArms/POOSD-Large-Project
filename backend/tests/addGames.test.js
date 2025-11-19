@@ -1,5 +1,8 @@
 const request = require("supertest");
 
+jest.mock('../db', () => require('./mocks/db.mock'));
+const db = require("../db");
+
 // mock the correct Users model
 jest.mock("../models/Users", () => require("./mocks/Users.mock"));
 
@@ -77,8 +80,11 @@ const { __mockUser } = require("./mocks/Users.mock");
 
 
 describe("POST /api/globalgames/add", () => {
+  const User = require("./mocks/Users.mock");
+  const mockUser = User.__mockUser;
+
   beforeEach(() => {
-    // Reset mock user's array before every test
+    jest.clearAllMocks();
     __mockUser.userGames = [];
   });
 
@@ -106,7 +112,9 @@ describe("POST /api/globalgames/add", () => {
 
   it("should return 409 if game already exists", async () => {
     // Pre-add game
-    __mockUser.userGames.push({ id: 10694, name: "Halo 2" });
+    mockUser.userGames = [{ id: 10694, name: "Halo 2" }];
+
+    db.UserModel.exists.mockResolvedValueOnce(true);
 
     const res = await request(app)
       .post("/api/globalgames/add")
@@ -125,14 +133,18 @@ describe("POST /api/globalgames/add", () => {
   });
 
   it("should return 500 if the database fails", async () => {
-    const { User } = require("./mocks/Users.mock");
+    db.UserModel.exists.mockResolvedValueOnce(false);
+    db.UserModel.findOneAndUpdate.mockReturnValue({
+      lean: jest.fn().mockRejectedValueOnce(new Error('DB exploded')),
+    });
 
-    User.findById.mockRejectedValueOnce(new Error("DB fail"));
 
     const res = await request(app)
       .post("/api/globalgames/add")
       .send({ id: 123, name: "Test" });
 
     expect(res.status).toBe(500);
-  });
+});
+
+
 });
