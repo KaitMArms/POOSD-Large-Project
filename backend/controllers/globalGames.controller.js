@@ -160,8 +160,8 @@ exports.searchGames = async (req, res) => {
 
       { $sort: { name: 1 } },
 
-      // { $skip: skip },
-      // { $limit: limit },
+      { $skip: skip },
+      { $limit: limit },
 
       {
         $lookup: {
