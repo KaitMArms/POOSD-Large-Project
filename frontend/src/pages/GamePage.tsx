@@ -2,19 +2,18 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PageTitle from '../components/PageTitle.tsx';
 import LoadGame from '../components/LoadGame.tsx';
-import LoadGameEdit from '../components/LoadGameEdit.tsx';
+import EditGameModal from '../components/LoadGameEdit.tsx';
 import "./GamePage.css"
 import "../index.css";
 
 const API_BASE =
-  window.location.hostname === "localhost"
-    ? "http://localhost:8080"
-    : "https://playedit.games";
+    window.location.hostname === "localhost"
+        ? "http://localhost:8080"
+        : "https://playedit.games";
 
-const GamePage = () =>
-{
-    const { id } = useParams<{ id?: string }>();
-    const [isGameInUserList, setIsGameInUserList] = useState<boolean | null>(null);
+const GamePage = () => {
+    const { slug } = useParams<{ slug?: string }>();
+    const [userGameData, setUserGameData] = useState<any | null>(null);
     const [isLoadingUserList, setIsLoadingUserList] = useState<boolean>(true);
 
     useEffect(() => {
@@ -24,15 +23,15 @@ const GamePage = () =>
             setIsLoadingUserList(true);
             const token = localStorage.getItem("token");
 
-            if (!token || !id) {
-                setIsGameInUserList(false);
+            if (!token || !slug) {
+                setUserGameData(false);
                 setIsLoadingUserList(false);
                 return;
             }
 
-            const numericId = Number(id);
-            if (isNaN(numericId)) {
-                setIsGameInUserList(false);
+            const slugString = String(slug);
+            if (!slugString) {
+                setUserGameData(false);
                 setIsLoadingUserList(false);
                 return;
             }
@@ -51,15 +50,15 @@ const GamePage = () =>
                     const userGamesData = await userGamesResp.json();
                     const games = Array.isArray(userGamesData.games) ? userGamesData.games : [];
 
-                    const gameInList = games.find((g: any) => g.gameId === numericId);
+                    const gameInList = games.find((g: any) => g.slug === slugString);
 
-                    setIsGameInUserList(!!gameInList);
+                    setUserGameData(!!gameInList);
                 } else {
-                    setIsGameInUserList(false);
+                    setUserGameData(false);
                 }
             } catch (error) {
                 console.error("Error checking user game list:", error);
-                setIsGameInUserList(false);
+                setUserGameData(false);
             } finally {
                 if (!cancelled) {
                     setIsLoadingUserList(false);
@@ -71,8 +70,15 @@ const GamePage = () =>
         return () => {
             cancelled = true;
         };
-    }, [id]);
+    }, [slug]);
 
+    const handleSaveChanges = (updatedGame: any) => {
+        setUserGameData(updatedGame);
+    };
+
+    const handleRemoveGame = () => {
+        setUserGameData(null);
+    };
     if (isLoadingUserList) {
         return (
             <div className='page-container'>
@@ -82,10 +88,19 @@ const GamePage = () =>
         );
     }
 
-    return(
+    return (
         <div className='page-container'>
             <PageTitle />
-            {isGameInUserList ? <LoadGameEdit /> : <LoadGame />}
+            {userGameData ? (
+                <EditGameModal
+                    game={userGameData}
+                    onSave={handleSaveChanges}
+                    onRemove={handleRemoveGame}
+                    onClose={() => { }}
+                />
+            ) : (
+                <LoadGame />
+            )}
         </div>
     );
 };

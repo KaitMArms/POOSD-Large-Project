@@ -146,7 +146,3 @@ function LoadUserGames() {
 }
 
 export default LoadUserGames;
-
-function fetchUserGames() {
-    throw new Error('Function not implemented.');
-}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { Link } from "react-router-dom";
 import type { CSSProperties } from 'react';
 
@@ -14,7 +14,7 @@ type EditGameModalProps = {
   onRemove: (gameId: number | string) => void;
 };
 
-function EditGameModal({ game, onClose, onSave }: EditGameModalProps) {
+function EditGameModal({ game, onClose, onSave ,onRemove}: EditGameModalProps) {
   const [status, setStatus] = useState<string>(game.status || "to-play");
   const [rating, setRating] = useState<number>(typeof game.userRating === 'number' ? game.userRating : 5);
   const [isLiked, setIsLiked] = useState<boolean>(!!game.isLiked);
@@ -171,6 +171,4 @@ function EditGameModal({ game, onClose, onSave }: EditGameModalProps) {
 
 export default EditGameModal;
 
-function onRemove(id: any) {
-  throw new Error("Function not implemented.");
-}
+
