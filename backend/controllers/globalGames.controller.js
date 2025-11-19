@@ -95,12 +95,6 @@ exports.browseRecommended = async (req, res) => {
     return res.status(500).json({ message: 'Server error recommended.' });
   }
 };
-<<<<<<< HEAD
-=======
-function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
->>>>>>> origin/main
 
 exports.searchGames = async (req, res) => {
   try {
