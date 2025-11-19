@@ -48,7 +48,7 @@ const KeywordSchema = require('./models/KeyWords');
 const ICompaniesSchema = require('./models/ICompanies');
 const GameEngineSchema = require('./models/GameEngine');
 const CollectionsSchema = require('./models/Collections');
-const LanguageSupportSchema = require('./model/LanguageSupport');
+const LanguageSupportSchema = require('./models/LanguageSupport');
 
 const UserModel = userConnection.models.User || userConnection.model('User', UserSchema);
 const CounterModel = userConnection.models.Counter || userConnection.model('Counter', CounterSchema);
