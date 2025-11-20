@@ -64,8 +64,14 @@ function LoadUserGames() {
     const handleSaveChanges = (updatedGame: any) => {
         setGames(currentGames =>
             currentGames.map(game =>
-                game.id === updatedGame.id ? updatedGame : game
+                String(game.id) === String(updatedGame.id) ? updatedGame : game
             )
+        );
+    };
+    
+    const handleRemove = (gameId: number | string) => {
+        setGames(currentGames =>
+            currentGames.filter(g => String(g.id) !== String(gameId))
         );
     };
     const gamesByStatus = (status: string) => {
@@ -112,7 +118,7 @@ function LoadUserGames() {
                     game={selectedGame}
                     onClose={handleCloseModal}
                     onSave={handleSaveChanges}
-                    onRemove={handleSaveChanges}
+                    onRemove={handleRemove}
                 />
             )}
             <div className="columns-wrapper">
