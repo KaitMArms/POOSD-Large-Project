@@ -300,50 +300,81 @@ exports.getGameById = async (req, res) => {
     const pipeline = [
       { $match: { slug: slug } },
 
-      { $lookup: { from: 'genres', localField: 'genres', foreignField: 'id', as: 'genreObjects' } },
-      { $lookup: { from: 'covers', localField: 'cover', foreignField: 'id', as: 'coverObject' } },
-      { $lookup: { from: 'artworks', localField: 'artworks', foreignField: 'id', as: 'artworkObjects' } },
-      { $lookup: { from: 'platforms', localField: 'platforms', foreignField: 'id', as: 'platformObjects' } },
-      { $lookup: { from: 'franchises', localField: 'franchise', foreignField: 'id', as: 'franchiseObjects' } },
+      { $lookup: { from: 'genres',     localField: 'genres',     foreignField: 'id', as: 'genreObjects' } },
+      { $lookup: { from: 'covers',     localField: 'cover',      foreignField: 'id', as: 'coverObject' } },
+      { $lookup: { from: 'artworks',   localField: 'artworks',   foreignField: 'id', as: 'artworkObjects' } },
+      { $lookup: { from: 'platforms',  localField: 'platforms',  foreignField: 'id', as: 'platformObjects' } },
+      { $lookup: { from: 'franchises', localField: 'franchise',  foreignField: 'id', as: 'franchiseObjects' } },
 
+      // ───── Languages: fix newRoot error here ─────
       {
         $lookup: {
-          from: 'languagesupports', 
-          let: { support_ids: '$language_supports' }, 
+          from: 'languagesupports',
+          let: { support_ids: '$language_supports' },
           pipeline: [
             { $match: { $expr: { $in: ['$id', '$$support_ids'] } } },
             {
               $lookup: {
-                from: 'languages', 
+                from: 'languages',
                 localField: 'language',
-                foreignField: 'id',     
+                foreignField: 'id',
                 as: 'languageDetails'
               }
             },
             { $unwind: '$languageDetails' },
-            { $replaceRoot: { newRoot: '$languageDetails.name' } }
+
+            // Instead of $replaceRoot: newRoot: '$languageDetails.name'
+            // keep it an object with a `name` field
+            {
+              $project: {
+                _id: 0,
+                name: '$languageDetails.name'
+              }
+            }
           ],
-          as: 'languageNames' 
+          as: 'languageNames'
         }
       },
 
       {
         $project: {
-          _id: 1, id: 1, name: 1, slug: 1, summary: 1, first_release_date: 1,
-          userRating: 1, userRatingCount: 1, storyline: 1,
+          _id: 1,
+          id: 1,
+          name: 1,
+          slug: 1,
+          summary: 1,
+          first_release_date: 1,
+          userRating: 1,
+          userRatingCount: 1,
+          storyline: 1,
 
           genres: '$genreObjects.name',
           platforms: '$platformObjects.name',
           franchise: { $arrayElemAt: ['$franchiseObjects.name', 0] },
 
-          languages: '$languageNames',
+          // languageNames is now an array of { name: "Polish" }
+          // this turns it into ["Polish", "English", ...]
+          languages: '$languageNames.name',
 
           coverUrl: {
             $let: {
               vars: { doc: { $arrayElemAt: ['$coverObject', 0] } },
-              in: { $cond: ['$$doc', { $concat: ["https://images.igdb.com/igdb/image/upload/t_cover_big/", "$$doc.image_id", ".jpg"] }, null] }
+              in: {
+                $cond: [
+                  '$$doc',
+                  {
+                    $concat: [
+                      'https://images.igdb.com/igdb/image/upload/t_cover_big/',
+                      '$$doc.image_id',
+                      '.jpg'
+                    ]
+                  },
+                  null
+                ]
+              }
             }
           },
+
           bannerUrl: {
             $let: {
               vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
@@ -351,7 +382,16 @@ exports.getGameById = async (req, res) => {
                 $cond: {
                   if: '$$artDoc',
                   then: {
-                    $concat: ["https:", { $replaceOne: { input: "$$artDoc.url", find: "t_thumb", replacement: "t_1080p" } }]
+                    $concat: [
+                      'https:',
+                      {
+                        $replaceOne: {
+                          input: '$$artDoc.url',
+                          find: 't_thumb',
+                          replacement: 't_1080p'
+                        }
+                      }
+                    ]
                   },
                   else: null
                 }
