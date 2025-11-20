@@ -10,14 +10,6 @@ const API_BASE =
     : "https://playedit.games";
 
 
-const STATUS_DISPLAY: Record<string, string> = {
-  "completed": "Completed",
-  "in-progress": "In Progress",
-  "on-hold": "Paused",
-  "dropped": "Dropped",
-  "to-play": "To Be Played",
-};
-
 type PublicUser = {
   username: string;
   firstName?: string;
