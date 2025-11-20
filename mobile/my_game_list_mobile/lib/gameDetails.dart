@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GameDetails extends StatefulWidget {
-  final int gameId;
+  final String gameSlug; // Change from gameId to gameSlug
   final String gameName;
 
   const GameDetails({
     super.key,
-    required this.gameId,
+    required this.gameSlug,
     required this.gameName,
   });
 
@@ -47,11 +47,12 @@ class _GameDetailsState extends State<GameDetails> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://playedit.games/api/globalgames/${widget.gameId}'),
+        Uri.parse('https://playedit.games/api/globalgames/${widget.gameSlug}'), // Use slug
         headers: <String, String>{
           'Authorization': 'Bearer $token',
         },
       );
+      
 
       if (response.statusCode == 200) {
         setState(() {
@@ -112,7 +113,7 @@ class _GameDetailsState extends State<GameDetails> {
               _gameData!['bannerUrl'],
               width: double.infinity,
               height: 250,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
 
           Padding(

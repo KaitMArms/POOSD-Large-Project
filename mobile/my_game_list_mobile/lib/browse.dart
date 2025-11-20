@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_game_list_mobile/recommendedGames.dart';
 //import 'package:my_game_list_mobile/services/api_service.dart';
 
-class Game {
+/*class Game {
   final int id;
   final String name;
   final String? coverUrl;
@@ -20,8 +20,30 @@ class Game {
       coverUrl: json['coverUrl'],
     );
   }
-}
+}*/
 
+class Game {
+  final int id;
+  final String name;
+  final String? coverUrl;
+  final String? slug; // ADD THIS
+
+  Game({
+    required this.id, 
+    required this.name, 
+    this.coverUrl,
+    this.slug, // ADD THIS
+  });
+
+  factory Game.fromJson(Map<String, dynamic> json) {
+    return Game(
+      id: json['id'],
+      name: json['name'],
+      coverUrl: json['coverUrl'],
+      slug: json['slug'], // ADD THIS - it should be in the API response
+    );
+  }
+}
 class AllGames extends StatefulWidget {
   const AllGames({super.key});
 
