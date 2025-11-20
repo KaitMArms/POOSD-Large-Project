@@ -160,8 +160,8 @@ exports.searchGames = async (req, res) => {
 
       { $sort: { name: 1 } },
 
-      // { $skip: skip },
-      // { $limit: limit },
+      { $skip: skip },
+      { $limit: limit },
 
       {
         $lookup: {
@@ -322,15 +322,7 @@ exports.getGameById = async (req, res) => {
               }
             },
             { $unwind: '$languageDetails' },
-
-            // Instead of $replaceRoot: newRoot: '$languageDetails.name'
-            // keep it an object with a `name` field
-            {
-              $project: {
-                _id: 0,
-                name: '$languageDetails.name'
-              }
-            }
+            { $replaceRoot: { newRoot: '$languageDetails' } }
           ],
           as: 'languageNames'
         }
@@ -352,8 +344,6 @@ exports.getGameById = async (req, res) => {
           platforms: '$platformObjects.name',
           franchise: { $arrayElemAt: ['$franchiseObjects.name', 0] },
 
-          // languageNames is now an array of { name: "Polish" }
-          // this turns it into ["Polish", "English", ...]
           languages: '$languageNames.name',
 
           coverUrl: {

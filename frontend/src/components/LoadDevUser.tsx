@@ -690,7 +690,7 @@ const LoadDevUser: React.FC<LoadDevUserProps> = ({ event }) => {
 
       <div className="dev-games-container">
         <div className="dev-section-header">
-          <h2 className="section-title">My Development Games</h2>
+          <h2 className="section-title">My Developing Games</h2>
           <button className="add-game-button" onClick={handleAddGame}>
             + Add New Game
           </button>

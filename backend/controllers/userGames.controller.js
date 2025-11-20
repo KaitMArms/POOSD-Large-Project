@@ -204,8 +204,6 @@ exports.searchUserGames = async (req, res) => {
   }
 };
 
-
-
 exports.deleteUserGame = async (req, res) => {
   try {
     const userId = req.user?.sub; // from JWT payload
@@ -222,16 +220,36 @@ exports.deleteUserGame = async (req, res) => {
     const user = await User.findById(userId, 'userGames');
     if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-    const hasGame = user.userGames.some(g => g.id === gameId);
-    if (!hasGame) {
+    const game = user.userGames.find(g => g.id === gameId);
+    if (!game) {
       return res.status(404).json({ success: false, error: 'Game not found in user library' });
     }
+
+    const userRating = game.userRating || 0;
 
     const updated = await User.findByIdAndUpdate(
       userId,
       { $pull: { userGames: { id: gameId } } },
       { new: true, projection: { userGames: 1 } }
     );
+
+    try {
+      const globalGame = await Game.findOne({ id: gameId });
+      if (globalGame && globalGame.userRatingCount > 0) {
+        const currentTotal = (globalGame.userRating || 0) * (globalGame.userRatingCount || 0);
+        const newTotal = currentTotal - userRating;
+        const newCount = Math.max(0, globalGame.userRatingCount - 1);
+        const newAverage = newCount > 0 ? newTotal / newCount : 0;
+
+        globalGame.userRating = Math.round(newAverage * 100) / 100;
+        globalGame.userRatingCount = newCount;
+        await globalGame.save();
+      } else if (!globalGame) {
+        console.warn(`Could not find global game with id ${gameId} to update rating on deletion.`);
+      }
+    } catch (ratingUpdateError) {
+      console.error(`Failed to update global rating for game ${gameId} on deletion:`, ratingUpdateError);
+    }
 
     return res.status(200).json({
       success: true,
@@ -280,18 +298,17 @@ exports.likeGame = async (req, res) => {
 
 exports.editGameInfo = async (req, res) => {
   try {
-    const userId = req.user?.sub; // Mongo _id lives in JWT `sub`
+    const userId = req.user?.sub;
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
 
-    // Route: PATCH /api/user/games/:gameId
     const gameId = Number(req.params.gameId ?? req.body.gameId);
     if (!Number.isInteger(gameId)) {
       return res.status(400).json({ success: false, error: 'Valid numeric gameId required (path param)' });
     }
 
-    const { status, isLiked, rating, review } = req.body;
+    const { status, isLiked, rating: newRating, review } = req.body;
 
     // Validate status
     if (status !== undefined) {
@@ -302,14 +319,14 @@ exports.editGameInfo = async (req, res) => {
     }
 
     // Validate rating
-    if (rating !== undefined) {
-      const n = Number(rating);
+    if (newRating !== undefined) {
+      const n = Number(newRating);
       if (!Number.isFinite(n) || n < 0 || n > 10) {
         return res.status(400).json({ success: false, error: 'rating must be a number between 0 and 10' });
       }
     }
 
-    // Validate review (≤ 500 chars)
+    // Validate review
     if (review !== undefined) {
       if (typeof review !== 'string' || review.length > 500) {
         return res.status(400).json({ success: false, error: 'review must be a string up to 500 characters' });
@@ -319,16 +336,25 @@ exports.editGameInfo = async (req, res) => {
     if (
       status === undefined &&
       isLiked === undefined &&
-      rating === undefined &&
+      newRating === undefined &&
       review === undefined
     ) {
       return res.status(400).json({ success: false, error: 'Provide at least one of {status, isLiked, rating, review}' });
     }
 
+    let oldRating = null;
+    if (newRating !== undefined) {
+      const user = await User.findOne({ _id: userId, 'userGames.id': gameId });
+      if (user) {
+        const gameEntry = user.userGames.find(g => g.id === gameId);
+        oldRating = gameEntry?.userRating || 0;
+      }
+    }
+
     const update = {};
     if (status !== undefined) update['userGames.$.status'] = status;
     if (isLiked !== undefined) update['userGames.$.isLiked'] = !!isLiked;
-    if (rating !== undefined) update['userGames.$.userRating'] = Number(rating);
+    if (newRating !== undefined) update['userGames.$.userRating'] = Number(newRating);
     if (review !== undefined) update['userGames.$.review'] = review;
 
     const updatedDoc = await User.findOneAndUpdate(
@@ -341,34 +367,18 @@ exports.editGameInfo = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Game not found in user library' });
     }
 
-    const user = await User.findOne({ _id: userId, 'userGames.id': gameId });
-    if (!user) {
-      return res.status(404).json({ success: false, error: 'Game not found in user library' });
-    }
-
-    const gameToUpdate = user.userGames.find(g => g.id === gameId);
-
-    let oldRating = null;
-    if (newRating !== undefined) {
-      oldRating = gameToUpdate.userRating || 0;
-    }
-    if (status !== undefined) gameToUpdate.status = status;
-    if (isLiked !== undefined) gameToUpdate.isLiked = !!isLiked;
-    if (newRating !== undefined) gameToUpdate.userRating = Number(newRating);
-    if (review !== undefined) gameToUpdate.review = review;
-
-    await user.save();
+    const gameToUpdate = updatedDoc.userGames.find(g => g.id === gameId);
 
     if (newRating !== undefined && oldRating !== null) {
       try {
         const globalGame = await Game.findOne({ id: gameId });
         if (globalGame) {
           const currentTotal = (globalGame.userRating || 0) * (globalGame.userRatingCount || 0);
-          const totalWithoutOld = currentTotal - oldRating;
 
-          const newTotal = totalWithoutOld + Number(newRating);
+          const newTotal = currentTotal - oldRating + Number(newRating);
 
-          const newAverage = globalGame.userRatingCount > 0 ? newTotal / globalGame.userRatingCount : 0;
+          const count = globalGame.userRatingCount || 0;
+          const newAverage = count > 0 ? newTotal / count : 0;
 
           globalGame.userRating = newAverage;
           await globalGame.save();
@@ -379,7 +389,7 @@ exports.editGameInfo = async (req, res) => {
         console.error(`Failed to update global rating for game ${gameId}:`, ratingUpdateError);
       }
     }
-    return res.status(200).json({ success: true, message: 'Updated', game: updatedGame });
+    return res.status(200).json({ success: true, message: 'Updated', game: gameToUpdate });
   } catch (error) {
     console.error('Error updating game info:', error);
     return res.status(500).json({ success: false, error: 'Error updating game information' });
