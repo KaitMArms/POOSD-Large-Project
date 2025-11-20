@@ -7,6 +7,7 @@ import UserProfilePage from './pages/UserProfilePage.tsx';
 import GlobalGamesPage from './pages/GlobalGamesPage.tsx';
 import UserGamesPage from './pages/UserGamesPage.tsx';
 import GamePage from "./pages/GamePage.tsx";
+import PublicUserProfilePage from './components/PublicUserProfilePage.tsx';
 function App()
 {
   return (
@@ -20,6 +21,7 @@ function App()
             <Route path="/all-games" element={<GlobalGamesPage />}/>
             <Route path="/my-games" element={<UserGamesPage />}/>
             <Route path="/game/:slug" element={<GamePage />} />
+            <Route path="/user/:username" element={<PublicUserProfilePage />} />
           </Routes>
         </main>
       </Router>

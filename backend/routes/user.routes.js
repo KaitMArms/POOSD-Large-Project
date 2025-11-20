@@ -7,7 +7,10 @@ const {
   settingsUpd,
   deleteAccount,
   uploadAvatar,
-  changePassword,          // ⬅️ NEW
+  changePassword,
+  searchUsers,
+  publicProfileByUsername,
+  publicUserGamesByUsername,
 } = require('../controllers/user.controller');
 const requireAuth = require('../middleware/requireAuth');
 const avatarUpload = require('../middleware/avatarUpload');
@@ -22,5 +25,12 @@ router.patch('/settings', settingsUpd);
 router.patch('/change-password', changePassword);   // ⬅️ NEW ROUTE
 router.delete('/delete', deleteAccount);
 router.post('/avatar', avatarUpload.single('avatar'), uploadAvatar);
+
+// Search other users (exclude self)
+router.get('/search', searchUsers);
+// Public profile & games for a given username (cannot be self)
+router.get('/:username/public', publicProfileByUsername);
+router.get('/:username/games', publicUserGamesByUsername);
+
 
 module.exports = router;

@@ -279,3 +279,240 @@ exports.uploadAvatar = async (req, res) => {
     return res.status(500).json({ message: 'Server error.' });
   }
 };
+
+// ───────────────────────────────────────────────────────────
+// Public user search + public profile + public games
+// ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/user/search?query=kev
+ * Returns a list of public user info (excluding the current user).
+ */
+exports.searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string' || !query.trim()) {
+      return res.status(200).json({ success: true, users: [] });
+    }
+
+    const q = query.toLowerCase().trim();
+    const currentUserId = req.user.sub;
+
+    // Basic regex search on username (case-insensitive)
+    const rawUsers = await User.find({
+      username: { $regex: q, $options: 'i' },
+      _id: { $ne: currentUserId }, // exclude self
+    })
+      .select('username firstName lastName avatarUrl role userID createdAt')
+      .lean();
+
+    // Prioritize "starts with" matches, then "contains"
+    const startsWith = [];
+    const contains = [];
+
+    for (const u of rawUsers) {
+      const uname = (u.username || '').toLowerCase();
+      if (uname.startsWith(q)) startsWith.push(u);
+      else contains.push(u);
+    }
+
+    const merged = [...startsWith, ...contains];
+
+    return res.status(200).json({
+      success: true,
+      users: merged,
+    });
+  } catch (err) {
+    console.error('searchUsers error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+/**
+ * GET /api/user/:username/public
+ * Returns public profile info for a given username.
+ * Blocks viewing your *own* profile this way.
+ */
+exports.publicProfileByUsername = async (req, res) => {
+  try {
+    const paramUsername = String(req.params.username || '').toLowerCase().trim();
+    if (!paramUsername) {
+      return res.status(400).json({ message: 'Username is required.' });
+    }
+
+    // Prevent users from viewing *their own* profile via this route
+    const currentUsername = String(req.user.username || '').toLowerCase();
+    if (paramUsername === currentUsername) {
+      return res.status(403).json({
+        message: 'Use /api/user/profile for your own profile.',
+        reason: 'SELF_PROFILE',
+      });
+    }
+
+    const user = await User.findOne({ username: paramUsername })
+      .select('username firstName lastName avatarUrl bio role userID createdAt')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    console.error('publicProfileByUsername error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+/**
+ * GET /api/user/:username/games
+ * Returns a populated game list for the given username.
+ * Blocks viewing your *own* games this way.
+ *
+ * This reuses the aggregation approach from viewUserGames,
+ * but uses the target user's embedded userGames instead of req.user.
+ */
+exports.publicUserGamesByUsername = async (req, res) => {
+  try {
+    const paramUsername = String(req.params.username || '').toLowerCase().trim();
+    if (!paramUsername) {
+      return res.status(400).json({ message: 'Username is required.' });
+    }
+
+    const currentUsername = String(req.user.username || '').toLowerCase();
+    if (paramUsername === currentUsername) {
+      return res.status(403).json({
+        message: 'Use /api/user/games for your own games.',
+        reason: 'SELF_PROFILE_GAMES',
+      });
+    }
+
+    const user = await User.findOne({ username: paramUsername })
+      .select('username userGames')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const userGames = Array.isArray(user.userGames) ? user.userGames : [];
+    if (userGames.length === 0) {
+      return res.status(200).json({
+        success: true,
+        username: user.username,
+        games: [],
+      });
+    }
+
+    const userGamesMap = new Map(userGames.map((g) => [g.id, g]));
+    const gameIds = Array.from(userGamesMap.keys());
+
+    if (gameIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        username: user.username,
+        games: [],
+      });
+    }
+
+    // Reuse the aggregation pattern from viewUserGames
+    const pipeline = [
+      { $match: { id: { $in: gameIds } } },
+      {
+        $lookup: {
+          from: 'covers',
+          localField: 'cover',
+          foreignField: 'id',
+          as: 'coverObject',
+        },
+      },
+      {
+        $lookup: {
+          from: 'artworks',
+          localField: 'artworks',
+          foreignField: 'id',
+          as: 'artworkObjects',
+        },
+      },
+      {
+        $addFields: {
+          coverUrl: {
+            $let: {
+              vars: { coverDoc: { $arrayElemAt: ['$coverObject', 0] } },
+              in: {
+                $cond: [
+                  '$$coverDoc',
+                  {
+                    $concat: [
+                      'https://images.igdb.com/igdb/image/upload/t_cover_small/',
+                      '$$coverDoc.image_id',
+                      '.jpg',
+                    ],
+                  },
+                  null,
+                ],
+              },
+            },
+          },
+          bannerUrl: {
+            $let: {
+              vars: { artDoc: { $arrayElemAt: ['$artworkObjects', 0] } },
+              in: {
+                $cond: {
+                  if: '$$artDoc',
+                  then: {
+                    $concat: [
+                      'https:',
+                      {
+                        $replaceOne: {
+                          input: '$$artDoc.url',
+                          find: 't_thumb',
+                          replacement: 't_1080p',
+                        },
+                      },
+                    ],
+                  },
+                  else: null,
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          coverObject: 0,
+          artworkObjects: 0,
+          cover: 0,
+          artworks: 0,
+        },
+      },
+    ];
+
+    const detailedGames = await Game.aggregate(pipeline);
+
+    const populatedGames = detailedGames.map((g) => {
+      const uGame = userGamesMap.get(g.id) || {};
+      return {
+        ...g,
+        status: uGame.status,
+        userRating: uGame.userRating,
+        isLiked: uGame.isLiked,
+        review: uGame.review,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      username: user.username,
+      games: populatedGames,
+    });
+  } catch (err) {
+    console.error('publicUserGamesByUsername error:', err);
+    return res.status(500).json({ message: 'Server error.' });
+  }
+};
