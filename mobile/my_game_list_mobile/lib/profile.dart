@@ -245,6 +245,7 @@ class _ProfileState extends State<Profile> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
               
               //const SizedBox(height: 25),

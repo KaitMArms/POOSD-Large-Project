@@ -12,7 +12,16 @@ class searchGames extends StatefulWidget {
 class searchGamesState extends State<searchGames>  {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Scaffold(
+      body: 
+        Center(
+          child: 
+          Text(
+            'Search Games Page\n(Coming Really Soon)',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 24),
+          ),
+        ),
+    );
   }
 }

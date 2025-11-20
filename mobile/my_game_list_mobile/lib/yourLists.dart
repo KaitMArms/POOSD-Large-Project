@@ -105,6 +105,27 @@ class YourGamesListState extends State<YourGamesList> {
     }
   }
 
+  // Helper method to normalize API status to display status
+  String _normalizeStatus(String status) {
+    switch (status.toLowerCase()) {
+      case "completed":
+        return "Completed";
+      case "in-progress":
+      case "in progress":
+        return "In Progress";
+      case "paused":
+      case "on-hold":
+        return "Paused";
+      case "dropped":
+        return "Dropped";
+      case "to-play":
+      case "to be played":
+        return "To Be Played";
+      default:
+        return status; // fallback to original if unknown
+    }
+  }
+
   void _updateDataMap() {
     dataMap = {
       "Completed": 0,
@@ -113,16 +134,18 @@ class YourGamesListState extends State<YourGamesList> {
       "Dropped": 0,
       "To Be Played": 0
     };
+    
     for (var game in _userGames) {
-      dataMap.update(game.status, (value) => value + 1, ifAbsent: () => 1);
+      String normalized = _normalizeStatus(game.status);
+      dataMap[normalized] = (dataMap[normalized] ?? 0) + 1;
     }
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Padding( // <-- instead of Center (fixes infinite height)
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -189,15 +212,14 @@ class YourGamesListState extends State<YourGamesList> {
                               touchCallback: (event, response) {
                                 setState(() {
                                   if (response == null || response.touchedSection == null) {
-                                    touchedIndex = null;  // ← This deselects when tapping empty space
+                                    touchedIndex = null;
                                     return;
                                   }
-                                  // If tapping the same section again, deselect it
                                   final tappedIndex = response.touchedSection!.touchedSectionIndex;
                                   if (touchedIndex == tappedIndex) {
-                                    touchedIndex = null;  // ← Toggle off
+                                    touchedIndex = null;
                                   } else {
-                                    touchedIndex = tappedIndex;  // ← Select new section
+                                    touchedIndex = tappedIndex;
                                   }
                                 });
                               },
@@ -214,7 +236,9 @@ class YourGamesListState extends State<YourGamesList> {
                     touchedIndex != null
                         ? _buildDetailView(touchedIndex!)
                         : Column(
-                            children: dataMap.entries.map((entry) {
+                            children: dataMap.entries
+                                .where((entry) => entry.value > 0) // Only show non-zero entries
+                                .map((entry) {
                               return Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                                 child: Row(
@@ -261,7 +285,6 @@ class YourGamesListState extends State<YourGamesList> {
       final double baseRadius = 70;
       final double touchedRadius = 90;
       final double baseOpacity = 1.0;
-      //final double dimOpacity = 0.3;
 
       final radius = isTouched ? touchedRadius : baseRadius;
       final opacity = baseOpacity;
@@ -294,14 +317,16 @@ class YourGamesListState extends State<YourGamesList> {
   }
 
   Widget _buildDetailView(int index) {
-    // Filter non-zero entries safely
     final nonZeroEntries = dataMap.entries.where((e) => e.value > 0).toList();
-    // Clamp index to prevent out-of-range
     if (index < 0 || index >= nonZeroEntries.length) return const SizedBox.shrink();
 
     final entry = nonZeroEntries[index];
     final status = entry.key;
-    final gamesForStatus = _userGames.where((game) => game.status == status).toList();
+    
+    // Filter using normalized status comparison
+    final gamesForStatus = _userGames.where((game) => 
+      _normalizeStatus(game.status) == status
+    ).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
