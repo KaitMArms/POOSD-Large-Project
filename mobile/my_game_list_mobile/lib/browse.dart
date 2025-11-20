@@ -117,6 +117,7 @@ class AllGamesState extends State<AllGames> {
           AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
+            foregroundColor: Colors.transparent,
           ),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
