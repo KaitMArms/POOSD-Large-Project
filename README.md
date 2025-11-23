@@ -24,7 +24,7 @@ For iOS:
   - Install XCode
   - Open XCode and agree to the license.
   - Install Command Line Tools
-      - '''xcode-select --install'''
+      - ```xcode-select --install```
       - Follow the prompt to install.
   - Open Xcode -> Settings -> Platforms -> iOS to ensure the latest iOS runtime is installed as that check is needed for the digital iPhone simulator to launch.
 
@@ -44,23 +44,23 @@ Next (working in Flutter now):
         - Edit your shell configuration file depending on your shell:
 
         - For zsh (default on macOS Catalina+ (check by heading into pressing Apple Logo -> About this Mac -> More Info -> Scroll Down to MacOS):
-          - Paste in '''nano ~/.zshrc''' in Terminal
+          - Paste in ```nano ~/.zshrc``` in Terminal
 
         - For bash:
-          - Paste in '''nano ~/.bash_profile''' in Terminal
-        - Add this line to the end in between the other '''PATH='''s
-          - '''export PATH="$PATH:$HOME/development/flutter/bin"''' in Terminal
-          - Replace $HOME/development/flutter/bin with the actual path where you unzipped Flutter.
-          - For example, if you put Flutter in Downloads/flutter, the line would be export PATH="$PATH:$HOME/Downloads/flutter/bin".
+          - Paste in ```nano ~/.bash_profile``` in Terminal
+        - Add this line to the end in between the other ```PATH=```s
+          - ```export PATH="$PATH:$HOME/development/flutter/bin"``` in Terminal
+          - Replace ```$HOME/development/flutter/bin``` with the actual path where you unzipped Flutter.
+          - For example, if you put Flutter in Downloads/flutter, the line would be export ```PATH="$PATH:$HOME/Downloads/flutter/bin"```.
           - Use Ctrl+O to Save, Ctrl+X to Exit.
-        - Apply the changes by running '''source ~/.zshrc''' or '''source ~/.bash_profile''' in Terminal.
-        - Test functionality by running '''flutter --version''' in Terminal.
+        - Apply the changes by running ```source ~/.zshrc``` or ```source ~/.bash_profile``` in Terminal.
+        - Test functionality by running ```flutter --version``` in Terminal.
         - Flutter’s version info/type should print out.
   - Run in Terminal:
-      - '''flutter doctor''' to ensure version installed correctly and platform functionality.
+      - ```flutter doctor``` to ensure version installed correctly and platform functionality.
   - Clone our repo.
   - Run in Terminal:
-      - '''flutter pub get''' to compile the repo build on your computer.
+      - ```flutter pub get``` to compile the repo build on your computer.
 
 Simulating the App Now:
   - For the iOS Simulator:
