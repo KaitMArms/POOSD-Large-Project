@@ -67,9 +67,9 @@ Simulating the App Now:
       - Run '''open -a Simulator''' in Terminal
       - Select Hardware -> Device -> Device You Want to start the emulator.
       - Wait for the emulator to open on your screen.
-  - From Android Studio:
+  - For the Android Simulator:
       - Go to Tools -> Device Manager -> Start, which should start up your device chosen from before, or go to Flutter Attach to choose a new device.
-  - Run in Terminal:
+  - Finally, for the App to Appear on Either Loaded Simulator, Run in Terminal:
       - '''flutter run'''
       - Your app should run!
       - Please note that the XCode build may take time to run the first time or various other times as the app gets bigger, but it will never exceed more than a minute or two for this repo.
