@@ -18,3 +18,9 @@ You will need the following commands entered into your computer's terminal or ru
   - In your browser of choice, search for ```http://localhost:8080``` and view the project from there
 
 # How To Emulate the IOS & Android Apps
+For the emulation of the iOS and Android Apps there are two different pathways depending on which platform you're building for.
+
+For iOS:
+
+
+For Android:
