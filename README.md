@@ -21,6 +21,55 @@ You will need the following commands entered into your computer's terminal or ru
 For the emulation of the iOS and Android Apps there are two different pathways depending on which platform you're building for.
 
 For iOS:
-
+  - Install XCode
+  - Open XCode and agree to the license.
+  - Install Command Line Tools
+      - '''xcode-select --install'''
+      - Follow the prompt to install.
+  - Open Xcode -> Settings -> Platforms -> iOS to ensure the latest iOS runtime is installed as that check is needed for the digital iPhone simulator to launch.
 
 For Android:
+  - Install the Android Studio IDE
+  - During setup, make sure these are checked:
+      - Android SDK
+      - Android SDK Platform
+      - Android Virtual Device (AVD)
+  - Once all of the above is completed, open Android Studio and create at least one emulator to test simulator functionality.
+
+Next (working in Flutter now):
+  - Install the Flutter SDK
+  - Add the Flutter SDK to your PATH (mini-process):
+      - On MacOS:
+        - Open Terminal
+        - Edit your shell configuration file depending on your shell:
+
+        - For zsh (default on macOS Catalina+ (check by heading into pressing Apple Logo -> About this Mac -> More Info -> Scroll Down to MacOS):
+          - Paste in '''nano ~/.zshrc''' in Terminal
+
+        - For bash:
+          - Paste in '''nano ~/.bash_profile''' in Terminal
+        - Add this line to the end in between the other '''PATH='''s
+          - '''export PATH="$PATH:$HOME/development/flutter/bin"''' in Terminal
+          - Replace $HOME/development/flutter/bin with the actual path where you unzipped Flutter.
+          - For example, if you put Flutter in Downloads/flutter, the line would be export PATH="$PATH:$HOME/Downloads/flutter/bin".
+          - Use Ctrl+O to Save, Ctrl+X to Exit.
+        - Apply the changes by running '''source ~/.zshrc''' or '''source ~/.bash_profile''' in Terminal.
+        - Test functionality by running '''flutter --version''' in Terminal.
+        - Flutter’s version info/type should print out.
+  - Run in Terminal:
+      - '''flutter doctor''' to ensure version installed correctly and platform functionality.
+  - Clone our repo.
+  - Run in Terminal:
+      - '''flutter pub get''' to compile the repo build on your computer.
+
+Simulating the App Now:
+  - For the iOS Simulator:
+      - Run '''open -a Simulator''' in Terminal
+      - Select Hardware -> Device -> Device You Want to start the emulator.
+      - Wait for the emulator to open on your screen.
+  - From Android Studio:
+      - Go to Tools -> Device Manager -> Start, which should start up your device chosen from before, or go to Flutter Attach to choose a new device.
+  - Run in Terminal:
+      - '''flutter run'''
+      - Your app should run!
+      - Please note that the XCode build may take time to run the first time or various other times as the app gets bigger, but it will never exceed more than a minute or two for this repo.
