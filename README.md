@@ -74,12 +74,5 @@ Simulating the App Now:
       - Your app should run!
       - Please note that the XCode build may take time to run the first time or various other times as the app gets bigger, but it will never exceed more than a minute or two for this repo.
 
-# APP SPOILERS BELOW:
-
-
-
-
-# Note for Playing the FreeDOOM Port Called to In Our App
-Before you start playing, you must use a keyboard and press the "Esc" key to start accessing the menu and playing the game. 
-The port is made for keyboard controls and touch controls are outside the bounds of what the port can understand.
-Hope you have fun! Thank you for your time.
+# Note for Encountering the Secret Door
+To fully experience what's after that section of the app, please either connect a bluetooth keyboard (mobile) or use your existing keyboard (desktop emulation). We hope you enjoy.
